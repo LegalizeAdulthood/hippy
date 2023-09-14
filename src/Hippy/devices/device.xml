@@ -1,0 +1,30 @@
+
+<HDF version="1.0">
+
+<DEVICE name="KEYPAD" chip="8279">
+  <WORD_SELECT>
+    <AI id="00"> PA00 </AI>
+  </WORD_SELECT>
+  <CHIP_SELECT> ~ (PA01 | PA02 | PA03 | PA04 | PA05 | PA06 
+    | PA07 | PA08 | PA09 | PA10 | PA11) . PA12 . PA13 . PA14 . PA15 
+  </CHIP_SELECT>
+</DEVICE>
+<DEVICE name="MONITOR" chip="EPROM">
+  <WORD_SELECT>
+    <AI id="00"> PA00 </AI>
+    <AI id="01"> PA01 </AI>
+    <AI id="02"> PA02 </AI>
+    <AI id="03"> PA03 </AI>
+    <AI id="04"> PA04 </AI>
+    <AI id="05"> PA05 </AI>
+    <AI id="06"> PA06 </AI>
+    <AI id="07"> PA07 </AI>
+    <AI id="08"> PA08 </AI>
+    <AI id="09"> PA09 </AI>
+    <AI id="10"> PA10 </AI>
+    <AI id="11"> PA11 </AI>
+    <AI id="12"> PA12 </AI>
+  </WORD_SELECT>
+  <CHIP_SELECT> ~PA13.PA14.PA15 </CHIP_SELECT>
+</DEVICE>
+</HDF>

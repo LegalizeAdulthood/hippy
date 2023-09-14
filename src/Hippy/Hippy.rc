@@ -1,0 +1,316 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Turkish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_TRK)
+#ifdef _WIN32
+LANGUAGE LANG_TURKISH, SUBLANG_DEFAULT
+#pragma code_page(1254)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "&Close",                      ID_FILE_CLOSE
+        MENUITEM "",                            ID_FILE, MENUBREAK
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM "Save &As ...",                ID_FILE_SAVEAS
+        MENUITEM "Save A&ll",                   ID_FILE_SAVEALL
+        MENUITEM "",                            ID_FILE, MENUBREAK
+        MENUITEM "&Load S File ...",            ID_FILE_LOADSFILE
+        MENUITEM "&Recent Files",               65535
+        MENUITEM "",                            ID_FILE, MENUBREAK
+        MENUITEM "&Exit",                       ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Compile",                    ID_EDIT_COMPILE
+        MENUITEM "Compile and &Load",           ID_EDIT_COMPILEANDLOAD
+    END
+    POPUP "&Microcomputer"
+    BEGIN
+        POPUP "&Generate Interrupt"
+        BEGIN
+            MENUITEM "&IRQ",                        ID_MICROCOMPUTER_GENERATEINTERRUPT_IRQ
+
+            MENUITEM "&NMI",                        ID_MICROCOMPUTER_GENERATEINTERRUPT_NMI
+
+            MENUITEM "RE&SET",                      ID_MICROCOMPUTER_GENERATEINTERRUPT_RESET
+
+        END
+        POPUP "&Execute"
+        BEGIN
+            MENUITEM "Step &Into\tF11",             ID_BTNSTEPINTO
+            MENUITEM "Set &Over\tF10",              ID_BTNSTEPOVER
+            MENUITEM "Step O&ut\tShift + F11",      ID_BTNSTEPOUT
+            MENUITEM "Run to &Cursor",              ID_BTNRUNCURSOR
+            MENUITEM "&Run\tF5",                    ID_BTNGO
+        END
+        POPUP "Execution Priority"
+        BEGIN
+            MENUITEM "&High",                       ID_MICROCOMPUTER_EXECUTIONPRIORITY_HIGH
+
+            MENUITEM "&Normal",                     ID_MICROCOMPUTER_EXECUTIONPRIORITY_NORMAL
+            , CHECKED
+        END
+        MENUITEM "",                            ID_MICROCOMPUTER
+        , MENUBARBREAK
+        POPUP "&Send Program to MP"
+        BEGIN
+            MENUITEM "&COM1",                       ID_EDIT_SENDPROGRAMTOMP_COM1
+
+            MENUITEM "&COM2",                       ID_EDIT_SENDPROGRAMTOMP_COM2
+
+        END
+        MENUITEM "",                            ID_MICROCOMPUTER, MENUBREAK
+        MENUITEM "Export S Record File ...",    ID_MICROCOMPUTER_SRECORDFILE
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&New Window",                 ID_WINDOW_NEW
+        MENUITEM "&Tile Horizontal",            ID_WINDOW_TILE_HORZ
+        MENUITEM "Tile Vertical",               ID_WINDOW_TILE_VERT
+        MENUITEM "Cascade",                     ID_WINDOW_CASCADE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About ...",                  ID_MENUABOUT
+    END
+END
+
+IDR_DASM_POPUP MENU DISCARDABLE 
+BEGIN
+    POPUP "Dasm"
+    BEGIN
+        MENUITEM "&Goto ...",                   ID_DASM_GOTO
+        MENUITEM "&Disassemble ...",            ID_DASM_DISASSEMBLE
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR1 ACCELERATORS DISCARDABLE 
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    VK_F10,         ID_BTNSTEPOVER,         VIRTKEY, NOINVERT
+    VK_F11,         ID_BTNSTEPINTO,         VIRTKEY, NOINVERT
+    VK_F11,         ID_BTNSTEPOUT,          VIRTKEY, SHIFT, NOINVERT
+    VK_F5,          ID_BTNGO,               VIRTKEY, NOINVERT
+    VK_F9,          ID_INSBRKPT,            VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_TOOLBAR1 TOOLBAR DISCARDABLE  16, 15
+BEGIN
+    BUTTON      ID_BTNGO
+    BUTTON      ID_BTNRUNCURSOR
+    BUTTON      ID_BTNSTEPINTO
+    BUTTON      ID_BTNSTEPOUT
+    BUTTON      ID_BTNSTEPOVER
+    BUTTON      ID_BTNPAUSE
+END
+
+IDR_TOOLBAR2 TOOLBAR DISCARDABLE  16, 15
+BEGIN
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    BUTTON      ID_FILE_NEW
+END
+
+IDR_TOOLBAR_INT TOOLBAR DISCARDABLE  16, 15
+BEGIN
+    BUTTON      ID_MICROCOMPUTER_GENERATEINTERRUPT_RESET
+    BUTTON      ID_MICROCOMPUTER_GENERATEINTERRUPT_NMI
+    BUTTON      ID_MICROCOMPUTER_GENERATEINTERRUPT_IRQ
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_TOOLBAR1            BITMAP  DISCARDABLE     "toolbar1.bmp"
+IDR_TOOLBAR2            BITMAP  DISCARDABLE     "toolbar2.bmp"
+IDR_TOOLBAR_INT         BITMAP  DISCARDABLE     "toolbar3.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_INPUTBOX DIALOG DISCARDABLE  0, 0, 186, 90
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,21,58,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,110,58,50,14
+    EDITTEXT        IDC_EDIT,19,32,139,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PROMPT,18,7,155,21,ES_MULTILINE | ES_AUTOHSCROLL | 
+                    ES_READONLY | NOT WS_BORDER
+END
+
+IDD_SRECORD DIALOG DISCARDABLE  0, 0, 195, 171
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Generate S-Record File"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,124,35,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,125,66,50,14
+    EDITTEXT        IDC_EDITBADDR,25,35,74,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITEADDR,25,86,71,14,ES_AUTOHSCROLL
+    LTEXT           "Beginning Address",IDC_STATIC,25,15,60,8
+    LTEXT           "Ending Address",IDC_STATIC,25,65,50,8
+    EDITTEXT        IDC_EDITOUTPUT,27,135,150,14,ES_AUTOHSCROLL
+    LTEXT           "Output File",IDC_STATIC,25,116,35,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_INPUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_SRECORD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 188
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 164
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON    DISCARDABLE     "app.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_BTNSTEPINTO          "\nStep Into (F11)"
+    ID_BTNSTEPOUT           "\nStep Out (Shit + F11)"
+    ID_BTNSTEPOVER          "\nStep Over (F10)"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_BTNGO                "\nGo (F5)"
+    ID_BTNPAUSE             "\nPause (Shift + F5)"
+    ID_BTNRUNCURSOR         "\nRun until selected line"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_BUTTON40054          "Reser"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_MICROCOMPUTER_GENERATEINTERRUPT_IRQ "\nIRQ interrupt"
+    ID_MICROCOMPUTER_GENERATEINTERRUPT_NMI "\nNon maskable interrupt"
+    ID_MICROCOMPUTER_GENERATEINTERRUPT_RESET "\nReset"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_NEW             "\nNew ASM File"
+    ID_FILE_OPEN            "\nOpen ASM File"
+    ID_FILE_SAVE            "\nSave Active File [Ctrl+S]"
+END
+
+#endif    // Turkish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

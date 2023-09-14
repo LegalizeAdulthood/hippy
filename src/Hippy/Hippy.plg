@@ -1,0 +1,83 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Hippy - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x41f /fo"Release/hippy.res" /d "NDEBUG" "C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\hippy.rc"" 
+Creating temporary file "C:\DOCUME~1\xxx\LOCALS~1\Temp\RSP289.tmp" with contents
+[
+/nologo /MTd /W3 /GR /GX /Zi /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Release/Hippy.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\baseWnd.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\dasmwnd.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\debugwnd.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\memdump.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\registerwnd.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\stackwnd.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\addrmng.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\alu.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\asmeditor.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\device.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\dialogs.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\disassembler.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\m6800.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\main.cpp"
+"C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\xmlparser.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\xxx\LOCALS~1\Temp\RSP289.tmp" 
+Creating temporary file "C:\DOCUME~1\xxx\LOCALS~1\Temp\RSP28A.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:no /pdb:"Release/hippy.pdb" /debug /machine:I386 /out:"bin/hippy.exe" /OPT:REF /ignore:4089 
+.\Release\baseWnd.obj
+.\Release\dasmwnd.obj
+.\Release\debugwnd.obj
+.\Release\memdump.obj
+.\Release\registerwnd.obj
+.\Release\stackwnd.obj
+.\Release\addrmng.obj
+.\Release\alu.obj
+.\Release\asmeditor.obj
+.\Release\device.obj
+.\Release\dialogs.obj
+.\Release\disassembler.obj
+.\Release\m6800.obj
+.\Release\main.obj
+.\Release\xmlparser.obj
+.\Release\hippy.res
+]
+Creating command line "link.exe @C:\DOCUME~1\xxx\LOCALS~1\Temp\RSP28A.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+baseWnd.cpp
+dasmwnd.cpp
+C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\dasmwnd.cpp(103) : warning C4800: 'unsigned char' : forcing value to bool 'true' or 'false' (performance warning)
+debugwnd.cpp
+memdump.cpp
+registerwnd.cpp
+stackwnd.cpp
+addrmng.cpp
+C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\addrmng.cpp(95) : warning C4101: 'hex' : unreferenced local variable
+alu.cpp
+asmeditor.cpp
+device.cpp
+dialogs.cpp
+disassembler.cpp
+m6800.cpp
+C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\m6800.cpp(36) : warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\m6800.cpp(42) : warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\m6800.cpp(50) : warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+C:\Hippy\Hippy_0.13a_source\Hippy_0.13a_source\src\Hippy\m6800.cpp(109) : warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+main.cpp
+xmlparser.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+hippy.exe - 0 error(s), 6 warning(s)
+</pre>
+</body>
+</html>
