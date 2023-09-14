@@ -55,8 +55,8 @@ public:
 	afx_msg void OnPaint();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar * pScrollBar);
-	afx_msg void OnSize();
-	afx_msg bool OnMouseWheel(UINT nFlag, short zDelta, CPoint pt);
+	afx_msg void OnSize(UINT p1, int p2, int p3);
+	afx_msg BOOL OnMouseWheel(UINT nFlag, short zDelta, CPoint pt);
 	DECLARE_MESSAGE_MAP()
 };
 

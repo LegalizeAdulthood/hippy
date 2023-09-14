@@ -27,13 +27,13 @@ bool CStackWnd::OnEraseBkgnd(CDC *pDC){
 	return false;
 }
 
-void CStackWnd::OnRedrawAll(WPARAM wParam, LPARAM lParam){
+LRESULT CStackWnd::OnRedrawAll(WPARAM wParam, LPARAM lParam){
 	int i;
 	for(i=0;i<numLines;i++)
 		ClearLine(i);
 	for(i=0;i<totNumLines;i++)
 		drawLine(lnPageStart+i);
-	
+	return TRUE;
 }
 
 void CStackWnd::ClearLine(int line){

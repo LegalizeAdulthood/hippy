@@ -33,7 +33,7 @@ public:
 	
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnMemLocChange(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMemLocChange(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 };
 

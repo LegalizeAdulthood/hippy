@@ -55,33 +55,33 @@ public:
 	CMainFrame();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg int OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext);
-	afx_msg int OnDestroy();
-	afx_msg int OnShowWindow(BOOL bShow, UINT nStatus);
-	afx_msg int OnFileOpenClick();
-	afx_msg int OnFileCloseClick();
-	afx_msg int OnFileNewClick();
-	afx_msg int OnFileExitClick();
-	afx_msg int OnFileSaveClick();
-	afx_msg int OnFileSaveAsClick();
-	afx_msg int OnEditCompile();
-	afx_msg int OnStepInto();
-	afx_msg int OnStepOver();
-	afx_msg int OnStepOut();
-	afx_msg int OnGo();
-	afx_msg int OnPause();
-	afx_msg int OnInsBkPt();
+	afx_msg void OnDestroy();
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnFileOpenClick();
+	afx_msg void OnFileCloseClick();
+	afx_msg void OnFileNewClick();
+	afx_msg void OnFileExitClick();
+	afx_msg void OnFileSaveClick();
+	afx_msg void OnFileSaveAsClick();
+	afx_msg void OnEditCompile();
+	afx_msg void OnStepInto();
+	afx_msg void OnStepOver();
+	afx_msg void OnStepOut();
+	afx_msg void OnGo();
+	afx_msg void OnPause();
+	afx_msg void OnInsBkPt();
 	afx_msg int OnWindowMenu();
-	afx_msg int OnSendCom1();
-	afx_msg int OnSendCom2();
-	afx_msg int OnRunToCursor();
-	afx_msg int OnLoadSFile();
-	afx_msg int OnWriteSFile();
-	afx_msg int OnCompileNLoad();
-	afx_msg int OnIntReset();
-	afx_msg int OnIntNmi();
-	afx_msg int OnIntIrq();
-	afx_msg int OnNormalPriority();
-	afx_msg int OnHighPriority();
+	afx_msg void OnSendCom1();
+	afx_msg void OnSendCom2();
+	afx_msg void OnRunToCursor();
+	afx_msg void OnLoadSFile();
+	afx_msg void OnWriteSFile();
+	afx_msg void OnCompileNLoad();
+	afx_msg void OnIntReset();
+	afx_msg void OnIntNmi();
+	afx_msg void OnIntIrq();
+	afx_msg void OnNormalPriority();
+	afx_msg void OnHighPriority();
 	DECLARE_MESSAGE_MAP()
 };
 
@@ -114,7 +114,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	ON_COMMAND(ID_MICROCOMPUTER_GENERATEINTERRUPT_IRQ, OnIntIrq)
 	ON_COMMAND(ID_MICROCOMPUTER_EXECUTIONPRIORITY_HIGH, OnHighPriority)
 	ON_COMMAND(ID_MICROCOMPUTER_EXECUTIONPRIORITY_NORMAL, OnNormalPriority)
-
 	ON_COMMAND(ID_EDIT_COMPILEANDLOAD, OnCompileNLoad)
 END_MESSAGE_MAP()
 
@@ -158,16 +157,15 @@ void CMainFrame::SendThroughCom(int PortNo, CString fname){
 	WaitForSingleObject(pi.hProcess, INFINITE);
 }
 
-int CMainFrame::OnLoadSFile(){
+void CMainFrame::OnLoadSFile(){
 	CFileDialog fd(true,".asm", NULL, OFN_FILEMUSTEXIST);
 	if(fd.DoModal()==IDOK){
 		pDbgWnd->LoadSFile(fd.GetFileName());
 		pDbgWnd->SendMessage(WM_UPDATEDBGWND);
 	}
-	return 0;
 }
 
-int CMainFrame::OnWriteSFile(){
+void CMainFrame::OnWriteSFile(){
 	CSFileDialog fd;
 	if(fd.ShowModal()==IDOK){
 		Word wBegin, wEnd;
@@ -187,41 +185,34 @@ int CMainFrame::OnWriteSFile(){
 		else
 			pDbgWnd->WriteSFile(wBegin, wEnd, str);
 	}
-	return 0;
 }
 
-int CMainFrame::OnNormalPriority(){
+void CMainFrame::OnNormalPriority(){
 	pDbgWnd->SetThreadPriority(THREAD_PRIORITY_NORMAL);
 	GetMenu()->CheckMenuItem(ID_MICROCOMPUTER_EXECUTIONPRIORITY_NORMAL, MF_CHECKED);
 	GetMenu()->CheckMenuItem(ID_MICROCOMPUTER_EXECUTIONPRIORITY_HIGH, MF_UNCHECKED);
-	return 0;
-
 }
 
-int CMainFrame::OnHighPriority(){
+void CMainFrame::OnHighPriority(){
 	pDbgWnd->SetThreadPriority(THREAD_PRIORITY_HIGHEST);
 	GetMenu()->CheckMenuItem(ID_MICROCOMPUTER_EXECUTIONPRIORITY_HIGH, MF_CHECKED);
 	GetMenu()->CheckMenuItem(ID_MICROCOMPUTER_EXECUTIONPRIORITY_NORMAL, MF_UNCHECKED);
-	return 0;
 }
 
-int CMainFrame::OnIntReset(){
+void CMainFrame::OnIntReset(){
 	psem_reset->Unlock();
-	return 0;
 }
 
-int CMainFrame::OnIntNmi(){
+void CMainFrame::OnIntNmi(){
 	psem_nmi->Unlock();
-	return 0;
 }
 
-int CMainFrame::OnIntIrq(){
+void CMainFrame::OnIntIrq(){
 	psem_irq->Unlock();
-	return 0;
 }
-	
 
-int CMainFrame::OnSendCom1(){
+
+void CMainFrame::OnSendCom1(){
 	CAsmEditorWnd * aw = GetCurrentEditor();
 	if(aw){
 		if(aw->CompileCode()){
@@ -230,11 +221,9 @@ int CMainFrame::OnSendCom1(){
 		}
 	}
 	else MessageBeep(1);
-
-	return 0;
 }
 
-int CMainFrame::OnSendCom2(){
+void CMainFrame::OnSendCom2(){
 		CAsmEditorWnd * aw = GetCurrentEditor();
 	if(aw){
 		if(aw->CompileCode()){
@@ -243,10 +232,9 @@ int CMainFrame::OnSendCom2(){
 		}
 	}
 	else MessageBeep(1);
-	return 0;
 }
 
-int CMainFrame::OnCompileNLoad(){
+void CMainFrame::OnCompileNLoad(){
 	CAsmEditorWnd * aw = GetCurrentEditor();
 	if(aw){
 		if(aw->CompileCode()){
@@ -255,54 +243,45 @@ int CMainFrame::OnCompileNLoad(){
 		}
 	}
 	else MessageBeep(1);
-	return 0;
 }
 
-int CMainFrame::OnEditCompile(){
+void CMainFrame::OnEditCompile(){
 	CAsmEditorWnd * aw = GetCurrentEditor();
 	if(aw){
 		aw->CompileCode();
 	}
 	else MessageBeep(1);
-	return 0;
 }
 
-int CMainFrame::OnInsBkPt(){
+void CMainFrame::OnInsBkPt(){
 	pDbgWnd->InsBkPt();
-	return 0;
 }
 
-int CMainFrame::OnPause(){
+void CMainFrame::OnPause(){
 	pDbgWnd->Stop();
-	return 0;
 }
 
-int CMainFrame::OnGo(){
+void CMainFrame::OnGo(){
 	pDbgWnd->Run();
-	return 0;
 }
 
-int CMainFrame::OnStepInto(){
+void CMainFrame::OnStepInto(){
 	pDbgWnd->StepIn();
-	return 0;
 }
 
-int CMainFrame::OnStepOver(){
+void CMainFrame::OnStepOver(){
 	pDbgWnd->StepOver();
-	return 0;
 }
 
-int CMainFrame::OnStepOut(){
+void CMainFrame::OnStepOut(){
 	pDbgWnd->StepOut();
-	return 0;
 }
 
-int CMainFrame::OnRunToCursor(){
+void CMainFrame::OnRunToCursor(){
 	pDbgWnd->RunToCursor();
-	return 0;
 }
 
-int CMainFrame::OnFileSaveClick(){
+void CMainFrame::OnFileSaveClick(){
 	CAsmEditorWnd *  pAsm =  GetCurrentEditor();
 	
 	if(pAsm){
@@ -310,11 +289,9 @@ int CMainFrame::OnFileSaveClick(){
 		else pAsm->Save();
 	}
 	else MessageBeep(1);
-	
-	return 0;
 }
 
-int CMainFrame::OnFileSaveAsClick(){
+void CMainFrame::OnFileSaveAsClick(){
 	CAsmEditorWnd *  pAsm =  GetCurrentEditor();
 	
 	if(pAsm){
@@ -327,11 +304,9 @@ int CMainFrame::OnFileSaveAsClick(){
 		}
 	}
 	else MessageBeep(1);
-	
-	return 0;
 }
 
-int CMainFrame::OnFileOpenClick(){
+void CMainFrame::OnFileOpenClick(){
 	CFileDialog fd(true,".asm", NULL, OFN_FILEMUSTEXIST);
 	if(fd.DoModal()==IDOK){
 		CAsmEditorWnd * pAsm;
@@ -339,10 +314,9 @@ int CMainFrame::OnFileOpenClick(){
 		mapp.AddToRecentFileList(fd.GetFileName());
 		
 	}
-	return 0;
 }
 
-int CMainFrame::OnFileCloseClick(){
+void CMainFrame::OnFileCloseClick(){
 	CMDIChildWnd *cw = this->MDIGetActive();
 	if(cw){
 		CRuntimeClass *pRtc = cw->GetRuntimeClass();
@@ -352,18 +326,15 @@ int CMainFrame::OnFileCloseClick(){
 		else MessageBeep(0);
 	}
 	else MessageBeep(1);
-	return 0;
 }
 
-int CMainFrame::OnFileNewClick(){
+void CMainFrame::OnFileNewClick(){
 	CAsmEditorWnd * pAsm;
 	pAsm = new CAsmEditorWnd(this, "");
-	return 0;
 }
 
-int CMainFrame::OnFileExitClick(){
+void CMainFrame::OnFileExitClick(){
 	DestroyWindow();
-	return 0;
 }
 
 int CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext){
@@ -376,15 +347,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct){
 	return 0;
 }
 
-int CMainFrame::OnDestroy(){
+void CMainFrame::OnDestroy(){
 	WINDOWPLACEMENT wp;
 	GetWindowPlacement(&wp);
     AfxGetApp()->WriteProfileBinary("Smart IDE", "WP MainFrame", (LPBYTE)&wp, sizeof(wp));
 	SaveBarState("ToolBarState");
-	return 0;
 }
 
-int CMainFrame::OnShowWindow(BOOL bShow, UINT nStatus){
+void CMainFrame::OnShowWindow(BOOL bShow, UINT nStatus){
 	CMDIFrameWnd::OnShowWindow(bShow, nStatus);
 
     if(bShow && !IsWindowVisible())
@@ -397,7 +367,6 @@ int CMainFrame::OnShowWindow(BOOL bShow, UINT nStatus){
             delete [] lwp;
         }
     }
-	return 0;
 }
 
 void CMainFrame::CreateMRUMenu(){

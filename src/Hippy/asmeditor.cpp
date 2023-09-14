@@ -69,14 +69,15 @@ void CBuildEdit::OnLButtonDblClk(UINT nFlags, CPoint point){
 	}
 }
 
-void CAsmEditorWnd::OnHideBuildWnd(WPARAM wParam, LPARAM lParam){
+LRESULT CAsmEditorWnd::OnHideBuildWnd(WPARAM wParam, LPARAM lParam){
 	buildWnd.ShowWindow(SW_HIDE);
 	CRect rc; 
 	GetClientRect(&rc);
 	OnSize(0, rc.right, rc.bottom);
+        return TRUE;
 }
 
-void CAsmEditorWnd::OnJumpToLine(WPARAM wParam, LPARAM lParam){
+LRESULT CAsmEditorWnd::OnJumpToLine(WPARAM wParam, LPARAM lParam){
 	int nBegin, nEnd;
 
 	if ((nBegin=Editor.LineIndex(wParam-1)) != -1)
@@ -90,6 +91,8 @@ void CAsmEditorWnd::OnJumpToLine(WPARAM wParam, LPARAM lParam){
 	}
 	else 
 		MessageBeep(1);
+
+        return TRUE;
 }
 
 bool CAsmEditorWnd::IsNewFile(){ 

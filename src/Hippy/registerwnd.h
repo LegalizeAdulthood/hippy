@@ -50,13 +50,13 @@ public:
 	~CRegisterWnd();
 
 	void	Update(bool drawAll=false);
-	afx_msg void OnRedrawAll(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnRedrawAll(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnSetFocus(CWnd *pOldWnd);
 	afx_msg void OnKillFocus(CWnd * pNewWnd);
 	afx_msg void OnPaint();
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg bool OnEraseBkgnd(CDC *pDC);
+	afx_msg BOOL OnEraseBkgnd(CDC *pDC);
 	DECLARE_MESSAGE_MAP()
 };
 

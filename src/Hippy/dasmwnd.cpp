@@ -42,7 +42,7 @@ int CDisasmWnd::add_codePt(Word w){
 	return 0;	
 }
 
-int CDisasmWnd::OnDasmHere(){
+void CDisasmWnd::OnDasmHere(){
 	CInputBox ib;
 	if(ib.ShowModal(&CString("Enter address to disassemble from:"))==IDOK){
 		Word w = ib.AsWord();
@@ -51,11 +51,9 @@ int CDisasmWnd::OnDasmHere(){
 		lnPageStart = InstructionPos[w];
 		RedrawWindow();
 	}
-	return 0;
-	
 }
 
-int CDisasmWnd::OnGoto(){
+void CDisasmWnd::OnGoto(){
 	CInputBox ib;
 	
 	if(ib.ShowModal()==IDOK){
@@ -65,8 +63,6 @@ int CDisasmWnd::OnGoto(){
 		lnPageStart = InstructionPos[w];
 		RedrawWindow();
 	}
-
-	return 0;
 }
 
 void CDisasmWnd::OnRButtonUp(UINT nFlags, CPoint point){
@@ -212,8 +208,9 @@ void CDisasmWnd::OnLButtonDown(UINT nFlags, CPoint point){
 	}
 }
 
-void CDisasmWnd::OnRedrawAll(WPARAM wParam, LPARAM lParam){
+LRESULT CDisasmWnd::OnRedrawAll(WPARAM wParam, LPARAM lParam){
 	Update((Word)wParam);
+        return TRUE;
 }
 
 void CDisasmWnd::Update(Word pc){

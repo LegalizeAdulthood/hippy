@@ -27,7 +27,7 @@
 
 
 typedef CArray<CString, CString&> CStrArray;
-typedef enum TInterrupt{ IRQ, NMI, RESET};
+enum TInterrupt{ IRQ, NMI, RESET};
 
 class CDevice{
 private:

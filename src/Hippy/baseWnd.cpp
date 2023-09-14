@@ -30,11 +30,11 @@ BEGIN_MESSAGE_MAP(CBaseWnd, CWnd)
   ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
 
-void CBaseWnd::OnSize(){
+void CBaseWnd::OnSize(UINT p1, int p2, int p3){
 	UpdateMetrics();
 }
 
-bool CBaseWnd::OnMouseWheel(UINT nFlag, short zDelta, CPoint pt){
+BOOL CBaseWnd::OnMouseWheel(UINT nFlag, short zDelta, CPoint pt){
 	zDelta /= 120;
 	if(zDelta<0)
 		for(;zDelta;zDelta++)

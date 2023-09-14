@@ -181,9 +181,10 @@ void CDebugWnd::Stop(){
 	Running = false;
 }
 
-void CDebugWnd::OnUpdateDbgWnd(WPARAM wParam, LPARAM lParam){
+LRESULT CDebugWnd::OnUpdateDbgWnd(WPARAM wParam, LPARAM lParam){
 	pStackWnd->toggleContinuous(false);
 	UpdateAll();
+        return TRUE;
 }
 
 BOOL CDebugWnd::OnEraseBkgnd(CDC* pDC){
@@ -197,7 +198,7 @@ void CDebugWnd::OnSize(UINT nType, int cx, int cy){
 	CMDIChildWnd::OnSize(nType, cx, cy);
 	CRect rc;
 	GetClientRect(&rc);
-	static const offset = 10;
+	static const int offset = 10;
 	int aw = cx - 2*offset;
 	int ah = cy - 2*offset;
 	
@@ -245,14 +246,13 @@ int CDebugWnd::WriteSFile(Word wBegin, Word wEnd, CString & str){
 	return memory->SaveSFile(str, wBegin, wEnd);
 }
 
-int CDebugWnd::OnDestroy(){
+void CDebugWnd::OnDestroy(){
 	WINDOWPLACEMENT wp;
     GetWindowPlacement(&wp);
     AfxGetApp()->WriteProfileBinary("Smart IDE", "WP DebugWnd", (LPBYTE)&wp, sizeof(wp));
-    return 0;
 }
 
-int CDebugWnd::OnShowWindow(BOOL bShow, UINT nStatus){
+void CDebugWnd::OnShowWindow(BOOL bShow, UINT nStatus){
 	CMDIChildWnd::OnShowWindow(bShow, nStatus);
 
     if(bShow && !IsWindowVisible())
@@ -266,7 +266,6 @@ int CDebugWnd::OnShowWindow(BOOL bShow, UINT nStatus){
             delete [] lwp;
         }
     }
-	return 1;
 }
 
 void CDebugWnd::SetThreadPriority(int priority) {  

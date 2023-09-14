@@ -38,7 +38,7 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
-static filenumber = 0;
+static int filenumber = 0;
 
 class CAsmEditorWnd : public CMDIChildWnd{
 private:
@@ -64,8 +64,8 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg bool OnEraseBkgnd(CDC *pDC);
 	afx_msg void OnClose();
-	afx_msg void OnJumpToLine(WPARAM wParam, LPARAM lParam);
-	afx_msg void OnHideBuildWnd(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnJumpToLine(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnHideBuildWnd(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 };
 

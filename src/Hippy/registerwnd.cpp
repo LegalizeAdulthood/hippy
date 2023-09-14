@@ -86,8 +86,9 @@ void CRegisterWnd::drawRegister(bool bActive, LPCRECT lprc, RegEnum reReg, int r
 	}
 }
 
-void CRegisterWnd::OnRedrawAll(WPARAM wParam, LPARAM lParam){
+LRESULT CRegisterWnd::OnRedrawAll(WPARAM wParam, LPARAM lParam){
 	Update();
+        return TRUE;
 }
 
 //called after each inst. if drawAll is true then (called from paint) all of the registers
@@ -247,7 +248,7 @@ void CRegisterWnd::OnPaint(){
 	EndPaint(&ps);
 }
 
-bool CRegisterWnd::OnEraseBkgnd(CDC *pDC){
+BOOL CRegisterWnd::OnEraseBkgnd(CDC *pDC){
 	return false;
 }
 

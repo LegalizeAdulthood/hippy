@@ -29,10 +29,11 @@ END_MESSAGE_MAP()
  * Message recieved when data stored in a memory location changes
  * wParam in the memory location changes.
  */
-void CMemDumpWnd::OnMemLocChange(WPARAM wParam, LPARAM lParam){
+LRESULT CMemDumpWnd::OnMemLocChange(WPARAM wParam, LPARAM lParam){
 	Word w = (Word)wParam;
 	if(isLineVisible(w/8))
 		drawLine(w/8);
+        return TRUE;
 }
 
 void CMemDumpWnd::OnLButtonDown(UINT nFlags, CPoint point){

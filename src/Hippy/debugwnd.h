@@ -83,12 +83,12 @@ public:
 	int LoadSFile(CString & str);
 	int WriteSFile(Word wBegin, Word wEnd, CString & str);
 	void SetThreadPriority(int priority);
-	afx_msg int OnDestroy();
-	afx_msg int OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnDestroy();
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnUpdateDbgWnd(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnUpdateDbgWnd(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 };
 

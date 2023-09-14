@@ -66,7 +66,7 @@ public:
 	void ScrollUp(int nl);
 	void ScrollDown(int nl=1);
 	afx_msg bool OnEraseBkgnd(CDC *pDC);
-	afx_msg void OnRedrawAll(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnRedrawAll(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 };
 

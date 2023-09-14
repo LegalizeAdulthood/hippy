@@ -707,255 +707,255 @@ void CM6800::initFunctions(){
 	switch(op){
 		//MEMORY & ACCUMULATOR OPERATIONS
 	case 0x8B: case 0x9B: case 0xAB: case 0xBB:
-		functions[op] = adda;
+		functions[op] = &CM6800::adda;
 		break;
 	case 0xCB: case 0xDB: case 0xEB: case 0xFB:
-		functions[op] = addb;
+		functions[op] = &CM6800::addb;
 		break;
 	case 0x1B:
-		functions[op] = aba;
+		functions[op] = &CM6800::aba;
 		break;
 	case 0x89: case 0x99: case 0xA9: case 0xB9:
-		functions[op] = adca;
+		functions[op] = &CM6800::adca;
 		break;
 	case 0xc9: case 0xd9: case 0xe9: case 0xf9:
-		functions[op] = adcb;
+		functions[op] = &CM6800::adcb;
 		break;
 	case 0x84: case 0x94: case 0xa4: case 0xb4:
-		functions[op] = anda;
+		functions[op] = &CM6800::anda;
 		break;
 	case 0xc4: case 0xd4: case 0xe4: case 0xf4:
-		functions[op] = andb;
+		functions[op] = &CM6800::andb;
 		break;
 	case 0x85: case 0x95: case 0xa5: case 0xb5:
-		functions[op] = bita;
+		functions[op] = &CM6800::bita;
 		break;
 	case 0xc5: case 0xd5: case 0xe5: case 0xf5:
-		functions[op] = bitb;
+		functions[op] = &CM6800::bitb;
 		break;
 	case 0x4f:
-		functions[op] = clra;
+		functions[op] = &CM6800::clra;
 		break;
 	case 0x5f:
-		functions[op] = clrb;
+		functions[op] = &CM6800::clrb;
 		break;
 	case 0x6f: case 0x7f:
-		functions[op] = clr;
+		functions[op] = &CM6800::clr;
 		break;
 	case 0x81: case 0x91: case 0xa1: case 0xb1:
-		functions[op] = cmpa;
+		functions[op] = &CM6800::cmpa;
 		break;
 	case 0xc1: case 0xd1: case 0xe1: case 0xf1:
-		functions[op] = cmpb;
+		functions[op] = &CM6800::cmpb;
 		break;
 	case 0x11:
-		functions[op] = cba;
+		functions[op] = &CM6800::cba;
 		break;
 	case 0x43:
-		functions[op] = coma;
+		functions[op] = &CM6800::coma;
 		break;
 	case 0x53:
-		functions[op] = comb;
+		functions[op] = &CM6800::comb;
 		break;
 	case 0x63: case 0x73:
-		functions[op] = com;
+		functions[op] = &CM6800::com;
 		break;
 	case 0x40:
-		functions[op] = nega;
+		functions[op] = &CM6800::nega;
 		break;
 	case 0x50:
-		functions[op] = negb;
+		functions[op] = &CM6800::negb;
 		break;
 	case 0x60: case 0x70:
-		functions[op] = neg;
+		functions[op] = &CM6800::neg;
 		break;
 	case 0x19:
-		functions[op] = daa;
+		functions[op] = &CM6800::daa;
 		break;
 	case 0x6a : case 0x7a : 
-		functions[op] = dec;
+		functions[op] = &CM6800::dec;
 		break;
 	case 0x4a :
-		functions[op] = deca;
+		functions[op] = &CM6800::deca;
 		break;
 	case 0x5a:
-		functions[op] = decb;
+		functions[op] = &CM6800::decb;
 		break;
 	case 0x88: case 0x98: case 0xa8: case 0xb8:
-		functions[op] = eora;
+		functions[op] = &CM6800::eora;
 		break;
 	case 0xc8: case 0xd8: case 0xe8: case 0xf8:
-		functions[op] = eorb;
+		functions[op] = &CM6800::eorb;
 		break;
 	case 0x6c : case 0x7c: 
-		functions[op] = inc;
+		functions[op] = &CM6800::inc;
 		break;
 	case 0x4c :
-		functions[op] = inca;
+		functions[op] = &CM6800::inca;
 		break;
 	case 0x5c:
-		functions[op] = incb;
+		functions[op] = &CM6800::incb;
 		break;
 	case 0x86: case 0x96: case 0xa6: case 0xb6:
-		functions[op] = ldaa;
+		functions[op] = &CM6800::ldaa;
 		break;
 	case 0xc6: case 0xd6: case 0xe6: case 0xf6:
-		functions[op] = ldab;
+		functions[op] = &CM6800::ldab;
 		break;
 	case 0x8a: case 0x9a: case 0xaa: case 0xba:
-		functions[op] = oraa;
+		functions[op] = &CM6800::oraa;
 		break;
 	case 0xca: case 0xda: case 0xea: case 0xfa:
-		functions[op] = orab;
+		functions[op] = &CM6800::orab;
 		break;
 	case 0x36:
-		functions[op] = psha;
+		functions[op] = &CM6800::psha;
 		break;
 	case 0x37:
-		functions[op] = pshb;
+		functions[op] = &CM6800::pshb;
 		break;
 	case 0x32:
-		functions[op] = pula;
+		functions[op] = &CM6800::pula;
 		break;
 	case 0x33:
-		functions[op] = pulb;
+		functions[op] = &CM6800::pulb;
 		break;
 	case 0x49:
-		functions[op] = rola;
+		functions[op] = &CM6800::rola;
 		break;
 	case 0x59:
-		functions[op] = rolb;
+		functions[op] = &CM6800::rolb;
 		break;
 	case 0x69: case 0x79:
-		functions[op] = rol;
+		functions[op] = &CM6800::rol;
 		break;
 	case 0x46:
-		functions[op] = rora;
+		functions[op] = &CM6800::rora;
 		break;
 	case 0x56:
-		functions[op] = rorb;
+		functions[op] = &CM6800::rorb;
 		break;
 	case 0x66: case 0x76:
-		functions[op] = ror;
+		functions[op] = &CM6800::ror;
 		break;
 	case 0x48:
-		functions[op] = asla;
+		functions[op] = &CM6800::asla;
 		break;
 	case 0x58:
-		functions[op] = aslb;
+		functions[op] = &CM6800::aslb;
 		break;
 	case 0x68: case 0x78:
-		functions[op] = asl;
+		functions[op] = &CM6800::asl;
 		break;
 	case 0x47:
-		functions[op] = asra;
+		functions[op] = &CM6800::asra;
 		break;
 	case 0x57:
-		functions[op] = asrb;
+		functions[op] = &CM6800::asrb;
 		break;
 	case 0x67: case 0x77:
-		functions[op] = asr;
+		functions[op] = &CM6800::asr;
 		break;
 	case 0x44:
-		functions[op] = lsra;
+		functions[op] = &CM6800::lsra;
 		break;
 	case 0x54:
-		functions[op] = lsrb;
+		functions[op] = &CM6800::lsrb;
 		break;
 	case 0x64: case 0x74:
-		functions[op] = lsr;
+		functions[op] = &CM6800::lsr;
 		break;
 	case 0x97: case 0xa7: case 0xb7:
-		functions[op] = staa;
+		functions[op] = &CM6800::staa;
 		break;
 	case 0xd7: case 0xe7: case 0xf7:
-		functions[op] = stab;
+		functions[op] = &CM6800::stab;
 		break;
 	case 0x80: case 0x90: case 0xa0: case 0xb0:
-		functions[op] = suba;
+		functions[op] = &CM6800::suba;
 		break;
 	case 0xc0: case 0xd0: case 0xe0: case 0xf0:
-		functions[op] = subb;
+		functions[op] = &CM6800::subb;
 		break;
 	case 0x10:
-		functions[op] = sba;
+		functions[op] = &CM6800::sba;
 		break;
 	case 0x82: case 0x92: case 0xa2: case 0xb2:
-		functions[op] = sbca;
+		functions[op] = &CM6800::sbca;
 		break;
 	case 0xc2: case 0xd2: case 0xe2: case 0xf2:
-		functions[op] = sbcb;
+		functions[op] = &CM6800::sbcb;
 		break;
 	case 0x16:
-		functions[op] = tab;
+		functions[op] = &CM6800::tab;
 		break;
 	case 0x17:
-		functions[op] = tba;
+		functions[op] = &CM6800::tba;
 		break;
 	case 0x4d: 
-		functions[op] = tsta;
+		functions[op] = &CM6800::tsta;
 		break;
 	case 0x5d:
-		functions[op] = tstb;
+		functions[op] = &CM6800::tstb;
 		break;
 	case 0x6d: case 0x7d:
-		functions[op] = tst;
+		functions[op] = &CM6800::tst;
 		break;
 		// BRANCH OPERATIONS
-	case 0x20: functions[op] = bra; break;
-	case 0x22: functions[op] = bhi; break;
-	case 0x23: functions[op] = bls; break;
-	case 0x24: functions[op] = bcc; break;
-	case 0x25: functions[op] = bcs; break;
-	case 0x26: functions[op] = bne; break;
-	case 0x27: functions[op] = beq; break;
-	case 0x28: functions[op] = bvc; break;
-	case 0x29: functions[op] = bvs; break;
-	case 0x2a: functions[op] = bpl; break;
-	case 0x2b: functions[op] = bmi; break;
-	case 0x2c: functions[op] = bge; break;
-	case 0x2d: functions[op] = blt; break;
-	case 0x2e: functions[op] = bgt; break;
-	case 0x2f: functions[op] = ble; break;
-	case 0x8d: functions[op] = bsr; break;
-	case 0xad: case 0xbd: functions[op] = jsr; break;
-	case 0x6e: case 0x7e: functions[op] = jmp; break;
-	case 0x01: functions[op] = nop; break;
-	case 0x39: functions[op] = rts; break;
-	case 0x3b: functions[op] = rti; break;
-	case 0x3e: functions[op] = wai; break;
-	case 0x3f: functions[op] = swi; break;
+	case 0x20: functions[op] = &CM6800::bra; break;
+	case 0x22: functions[op] = &CM6800::bhi; break;
+	case 0x23: functions[op] = &CM6800::bls; break;
+	case 0x24: functions[op] = &CM6800::bcc; break;
+	case 0x25: functions[op] = &CM6800::bcs; break;
+	case 0x26: functions[op] = &CM6800::bne; break;
+	case 0x27: functions[op] = &CM6800::beq; break;
+	case 0x28: functions[op] = &CM6800::bvc; break;
+	case 0x29: functions[op] = &CM6800::bvs; break;
+	case 0x2a: functions[op] = &CM6800::bpl; break;
+	case 0x2b: functions[op] = &CM6800::bmi; break;
+	case 0x2c: functions[op] = &CM6800::bge; break;
+	case 0x2d: functions[op] = &CM6800::blt; break;
+	case 0x2e: functions[op] = &CM6800::bgt; break;
+	case 0x2f: functions[op] = &CM6800::ble; break;
+	case 0x8d: functions[op] = &CM6800::bsr; break;
+	case 0xad: case 0xbd: functions[op] = &CM6800::jsr; break;
+	case 0x6e: case 0x7e: functions[op] = &CM6800::jmp; break;
+	case 0x01: functions[op] = &CM6800::nop; break;
+	case 0x39: functions[op] = &CM6800::rts; break;
+	case 0x3b: functions[op] = &CM6800::rti; break;
+	case 0x3e: functions[op] = &CM6800::wai; break;
+	case 0x3f: functions[op] = &CM6800::swi; break;
 		// INDEX & STACK
 	case 0x8c: case 0x9c: case 0xac: case 0xbc:
-		functions[op] = cpx;
+		functions[op] = &CM6800::cpx;
 		break;
-	case 0x09: functions[op] = dex; break;
-	case 0x34: functions[op] = des; break;
-	case 0x08: functions[op] = inx; break;
-	case 0x31: functions[op] = ins; break;
+	case 0x09: functions[op] = &CM6800::dex; break;
+	case 0x34: functions[op] = &CM6800::des; break;
+	case 0x08: functions[op] = &CM6800::inx; break;
+	case 0x31: functions[op] = &CM6800::ins; break;
 	case 0xce: case 0xde: case 0xee: case 0xfe:
-		functions[op] = ldx; 
+		functions[op] = &CM6800::ldx; 
 		break;
 	case 0x8e: case 0x9e: case 0xae: case 0xbe:
-		functions[op] = lds; 
+		functions[op] = &CM6800::lds; 
 		break;
 	case 0xdf: case 0xef: case 0xff:
-		functions[op] = stx;
+		functions[op] = &CM6800::stx;
 		break;
 	case 0x9f: case 0xaf: case 0xbf:
-		functions[op] = sts;
+		functions[op] = &CM6800::sts;
 		break;
-	case 0x35: functions[op] = txs; break;
-	case 0x30: functions[op] = tsx; break;
+	case 0x35: functions[op] = &CM6800::txs; break;
+	case 0x30: functions[op] = &CM6800::tsx; break;
 		//CCR OPS
-	case 0x0c: functions[op] = clc; break;
-	case 0x0d: functions[op] = sec; break;
-	case 0x0a: functions[op] = clv; break;
-	case 0x0b: functions[op] = sev; break;
-	case 0x0e: functions[op] = cli; break;
-	case 0x0f: functions[op] = sei; break;
-	case 0x06: functions[op] = tap; break;
-	case 0x07: functions[op] = tpa; break;
+	case 0x0c: functions[op] = &CM6800::clc; break;
+	case 0x0d: functions[op] = &CM6800::sec; break;
+	case 0x0a: functions[op] = &CM6800::clv; break;
+	case 0x0b: functions[op] = &CM6800::sev; break;
+	case 0x0e: functions[op] = &CM6800::cli; break;
+	case 0x0f: functions[op] = &CM6800::sei; break;
+	case 0x06: functions[op] = &CM6800::tap; break;
+	case 0x07: functions[op] = &CM6800::tpa; break;
 	default: functions[op] = NULL;
 	}
 }
