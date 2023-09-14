@@ -1,4 +1,4 @@
-add_executable(eprom WIN32
+add_library(eprom SHARED
     eprom.h
     eprom.cpp
     StdAfx.h
