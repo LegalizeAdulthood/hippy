@@ -20,6 +20,7 @@
 //
 
 #include "stdafx.h"
+
 #include "eprom.h"
 
 #ifdef _DEBUG
@@ -31,14 +32,16 @@ static char THIS_FILE[] = __FILE__;
 #include <device.h>
 #include <hippy.h>
 
-class CEprom : public CDevice{
+class CEprom : public CDevice
+{
 private:
-	BYTE memory[0x2000];
-	bool LoadFile();
-	CString GetRomFileName();
+    BYTE    memory[0x2000];
+    bool    LoadFile();
+    CString GetRomFileName();
+
 public:
-	BYTE OnRead(Word addr);
-	void OnInitialize();
+    BYTE OnRead(Word addr);
+    void OnInitialize();
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -48,114 +51,134 @@ CEpromApp theApp;
 
 ///////////////////////////////////////
 
-int HexToByte(char c){ 
-		c = toupper(c);
-		if(c<='F' && c>='A') return c - 'A' + 10;
-		else return c - '0';
+int HexToByte(char c)
+{
+    c = toupper(c);
+    if (c <= 'F' && c >= 'A')
+        return c - 'A' + 10;
+    else
+        return c - '0';
 }
 
-BYTE GetNextByte(FILE *f){
-		int hi,lo;
-		hi= fgetc(f);
-		lo= fgetc(f);
-		return HexToByte(hi) * 0x10 + HexToByte(lo);
-}	
+BYTE GetNextByte(FILE *f)
+{
+    int hi, lo;
+    hi = fgetc(f);
+    lo = fgetc(f);
+    return HexToByte(hi) * 0x10 + HexToByte(lo);
+}
 
-CString CEprom::GetRomFileName(){
-	char buf[256];
-	GetModuleFileName(theApp.m_hInstance, buf, 256);
+CString CEprom::GetRomFileName()
+{
+    char buf[256];
+    GetModuleFileName(theApp.m_hInstance, buf, 256);
 
-	int i = strlen(buf);
-	while(buf[i]!='\\') i--;
-	buf[i+1] =0;
-	CString str(buf);
+    int i = strlen(buf);
+    while (buf[i] != '\\')
+        i--;
+    buf[i + 1] = 0;
+    CString str(buf);
 
-	str += *lpszDeviceName;
-	str += ".rom";
-	return str;
+    str += *lpszDeviceName;
+    str += ".rom";
+    return str;
 }
 
 ///////////////////////////////////////////////
 
-bool CEprom::LoadFile(){
-	int hi,lo;
-	int lg;
-	Word addr;
-	BYTE val,ck;
-	BYTE checksum;
-	Word last_addr = 0xffff;
-	
-	FILE *f = fopen(GetRomFileName(), "r");
-	if(!f){
-		//char msg[1024];
-		CString msg;
-		msg.Format("Rom image file not found :\n %s", GetRomFileName());
-		m_pParentWnd->MessageBox(msg,lpszDeviceName->GetBuffer(1));
-		return false;
-	}
-	while(!feof(f)){
-		do{
-			if(feof(f)) break;
-			hi = fgetc(f);
-		}while(hi != 'S');
-		lo = fgetc(f);
-		if(hi=='S'){
-			if(lo=='0' || lo=='9'){
-				while(fgetc(f)!='\n' && !feof(f));
-			}else{
-				lg= GetNextByte(f);
-				addr= GetNextByte(f);
-				checksum= addr+lg;
-				val= GetNextByte(f);
-				checksum+=val;
-				addr=addr*0x100+val;
-				lg-=3;
-				for(;lg>0;lg--){
-					val= GetNextByte(f);
-					checksum+= val;
-					memory[addr] = val;
-					addr++;
-				}
-			
-				ck= GetNextByte(f);
-			//	if( (BYTE)~checksum != ck ){
-					//MessageBox(NULL, "CHECK SUM ERROR", "ERROR", MB_OK|MB_ICONWARNING);
-				//	return false;
-				//}
-				fgetc(f); //newline
-			}
-		}
+bool CEprom::LoadFile()
+{
+    int  hi, lo;
+    int  lg;
+    Word addr;
+    BYTE val, ck;
+    BYTE checksum;
+    Word last_addr = 0xffff;
 
-	}
-	fclose(f);
-	return true;
+    FILE *f = fopen(GetRomFileName(), "r");
+    if (!f)
+    {
+        // char msg[1024];
+        CString msg;
+        msg.Format("Rom image file not found :\n %s", GetRomFileName());
+        m_pParentWnd->MessageBox(msg, lpszDeviceName->GetBuffer(1));
+        return false;
+    }
+    while (!feof(f))
+    {
+        do
+        {
+            if (feof(f))
+                break;
+            hi = fgetc(f);
+        } while (hi != 'S');
+        lo = fgetc(f);
+        if (hi == 'S')
+        {
+            if (lo == '0' || lo == '9')
+            {
+                while (fgetc(f) != '\n' && !feof(f))
+                    ;
+            }
+            else
+            {
+                lg = GetNextByte(f);
+                addr = GetNextByte(f);
+                checksum = addr + lg;
+                val = GetNextByte(f);
+                checksum += val;
+                addr = addr * 0x100 + val;
+                lg -= 3;
+                for (; lg > 0; lg--)
+                {
+                    val = GetNextByte(f);
+                    checksum += val;
+                    memory[addr] = val;
+                    addr++;
+                }
+
+                ck = GetNextByte(f);
+                //	if( (BYTE)~checksum != ck ){
+                // MessageBox(NULL, "CHECK SUM ERROR", "ERROR", MB_OK|MB_ICONWARNING);
+                //	return false;
+                //}
+                fgetc(f); // newline
+            }
+        }
+    }
+    fclose(f);
+    return true;
 }
 
-void CEprom::OnInitialize(){
-	LoadFile();
+void CEprom::OnInitialize()
+{
+    LoadFile();
 }
 
-BYTE CEprom::OnRead(Word addr){
-	BYTE ret = 0xff;
-	if(addr < 0x2000){
-		ret = memory[addr];
-	}
-	return ret;
+BYTE CEprom::OnRead(Word addr)
+{
+    BYTE ret = 0xff;
+    if (addr < 0x2000)
+    {
+        ret = memory[addr];
+    }
+    return ret;
 }
 
-extern "C" __declspec(dllexport) CDevice *  GetNewDevice();
-__declspec(dllexport) CDevice * GetNewDevice(){
-	return new CEprom();
+extern "C" __declspec(dllexport) CDevice *GetNewDevice();
+__declspec(dllexport) CDevice *GetNewDevice()
+{
+    return new CEprom();
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // CEpromApp
 
 BEGIN_MESSAGE_MAP(CEpromApp, CWinApp)
-	//{{AFX_MSG_MAP(CEpromApp)
-		// NOTE - the ClassWizard will add and remove mapping macros here.
-		//    DO NOT EDIT what you see in these blocks of generated code!
-	//}}AFX_MSG_MAP
+//{{AFX_MSG_MAP(CEpromApp)
+// NOTE - the ClassWizard will add and remove mapping macros here.
+//    DO NOT EDIT what you see in these blocks of generated code!
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -164,4 +187,3 @@ END_MESSAGE_MAP()
 CEpromApp::CEpromApp()
 {
 }
-

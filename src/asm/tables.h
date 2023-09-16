@@ -19,115 +19,130 @@
 #ifndef _TABLES_H__
 #define _TABLES_H__
 
-#include <memory.h>
-#include <malloc.h>
-#include <string.h>
 #include "codes.h"
 #include <assert.h>
+#include <malloc.h>
+#include <memory.h>
+#include <string.h>
 
-typedef enum{
-	REL,
-	IMMED,
-	DIRECT,
-	INDEXED,
-	EXTEND,
-	INHER
+typedef enum
+{
+    REL,
+    IMMED,
+    DIRECT,
+    INDEXED,
+    EXTEND,
+    INHER
 } INST_MODE;
 
 #ifndef BYTE
 typedef unsigned char BYTE;
 #endif
 
-typedef char *			LPSTR;
-typedef const char *	LPCSTR;
+typedef char          *LPSTR;
+typedef const char    *LPCSTR;
 typedef unsigned short Word;
 
-typedef enum{
-	IMMEDIATE, ADDRESS
+typedef enum
+{
+    IMMEDIATE,
+    ADDRESS
 } NumberMode;
 
 /*
  * String Table
  */
 
-class CStringTable{
+class CStringTable
+{
 private:
-	char	**	tree[256];
-	int			listSize[256];
+    char **tree[256];
+    int    listSize[256];
+
 public:
-	CStringTable();
-	~CStringTable();
-	LPSTR	AddString(BYTE hash, LPCSTR lpcStr);
-	LPSTR	Find(BYTE hash, LPCSTR lpcStr);
+    CStringTable();
+    ~CStringTable();
+    LPSTR AddString(BYTE hash, LPCSTR lpcStr);
+    LPSTR Find(BYTE hash, LPCSTR lpcStr);
 };
 
-
-typedef struct Symbol{
-	LPSTR	name;
-	Word	addr;
-	BYTE	type;
-} Symbol, * PSymbol;
+typedef struct Symbol
+{
+    LPSTR name;
+    Word  addr;
+    BYTE  type;
+} Symbol, *PSymbol;
 
 /*
  * Symbol Table
  */
 
-class CSymbolTable{
+class CSymbolTable
+{
 private:
-	PSymbol	*	tree[256];
-	int			listSize[256];
+    PSymbol *tree[256];
+    int      listSize[256];
+
 public:
-	CSymbolTable();
-	~CSymbolTable();
-	bool	Insert(BYTE hash, PSymbol pSym);
-	bool	Find(BYTE hash, PSymbol pSym);
+    CSymbolTable();
+    ~CSymbolTable();
+    bool Insert(BYTE hash, PSymbol pSym);
+    bool Find(BYTE hash, PSymbol pSym);
 };
 
-typedef struct {
-	Word	addr;
-	Byte	val;
-}MEMBYTE, *PMEMBYTE;
+typedef struct
+{
+    Word addr;
+    Byte val;
+} MEMBYTE, *PMEMBYTE;
 
 /*
  * Lookup Table
  */
 
-typedef struct LookupEnt{
-	LPSTR		name;
-	PMEMBYTE	pbMem;
-	INST_MODE	instmode;
-	Byte		hash;
-	Word		line;
-	Word		pc;
-} LookupEnt, * PLookupEnt;
+typedef struct LookupEnt
+{
+    LPSTR     name;
+    PMEMBYTE  pbMem;
+    INST_MODE instmode;
+    Byte      hash;
+    Word      line;
+    Word      pc;
+} LookupEnt, *PLookupEnt;
 
-class CLookupTable{
+class CLookupTable
+{
 private:
     PLookupEnt list{};
-	int size;
+    int        size;
+
 public:
-	CLookupTable(){
-		size=0;
-	}
+    CLookupTable()
+    {
+        size = 0;
+    }
 
-	~CLookupTable(){
-		free(list);
-	}
-	
-	void Insert(PLookupEnt ple){
-		size++;
-		list = (PLookupEnt)realloc(list, sizeof(LookupEnt)*size);
-		list[size-1] = *ple;
-	}
+    ~CLookupTable()
+    {
+        free(list);
+    }
 
-	int GetSize(){
-		return size;
-	}
+    void Insert(PLookupEnt ple)
+    {
+        size++;
+        list = (PLookupEnt) realloc(list, sizeof(LookupEnt) * size);
+        list[size - 1] = *ple;
+    }
 
-	void GetEntry(int ind, PLookupEnt ple){
-		*ple = list[ind];
-	}
+    int GetSize()
+    {
+        return size;
+    }
 
+    void GetEntry(int ind, PLookupEnt ple)
+    {
+        *ple = list[ind];
+    }
 };
 
 #endif

@@ -20,6 +20,7 @@
 //
 
 #include "stdafx.h"
+
 #include "8279_dll.h"
 #include "keypad.h"
 
@@ -29,19 +30,20 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-extern "C" __declspec(dllexport) CDevice *  GetNewDevice();
-__declspec(dllexport) CDevice * GetNewDevice(){
-	return new CIntel8279();
+extern "C" __declspec(dllexport) CDevice *GetNewDevice();
+__declspec(dllexport) CDevice *GetNewDevice()
+{
+    return new CIntel8279();
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // CMy8279_dllApp
 
 BEGIN_MESSAGE_MAP(CMy8279_dllApp, CWinApp)
-	//{{AFX_MSG_MAP(CMy8279_dllApp)
-		// NOTE - the ClassWizard will add and remove mapping macros here.
-		//    DO NOT EDIT what you see in these blocks of generated code!
-	//}}AFX_MSG_MAP
+//{{AFX_MSG_MAP(CMy8279_dllApp)
+// NOTE - the ClassWizard will add and remove mapping macros here.
+//    DO NOT EDIT what you see in these blocks of generated code!
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -49,8 +51,8 @@ END_MESSAGE_MAP()
 
 CMy8279_dllApp::CMy8279_dllApp()
 {
-	// TODO: add construction code here,
-	// Place all significant initialization in InitInstance
+    // TODO: add construction code here,
+    // Place all significant initialization in InitInstance
 }
 
 /////////////////////////////////////////////////////////////////////////////

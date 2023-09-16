@@ -21,52 +21,57 @@
 
 #define WM_UPDATEDBGWND WM_USER + 100
 #define WM_MEMLOCCHANGE WM_USER + 101
-#define WM_JUMPTOLINE	WM_USER + 102
-#define WM_HIDEBUILDWND	WM_USER + 103
-#define WM_REDRAWALL	WM_USER + 104
+#define WM_JUMPTOLINE WM_USER + 102
+#define WM_HIDEBUILDWND WM_USER + 103
+#define WM_REDRAWALL WM_USER + 104
 
-#define INT_IRQ	"HIPPY_IRQ_INT_SEM"
+#define INT_IRQ "HIPPY_IRQ_INT_SEM"
 #define INT_NMI "HIPPY_NMI_INT_SEM"
 #define INT_RST "HIPPY_RST_INT_SEM"
-
 
 typedef unsigned char  BYTE;
 typedef unsigned short ADDRESS;
 typedef unsigned short LINENUMBER;
 typedef unsigned short Word;
 
-typedef union CCR{
-	BYTE	all;
-	struct {
-	BYTE	c : 1;
-	BYTE	v : 1;
-	BYTE	z : 1;
-	BYTE	n : 1;
-	BYTE	i : 1;
-	BYTE	h : 1;
-	BYTE	rsv: 2;
-	};
+typedef union CCR
+{
+    BYTE all;
+    struct
+    {
+        BYTE c : 1;
+        BYTE v : 1;
+        BYTE z : 1;
+        BYTE n : 1;
+        BYTE i : 1;
+        BYTE h : 1;
+        BYTE rsv : 2;
+    };
 } CCR;
 
-typedef struct Registers{
-	BYTE	a;
-	BYTE	b;
-	ADDRESS pc;
-	ADDRESS x;
-	ADDRESS sp;
-	CCR		ccr;
-} Registers, * PRegisters;
+typedef struct Registers
+{
+    BYTE    a;
+    BYTE    b;
+    ADDRESS pc;
+    ADDRESS x;
+    ADDRESS sp;
+    CCR     ccr;
+} Registers, *PRegisters;
 
-#define IMPLEMENT_STACK() int indStack=0; char stack[30]
+#define IMPLEMENT_STACK() \
+    int  indStack = 0;    \
+    char stack[30]
 #define POP() stack[--indStack]
 #define PUSH(x) stack[indStack++] = (x)
 
-typedef enum{
-	bitOR=1,
-	bitXOR,
-	bitAND,
-	bitNOT,
-	leftPrnt
+typedef enum
+{
+    bitOR = 1,
+    bitXOR,
+    bitAND,
+    bitNOT,
+    leftPrnt
 } Operator;
 
 #endif

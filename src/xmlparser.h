@@ -19,61 +19,66 @@
 #ifndef XML_parser_H__
 #define XML_parser_H__
 
+#include "device.h"
+#include "hippy.h"
 #include <afx.h>
+#include <afxtempl.h>
 #include <afxwin.h>
 #include <stdio.h>
 #include <string.h>
-#include "hippy.h"
-#include "device.h"
-#include <afxtempl.h>
 
-typedef CArray<CDevice*, CDevice*&> CDeviceArray;
+typedef CArray<CDevice *, CDevice *&> CDeviceArray;
 
-typedef enum{
-	ttHdf,
-	ttDevice,
-	ttWordSelect,
-	ttChipSelect,
-	ttWordSelectCld,
-	ttChipSelectCld,
-	ttAI,
-	ttCS
+typedef enum
+{
+    ttHdf,
+    ttDevice,
+    ttWordSelect,
+    ttChipSelect,
+    ttWordSelectCld,
+    ttChipSelectCld,
+    ttAI,
+    ttCS
 } XmlTagType;
 
-typedef struct AddrResEntry{
-	Word decodedAddr;
-	BYTE devIndex;
-}AddrResEntry;
+typedef struct AddrResEntry
+{
+    Word decodedAddr;
+    BYTE devIndex;
+} AddrResEntry;
 
-typedef struct XmlTag{
-	XmlTagType	type;
-	double		version;
-	int			id;
-	CString		szData;
-	CString		szName;
-	CString		szChip;
-	bool		close;
+typedef struct XmlTag
+{
+    XmlTagType type;
+    double     version;
+    int        id;
+    CString    szData;
+    CString    szName;
+    CString    szChip;
+    bool       close;
 } XmlTag, *PXmlTag;
 
-class CDeviceFile{
+class CDeviceFile
+{
 private:
-	FILE * 		file;
-	bool		bOpened;
-	XmlTag		xmlTag;
-	char		GetNextToken();
+    FILE  *file;
+    bool   bOpened;
+    XmlTag xmlTag;
+    char   GetNextToken();
 
-	bool	EvalEqn(Word addr, CString & eqn);
+    bool EvalEqn(Word addr, CString &eqn);
+
 public:
-	bool	CheckCSEquation(CString eqn, Word wAddr);
-	void	PutCharBack();
-	bool	FindChar(char c);
-	bool	FindPattern(LPSTR lpStr);
-	char	GetString(CString & szString);
-	bool	GetField(LPCSTR lpcField, CString & szVal);
-	bool	GetUntilChar(const char chr, CString & szStr);
-	bool	FindNextTag();
-	bool	CompileData();
-	int		ParseFile(CWnd * parent,CString szFileName, CDeviceArray & devArr, AddrResEntry * AddrResTbl);
+    bool CheckCSEquation(CString eqn, Word wAddr);
+    void PutCharBack();
+    bool FindChar(char c);
+    bool FindPattern(LPSTR lpStr);
+    char GetString(CString &szString);
+    bool GetField(LPCSTR lpcField, CString &szVal);
+    bool GetUntilChar(const char chr, CString &szStr);
+    bool FindNextTag();
+    bool CompileData();
+    int  ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl);
 };
 
 #endif

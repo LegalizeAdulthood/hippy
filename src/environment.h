@@ -21,18 +21,38 @@
 
 #include <afxwin.h>
 
-class CEnvironment{
+class CEnvironment
+{
 private:
-	void *		m_pMainWnd;
-	void *		m_pDebugWnd;
-	CString		devicefile;
+    void   *m_pMainWnd;
+    void   *m_pDebugWnd;
+    CString devicefile;
+
 public:
-	void SetMainWnd(void * pWnd){ m_pMainWnd = pWnd;}
-	void * GetMainWnd(){return m_pMainWnd;}
-	void SetDebugWnd(void * pDbg){m_pDebugWnd = pDbg; }
-	void *  GetDebugWnd(){return m_pDebugWnd;}
-	void SetDeviceFile(CString str){ devicefile = str;}
-	CString GetDeviceFile(){ return devicefile;}
+    void SetMainWnd(void *pWnd)
+    {
+        m_pMainWnd = pWnd;
+    }
+    void *GetMainWnd()
+    {
+        return m_pMainWnd;
+    }
+    void SetDebugWnd(void *pDbg)
+    {
+        m_pDebugWnd = pDbg;
+    }
+    void *GetDebugWnd()
+    {
+        return m_pDebugWnd;
+    }
+    void SetDeviceFile(CString str)
+    {
+        devicefile = str;
+    }
+    CString GetDeviceFile()
+    {
+        return devicefile;
+    }
 };
 
 #endif

@@ -19,45 +19,59 @@
 #ifndef _REGISTERWND_H_
 #define _REGISTERWND_H_
 
-#include <afxwin.h>
-#include "hippy.h"
 #include "disassembler.h"
+#include "hippy.h"
+#include <afxwin.h>
 
-typedef enum RegEnum{
-	rgNone, rgA, rgB, rgPC, rgX, rgSP, rgH, rgI, rgN, rgZ, rgV, rgC
-} RegEnum; 
+typedef enum RegEnum
+{
+    rgNone,
+    rgA,
+    rgB,
+    rgPC,
+    rgX,
+    rgSP,
+    rgH,
+    rgI,
+    rgN,
+    rgZ,
+    rgV,
+    rgC
+} RegEnum;
 
-class CRegisterWnd : public CWnd{
+class CRegisterWnd : public CWnd
+{
 private:
-	CFont		Font, *defFont;
-	CBrush		brNormal, brSelected, brRecent;
-	int			CharWidth, CharHeight,SideMargin;
-	PRegisters  pRegs;			//points to actual processor registers
-	Registers	prevRegs;		//previous register states
-	Registers	prevRegsAct;	//used as boolean type, true for each element if
-								//that element was modified in previous instruction.
-	RegEnum		selReg;			//shows the selected reg
-	HexDumper	Hexer;
-	
-								// editing-----------
-	Word		editMask;		// mask showing last quadrant edited (like 0x0f)
-	
-	void drawRegister(bool bActive, LPCRECT lprc, RegEnum reReg, int regsize, int regval);
-	void UpdateMetrics();
-public:
-	//constructor & destructor
-	CRegisterWnd(CWnd * pParentWnd,CRect &rcPos, PRegisters pRegs,  LPCTSTR szWindowName=NULL);
-	~CRegisterWnd();
+    CFont      Font, *defFont;
+    CBrush     brNormal, brSelected, brRecent;
+    int        CharWidth, CharHeight, SideMargin;
+    PRegisters pRegs;       // points to actual processor registers
+    Registers  prevRegs;    // previous register states
+    Registers  prevRegsAct; // used as boolean type, true for each element if
+                           // that element was modified in previous instruction.
+    RegEnum   selReg; // shows the selected reg
+    HexDumper Hexer;
 
-	void	Update(bool drawAll=false);
-	afx_msg LRESULT OnRedrawAll(WPARAM wParam, LPARAM lParam);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnSetFocus(CWnd *pOldWnd);
-	afx_msg void OnKillFocus(CWnd * pNewWnd);
-	afx_msg void OnPaint();
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg BOOL OnEraseBkgnd(CDC *pDC);
-	DECLARE_MESSAGE_MAP()
+    // editing-----------
+    Word editMask; // mask showing last quadrant edited (like 0x0f)
+
+    void drawRegister(bool bActive, LPCRECT lprc, RegEnum reReg, int regsize, int regval);
+    void UpdateMetrics();
+
+public:
+    // constructor & destructor
+    CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, PRegisters pRegs, LPCTSTR szWindowName = NULL);
+    ~CRegisterWnd();
+
+    void            Update(bool drawAll = false);
+    afx_msg LRESULT OnRedrawAll(WPARAM wParam, LPARAM lParam);
+    afx_msg void    OnLButtonDown(UINT nFlags, CPoint point);
+    afx_msg void    OnSetFocus(CWnd *pOldWnd);
+    afx_msg void    OnKillFocus(CWnd *pNewWnd);
+    afx_msg void    OnPaint();
+    afx_msg void    OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+    afx_msg BOOL    OnEraseBkgnd(CDC *pDC);
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif

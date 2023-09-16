@@ -20,54 +20,67 @@
 #ifndef STACK_WND_H__12
 #define STACK_WND_H__12
 
-#include <afxwin.h>
-#include "hippy.h"
 #include "basewnd.h"
+#include "hippy.h"
+#include <afxwin.h>
 
-typedef enum{
-	_ACCA,
-	_ACCB,
-	_PCH,
-	_PCL,
-	_CCR,
-	_XH,
-	_XL,
-	_NONE
+typedef enum
+{
+    _ACCA,
+    _ACCB,
+    _PCH,
+    _PCL,
+    _CCR,
+    _XH,
+    _XL,
+    _NONE
 } RegName;
 
-typedef struct StackInfo{
-	Word addr;
-	RegName reg;
+typedef struct StackInfo
+{
+    Word    addr;
+    RegName reg;
 } StackInfo;
 
-class CStackWnd : public CBaseWnd{
-private :
-	bool				 continuous;
-	StackInfo		*	pCodes;
-	Registers		*	pRegs;
-	HexDumper			hexer;
-	CAddressManager *	mem;
+class CStackWnd : public CBaseWnd
+{
+private:
+    bool             continuous;
+    StackInfo       *pCodes;
+    Registers       *pRegs;
+    HexDumper        hexer;
+    CAddressManager *mem;
 
-	void drawLine(LINENUMBER lnActualLine);
-	void paintBkgnd(LPCRECT lpcRect);
-	void PushEx(RegName rn, Word addr);
-	void PopEx(int numPop);
-	void UpdateScroll();
-	void Push(BYTE code, bool paint);
-	void Pop(BYTE code, bool paint);
-	void ClearLine(int line);
+    void drawLine(LINENUMBER lnActualLine);
+    void paintBkgnd(LPCRECT lpcRect);
+    void PushEx(RegName rn, Word addr);
+    void PopEx(int numPop);
+    void UpdateScroll();
+    void Push(BYTE code, bool paint);
+    void Pop(BYTE code, bool paint);
+    void ClearLine(int line);
+
 public:
-	void toggleContinuous(bool cont){continuous=cont;}
-	CStackWnd(CWnd * pParentWnd,CRect &rcPos);
-	~CStackWnd();
-	void SetRegisters(Registers * pRegs){ this->pRegs = pRegs;}
-	void SetMem(CAddressManager * mem){ this->mem = mem;}
-	void CheckStack(BYTE code, bool paint=true);
-	void ScrollUp(int nl);
-	void ScrollDown(int nl=1);
-	afx_msg bool OnEraseBkgnd(CDC *pDC);
-	afx_msg LRESULT OnRedrawAll(WPARAM wParam, LPARAM lParam);
-	DECLARE_MESSAGE_MAP()
+    void toggleContinuous(bool cont)
+    {
+        continuous = cont;
+    }
+    CStackWnd(CWnd *pParentWnd, CRect &rcPos);
+    ~CStackWnd();
+    void SetRegisters(Registers *pRegs)
+    {
+        this->pRegs = pRegs;
+    }
+    void SetMem(CAddressManager *mem)
+    {
+        this->mem = mem;
+    }
+    void            CheckStack(BYTE code, bool paint = true);
+    void            ScrollUp(int nl);
+    void            ScrollDown(int nl = 1);
+    afx_msg bool    OnEraseBkgnd(CDC *pDC);
+    afx_msg LRESULT OnRedrawAll(WPARAM wParam, LPARAM lParam);
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif

@@ -25,34 +25,35 @@
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     INDEX = 258,
-     FCB = 259,
-     FDB = 260,
-     DFB = 261,
-     RMB = 262,
-     ZMB = 263,
-     FCC = 264,
-     END = 265,
-     ORG = 266,
-     DFL = 267,
-     DWL = 268,
-     NAM = 269,
-     DWM = 270,
-     DFS = 271,
-     OPT = 272,
-     EQU = 273,
-     BSZ = 274,
-     PAGE = 275,
-     FILL = 276,
-     INST = 277,
-     NUMBER = 278,
-     ID = 279,
-     TEXT = 280
-   };
+#define YYTOKENTYPE
+/* Put the tokens into the symbol table, so that GDB and other debuggers
+   know about them.  */
+enum yytokentype
+{
+    INDEX = 258,
+    FCB = 259,
+    FDB = 260,
+    DFB = 261,
+    RMB = 262,
+    ZMB = 263,
+    FCC = 264,
+    END = 265,
+    ORG = 266,
+    DFL = 267,
+    DWL = 268,
+    NAM = 269,
+    DWM = 270,
+    DFS = 271,
+    OPT = 272,
+    EQU = 273,
+    BSZ = 274,
+    PAGE = 275,
+    FILL = 276,
+    INST = 277,
+    NUMBER = 278,
+    ID = 279,
+    TEXT = 280
+};
 #endif
 /* Tokens.  */
 #define INDEX 258
@@ -79,20 +80,18 @@
 #define ID 279
 #define TEXT 280
 
-
-
-
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
+#if !defined(YYSTYPE) && !defined(YYSTYPE_IS_DECLARED)
 #line 76 ".\\asm.yacc.cpp"
-typedef union YYSTYPE {	int ival; void* pse;} YYSTYPE;
+typedef union YYSTYPE
+{
+    int   ival;
+    void *pse;
+} YYSTYPE;
 /* Line 1447 of yacc.c.  */
 #line 90 ".\\y.tab.hpp"
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
+#define yystype YYSTYPE /* obsolescent; will be withdrawn */
+#define YYSTYPE_IS_DECLARED 1
+#define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE yylval;
-
-
-

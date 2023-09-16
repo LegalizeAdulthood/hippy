@@ -19,35 +19,44 @@
 #ifndef _DIALOGS_H___
 #define _DIALOGS_H___
 
-#include <afxwin.h>
-#include "resource.h"
 #include "hippy.h"
+#include "resource.h"
+#include <afxwin.h>
 
-class CInputBox : public CDialog{
+class CInputBox : public CDialog
+{
 private:
-	CString strEntry;
-	CString strTitle;
-	CString	strPrompt;
-public:
-	int ShowModal(CString * pstrPrompt=NULL, CString * pstrTitle=NULL);
+    CString strEntry;
+    CString strTitle;
+    CString strPrompt;
 
-	void AsString(CString & str) { str = strEntry; }
-	Word AsWord();
-	void DoDataExchange(CDataExchange *pDX);
+public:
+    int ShowModal(CString *pstrPrompt = NULL, CString *pstrTitle = NULL);
+
+    void AsString(CString &str)
+    {
+        str = strEntry;
+    }
+    Word AsWord();
+    void DoDataExchange(CDataExchange *pDX);
 };
 
 class CSFileDialog : public CDialog
 {
 private:
-	CString	strBegin;
-	CString strFile;
-	CString strEnd;
-protected:
-	enum MYIDD {IDD = IDD_SRECORD};
-public:
-	int ShowModal();
-	void GetValues(Word &wBegin, Word &wEnd, CString & str);
-	void DoDataExchange(CDataExchange *pDX);
+    CString strBegin;
+    CString strFile;
+    CString strEnd;
 
+protected:
+    enum MYIDD
+    {
+        IDD = IDD_SRECORD
+    };
+
+public:
+    int  ShowModal();
+    void GetValues(Word &wBegin, Word &wEnd, CString &str);
+    void DoDataExchange(CDataExchange *pDX);
 };
 #endif

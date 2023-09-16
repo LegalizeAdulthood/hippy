@@ -19,118 +19,140 @@
 #ifndef __DASMWND_H__
 #define __DASMWND_H__
 
-#include <afxwin.h>
-#include "disassembler.h"
 #include "basewnd.h"
+#include "dialogs.h"
+#include "disassembler.h"
 #include "hippy.h"
 #include "resource.h"
-#include "dialogs.h"
+#include <afxwin.h>
 
-typedef struct Listnode{
-	struct Listnode *	prev;
-	struct Listnode *	next;
-	Word				loc;	
+typedef struct Listnode
+{
+    struct Listnode *prev;
+    struct Listnode *next;
+    Word             loc;
 } Listnode, *PListnode;
 
-class LinkedList{
+class LinkedList
+{
 private:
-	Listnode	head;
-	PListnode	current;
+    Listnode  head;
+    PListnode current;
+
 public:
-	LinkedList(){ head.prev = head.next = NULL; head.loc = 0;}
-	bool	search(Word loc, PListnode & pnode){
-		PListnode p = &head;
-		while(p)
-			if(p->loc==loc) return true;
-			else if(loc>p->loc){
-					if(!p->next){
-					pnode = p;
-					return false;
-				}
-				p = p->next;
-			}
-			else{ 
-				pnode = p->prev; 
-				return false;
-			}
-			return true;
-	}
-	bool	insert(Word loc){
-		PListnode p;
-		if(!search(loc, p)){
-			ASSERT(p);
-			PListnode n = new Listnode;
-			n->loc = loc;
-			n->prev = p;
-			n->next = p->next;
-			p->next = n;
-			if(n->next) n->next->prev = n;
-			return true;
-		}
-		return false;
-	}
-	void clearall(){
-		PListnode t,p = head.next;
-		while(p){
-			t = p;
-			p = p->next;
-			delete t;
-		}
-	}
-	bool GetNextLocation(Word & wLoc, bool restart = false){
-		if(restart){
-			current = &head;
-		}
-		if(!current){
-			wLoc = 0xFFFF;
-			return false;
-		}
-		wLoc = current->loc;
-		current = current->next;
-		return true;
-	}
+    LinkedList()
+    {
+        head.prev = head.next = NULL;
+        head.loc = 0;
+    }
+    bool search(Word loc, PListnode &pnode)
+    {
+        PListnode p = &head;
+        while (p)
+            if (p->loc == loc)
+                return true;
+            else if (loc > p->loc)
+            {
+                if (!p->next)
+                {
+                    pnode = p;
+                    return false;
+                }
+                p = p->next;
+            }
+            else
+            {
+                pnode = p->prev;
+                return false;
+            }
+        return true;
+    }
+    bool insert(Word loc)
+    {
+        PListnode p;
+        if (!search(loc, p))
+        {
+            ASSERT(p);
+            PListnode n = new Listnode;
+            n->loc = loc;
+            n->prev = p;
+            n->next = p->next;
+            p->next = n;
+            if (n->next)
+                n->next->prev = n;
+            return true;
+        }
+        return false;
+    }
+    void clearall()
+    {
+        PListnode t, p = head.next;
+        while (p)
+        {
+            t = p;
+            p = p->next;
+            delete t;
+        }
+    }
+    bool GetNextLocation(Word &wLoc, bool restart = false)
+    {
+        if (restart)
+        {
+            current = &head;
+        }
+        if (!current)
+        {
+            wLoc = 0xFFFF;
+            return false;
+        }
+        wLoc = current->loc;
+        current = current->next;
+        return true;
+    }
 };
 
-class CDisasmWnd : public CBaseWnd{
+class CDisasmWnd : public CBaseWnd
+{
 private:
-	LinkedList		code_listing;
-	Disassembler	Dasm;
-	CMenu *			menu;
+    LinkedList   code_listing;
+    Disassembler Dasm;
+    CMenu       *menu;
 
-	int				ActiveLine;
+    int ActiveLine;
 
-	CBrush			brBrkpt;
-	BYTE			BreakPoints[0x10000];			
-	BYTE			InstructionLength[0x10000];		//index is line number, value is the length of corresponding instr.
-	Word			InstructionPos[0x10000];		//index is the memory address, value is the line where that address is dasm'ed
-	Word			MemoryAddressLocator[0x10000];	//index is the line number, value is the memory address of the 													//first byte disassembled in that line
-	
-	void paintBkgnd(LPCRECT lpcRect);
-	void drawLine(LINENUMBER lnActualNum);
+    CBrush brBrkpt;
+    BYTE   BreakPoints[0x10000];
+    BYTE   InstructionLength[0x10000]; // index is line number, value is the length of corresponding instr.
+    Word   InstructionPos[0x10000];    // index is the memory address, value is the line where that address is dasm'ed
+    Word   MemoryAddressLocator[0x10000]; // index is the line number, value is the memory address of the
+                                        // //first byte disassembled in that line
+
+    void paintBkgnd(LPCRECT lpcRect);
+    void drawLine(LINENUMBER lnActualNum);
 
 public:
-	CDisasmWnd(CWnd * pParentWnd,CRect &rcPos, LPCTSTR szWindowName=NULL);
-	~CDisasmWnd();
-	
-	void InsertBreakpoint(ADDRESS addr, bool soft=false);
-	void InsertBrkPtHere();
-	void RemoveBreakpoint(ADDRESS addr);
-	int  IsBrkPoint(Word addr);
+    CDisasmWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName = NULL);
+    ~CDisasmWnd();
 
-	void DasmHere(Word addr);
-	void Update(Word pc);	//pc is updated, active line changed
+    void InsertBreakpoint(ADDRESS addr, bool soft = false);
+    void InsertBrkPtHere();
+    void RemoveBreakpoint(ADDRESS addr);
+    int  IsBrkPoint(Word addr);
 
-	int  GetActiveMemLoc();
-	int  GetLineFromPt(int x, int y);
-	int add_codePt(Word w);
-	void LoadProgram(Word wStart);
-	afx_msg void OnGoto();
-	afx_msg void OnDasmHere();
-	afx_msg LRESULT OnRedrawAll(WPARAM wParam, LPARAM lParam);
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-	DECLARE_MESSAGE_MAP()
+    void DasmHere(Word addr);
+    void Update(Word pc); // pc is updated, active line changed
+
+    int             GetActiveMemLoc();
+    int             GetLineFromPt(int x, int y);
+    int             add_codePt(Word w);
+    void            LoadProgram(Word wStart);
+    afx_msg void    OnGoto();
+    afx_msg void    OnDasmHere();
+    afx_msg LRESULT OnRedrawAll(WPARAM wParam, LPARAM lParam);
+    afx_msg void    OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+    afx_msg void    OnLButtonDown(UINT nFlags, CPoint point);
+    afx_msg void    OnRButtonUp(UINT nFlags, CPoint point);
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif

@@ -21,42 +21,65 @@
 #define _DEVICE_H__
 
 #include "hippy.h"
-#include <afxwin.h>
 #include <afxmt.h>
 #include <afxtempl.h>
+#include <afxwin.h>
 
+typedef CArray<CString, CString &> CStrArray;
+enum TInterrupt
+{
+    IRQ,
+    NMI,
+    RESET
+};
 
-typedef CArray<CString, CString&> CStrArray;
-enum TInterrupt{ IRQ, NMI, RESET};
-
-class CDevice{
+class CDevice
+{
 private:
-	CSemaphore	*		psem_irq;
-	CSemaphore  *		psem_nmi;
-	CSemaphore	*		psem_reset;
+    CSemaphore *psem_irq;
+    CSemaphore *psem_nmi;
+    CSemaphore *psem_reset;
+
 protected:
-	CWnd	*			m_pParentWnd;
-	bool				bDbg;
-	CString		*		lpszDeviceName;
-	CString		*		lpszLibraryName;
-	
-	void				Reset(){}
-	virtual void		OnInitialize(){}
-	void				OnFinalize(){}
-	virtual BYTE		OnRead(Word addr){return 0;}
-	virtual void		OnWrite(Word addr, BYTE wVal){}
+    CWnd    *m_pParentWnd;
+    bool     bDbg;
+    CString *lpszDeviceName;
+    CString *lpszLibraryName;
+
+    void Reset()
+    {
+    }
+    virtual void OnInitialize()
+    {
+    }
+    void OnFinalize()
+    {
+    }
+    virtual BYTE OnRead(Word addr)
+    {
+        return 0;
+    }
+    virtual void OnWrite(Word addr, BYTE wVal)
+    {
+    }
+
 public:
-	CDevice();
-	~CDevice();
+    CDevice();
+    ~CDevice();
 
-	int Create(CWnd * parentWnd, CString szName);
-	void Interrupt(TInterrupt tint);
-	bool Read(Word addr, BYTE & val, bool bDbg);
-	bool Write(Word addr, BYTE val, bool bDbg);
+    int  Create(CWnd *parentWnd, CString szName);
+    void Interrupt(TInterrupt tint);
+    bool Read(Word addr, BYTE &val, bool bDbg);
+    bool Write(Word addr, BYTE val, bool bDbg);
 
-	void GetDeviceName(CString & str){ str = *lpszDeviceName;}
-	void GetLibraryName(CString & str){ str = *lpszLibraryName;}
-
+    void GetDeviceName(CString &str)
+    {
+        str = *lpszDeviceName;
+    }
+    void GetLibraryName(CString &str)
+    {
+        str = *lpszLibraryName;
+    }
 };
 
 typedef CDevice *(*pdevFunctv)();

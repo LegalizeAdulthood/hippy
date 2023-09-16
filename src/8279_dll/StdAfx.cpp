@@ -21,6 +21,3 @@
 //
 
 #include "stdafx.h"
-
-
-

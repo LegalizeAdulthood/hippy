@@ -19,39 +19,46 @@
 #ifndef _ADDRMNG__H__
 #define _ADDRMNG__H__
 
-#include <afx.h>
-#include "hippy.h"
-#include "environment.h"
-#include "xmlparser.h"
 #include "disassembler.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include "environment.h"
+#include "hippy.h"
+#include "xmlparser.h"
+#include <afx.h>
 #include <memory.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-class CAddressManager{
+class CAddressManager
+{
 protected:
 private:
-	AddrResEntry	AddrResTbl[0x10000];
-	CEnvironment *	pEnv;
-	CDeviceFile		xp;
-	CDeviceArray 	devices;
-	BYTE			memory[0x10000];
-	Word			wLastWrite;
-	Word			wLastRead;
-	CDevice		 *  GetDeviceFromAddr(Word addr);
+    AddrResEntry  AddrResTbl[0x10000];
+    CEnvironment *pEnv;
+    CDeviceFile   xp;
+    CDeviceArray  devices;
+    BYTE          memory[0x10000];
+    Word          wLastWrite;
+    Word          wLastRead;
+    CDevice      *GetDeviceFromAddr(Word addr);
+
 public:
-	CAddressManager();
-	~CAddressManager();
+    CAddressManager();
+    ~CAddressManager();
 
-	void Create(CEnvironment * pEnv);
-	bool LoadFile(char *fname, CArray<Word, Word&> & adr_arr);
-	int  SaveSFile(CString str, Word wBegin, Word wEnd);
+    void Create(CEnvironment *pEnv);
+    bool LoadFile(char *fname, CArray<Word, Word &> &adr_arr);
+    int  SaveSFile(CString str, Word wBegin, Word wEnd);
 
-	Word	GetLastWrite(){ return wLastWrite; }
-	Word	GetLastRead() { return wLastRead; }
-	BYTE	Read(Word wIndex, bool bDbg=false);
-	void	Write(Word wIndex, BYTE bVal);
-	
+    Word GetLastWrite()
+    {
+        return wLastWrite;
+    }
+    Word GetLastRead()
+    {
+        return wLastRead;
+    }
+    BYTE Read(Word wIndex, bool bDbg = false);
+    void Write(Word wIndex, BYTE bVal);
 };
 
 #endif

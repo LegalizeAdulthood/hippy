@@ -4,7 +4,6 @@
 #include "sym_table.h"
 
 extern SymTable symtable;
-extern bool addc;
-
+extern bool     addc;
 
 #endif

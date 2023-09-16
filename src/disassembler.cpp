@@ -22,18 +22,20 @@
  * representations. assumes that the buffer, pcStr is twice as much as the requested
  * number of bytes to decode (szByteArray) returns the number of bytes written.
  */
-int HexDumper::ByteArrayToHexArray(BYTE * pbByteArray, int szByteArray, char * pcStr){
-	char * p = pcStr;
-	while(szByteArray){
-		pcStr[0] = HexTable[*pbByteArray / 16];
-		pcStr[1] = HexTable[*pbByteArray % 16];
-		pcStr+=2;
-		pbByteArray++;
-		szByteArray--;
-	}
+int HexDumper::ByteArrayToHexArray(BYTE *pbByteArray, int szByteArray, char *pcStr)
+{
+    char *p = pcStr;
+    while (szByteArray)
+    {
+        pcStr[0] = HexTable[*pbByteArray / 16];
+        pcStr[1] = HexTable[*pbByteArray % 16];
+        pcStr += 2;
+        pbByteArray++;
+        szByteArray--;
+    }
 
-	pcStr[0] = 0;
-	return (int) (pcStr - p);
+    pcStr[0] = 0;
+    return (int) (pcStr - p);
 }
 
 /* Converts the given array of bytes into a string containing their hexadecimal
@@ -41,26 +43,29 @@ int HexDumper::ByteArrayToHexArray(BYTE * pbByteArray, int szByteArray, char * p
  * number of bytes to decode (szByteArray). This function also inserts blank characters
  * after each byte.
  */
-void HexDumper::ByteArrayToHexArrayEx(BYTE * pbByteArray, int szByteArray, char * pcStr){
-	while(szByteArray){
-		pcStr[0] = HexTable[*pbByteArray / 16];
-		pcStr[1] = HexTable[*pbByteArray % 16];
-		pcStr[2] = ' ';
-		pcStr+=3;
-		pbByteArray++;
-		szByteArray--;
-	}
+void HexDumper::ByteArrayToHexArrayEx(BYTE *pbByteArray, int szByteArray, char *pcStr)
+{
+    while (szByteArray)
+    {
+        pcStr[0] = HexTable[*pbByteArray / 16];
+        pcStr[1] = HexTable[*pbByteArray % 16];
+        pcStr[2] = ' ';
+        pcStr += 3;
+        pbByteArray++;
+        szByteArray--;
+    }
 
-	pcStr[0] = 0;
+    pcStr[0] = 0;
 }
 
-/* Simply outputs the hexadecimal representaion of "b" into pcStr. Which should be 
+/* Simply outputs the hexadecimal representaion of "b" into pcStr. Which should be
  * 3 chars (minimum). Null character at the end is also put.
  */
-void HexDumper::ByteToHex(BYTE b, char * pcStr){
-	pcStr[0] = HexTable[b / 16];
-	pcStr[1] = HexTable[b % 16];
-	pcStr[2] = 0;
+void HexDumper::ByteToHex(BYTE b, char *pcStr)
+{
+    pcStr[0] = HexTable[b / 16];
+    pcStr[1] = HexTable[b % 16];
+    pcStr[2] = 0;
 }
 
 /*
@@ -70,41 +75,50 @@ void HexDumper::ByteToHex(BYTE b, char * pcStr){
  * the length of that instruction is larger than szByteArray then returns -1.
  * in that case INVALID is coppied to the pcStr.
  */
-int Disassembler::Dasm(BYTE * pbByteArray, int szByteArray, char * pcStr){
-	int opcode  = *pbByteArray;
-	int numread = InstDescTbl[opcode] & 0x0F;
-	char pcAddr[5];
+int Disassembler::Dasm(BYTE *pbByteArray, int szByteArray, char *pcStr)
+{
+    int  opcode = *pbByteArray;
+    int  numread = InstDescTbl[opcode] & 0x0F;
+    char pcAddr[5];
 
-	if(numread>szByteArray || !opcode){
-		strcpy(pcStr, "INVALID");
-		return INVALID_CODE;
-	}
+    if (numread > szByteArray || !opcode)
+    {
+        strcpy(pcStr, "INVALID");
+        return INVALID_CODE;
+    }
 
-	if(numread == 2) hexer.ByteToHex(pbByteArray[1], pcAddr);
-	else if(numread == 3) hexer.ByteArrayToHexArray(&pbByteArray[1], 2, pcAddr);
+    if (numread == 2)
+        hexer.ByteToHex(pbByteArray[1], pcAddr);
+    else if (numread == 3)
+        hexer.ByteArrayToHexArray(&pbByteArray[1], 2, pcAddr);
 
-	switch(InstModes[opcode]){
-	case amNon:
-			strcpy(pcStr, "INVALID");
-			return INVALID_CODE;
-		break;
-	case amRel:
-	case amDir:
-	case amExt:
-		    if(strlen(codes[opcode])==3) sprintf(pcStr, "%s      $%s",codes[opcode], pcAddr);
-			else sprintf(pcStr, "%s     $%s",codes[opcode], pcAddr);
-		break;
-	case amImm:
-		if(strlen(codes[opcode])==3) sprintf(pcStr,"%s      #$%s",codes[opcode], pcAddr);
-		else sprintf(pcStr, "%s     #$%s",codes[opcode], pcAddr);
-		break;
-	case amInd:
-		sprintf(pcStr, "%s     $%s, X",codes[opcode], pcAddr);
-		break;
-	case amImp:
-			strcpy(pcStr, codes[opcode]);
-		break;
-	}
+    switch (InstModes[opcode])
+    {
+    case amNon:
+        strcpy(pcStr, "INVALID");
+        return INVALID_CODE;
+        break;
+    case amRel:
+    case amDir:
+    case amExt:
+        if (strlen(codes[opcode]) == 3)
+            sprintf(pcStr, "%s      $%s", codes[opcode], pcAddr);
+        else
+            sprintf(pcStr, "%s     $%s", codes[opcode], pcAddr);
+        break;
+    case amImm:
+        if (strlen(codes[opcode]) == 3)
+            sprintf(pcStr, "%s      #$%s", codes[opcode], pcAddr);
+        else
+            sprintf(pcStr, "%s     #$%s", codes[opcode], pcAddr);
+        break;
+    case amInd:
+        sprintf(pcStr, "%s     $%s, X", codes[opcode], pcAddr);
+        break;
+    case amImp:
+        strcpy(pcStr, codes[opcode]);
+        break;
+    }
 
-	return numread;
+    return numread;
 }

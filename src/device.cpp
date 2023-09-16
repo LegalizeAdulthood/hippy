@@ -19,58 +19,64 @@
 
 #include "device.h"
 
-
-CDevice::CDevice(){
-	psem_irq	= new CSemaphore(0, 1000, INT_IRQ);
-	psem_nmi	= new CSemaphore(0, 1000, INT_NMI);
-	psem_reset	= new CSemaphore(0, 1000, INT_RST);
-	Reset();	
+CDevice::CDevice()
+{
+    psem_irq = new CSemaphore(0, 1000, INT_IRQ);
+    psem_nmi = new CSemaphore(0, 1000, INT_NMI);
+    psem_reset = new CSemaphore(0, 1000, INT_RST);
+    Reset();
 }
 
-CDevice::~CDevice(){
-	delete psem_irq;
-	delete psem_nmi;
-	delete psem_reset;
-	OnFinalize();
+CDevice::~CDevice()
+{
+    delete psem_irq;
+    delete psem_nmi;
+    delete psem_reset;
+    OnFinalize();
 }
 
-int CDevice::Create(CWnd * parentWnd, CString szName){
-	char buffer[1024];
-	m_pParentWnd = parentWnd;
-	lpszDeviceName = new CString(szName);	
-	GetModuleFileName(AfxGetInstanceHandle() , buffer, 1024);
-	lpszLibraryName = new CString(buffer);
-	OnInitialize();
-	return 0;
+int CDevice::Create(CWnd *parentWnd, CString szName)
+{
+    char buffer[1024];
+    m_pParentWnd = parentWnd;
+    lpszDeviceName = new CString(szName);
+    GetModuleFileName(AfxGetInstanceHandle(), buffer, 1024);
+    lpszLibraryName = new CString(buffer);
+    OnInitialize();
+    return 0;
 }
 
-void CDevice::Interrupt(TInterrupt tint){
-	switch(tint){
-	case IRQ:
-		psem_irq->Unlock();
-		break;
-	case NMI:
-		psem_nmi->Unlock();
-		break;
-	case RESET:
-		psem_reset->Unlock();
-		break;
-	}
+void CDevice::Interrupt(TInterrupt tint)
+{
+    switch (tint)
+    {
+    case IRQ:
+        psem_irq->Unlock();
+        break;
+    case NMI:
+        psem_nmi->Unlock();
+        break;
+    case RESET:
+        psem_reset->Unlock();
+        break;
+    }
 }
 
-//reads the specifies address from the chip and returns the value in val.
-//if the chip is not selected with the address specified returns false.
-//in this case the val remains untouched.
-bool CDevice::Read(Word addr, BYTE & val, bool bDbg){
-	this->bDbg = bDbg;
-	val = OnRead(addr);
-	return true;
+// reads the specifies address from the chip and returns the value in val.
+// if the chip is not selected with the address specified returns false.
+// in this case the val remains untouched.
+bool CDevice::Read(Word addr, BYTE &val, bool bDbg)
+{
+    this->bDbg = bDbg;
+    val = OnRead(addr);
+    return true;
 }
 
-//write the specifies address to the chip if the chip is not selected with 
-//the address specified returns false.
-bool CDevice::Write(Word addr, BYTE val, bool bDbg){
-	this->bDbg = bDbg;
-	OnWrite(addr, val);
-	return true;
+// write the specifies address to the chip if the chip is not selected with
+// the address specified returns false.
+bool CDevice::Write(Word addr, BYTE val, bool bDbg)
+{
+    this->bDbg = bDbg;
+    OnWrite(addr, val);
+    return true;
 }

@@ -20,76 +20,80 @@
 #ifndef _DEBUGWND_H__
 #define _DEBUGWND_H__
 
-#include <afxwin.h>
-#include "disassembler.h"
 #include "dasmwnd.h"
+#include "disassembler.h"
+#include "hippy.h"
+#include "m6800.h"
 #include "memdump.h"
 #include "registerwnd.h"
 #include "stackwnd.h"
-#include "hippy.h"
-#include "m6800.h"
 #include <Winsock2.h>
+#include <afxwin.h>
 
-typedef enum{
-	NONSTOP,
-	STOP_MEMLOC,
-	STOP_OPCODE
+typedef enum
+{
+    NONSTOP,
+    STOP_MEMLOC,
+    STOP_OPCODE
 } StopMode;
 
-typedef enum{
-	TM_ACTUAL,
-	TM_BURST,
-	TM_IGNORE
+typedef enum
+{
+    TM_ACTUAL,
+    TM_BURST,
+    TM_IGNORE
 } TimeMode;
 
-class CDebugWnd: public CMDIChildWnd{
-	FILETIME		  lastTimeRecorded;
-	int				  collectedCycles;
-	int				  threadPri;
-	CDisasmWnd		* pDasm;
-	CMemDumpWnd		* pMemDump;
-	CRegisterWnd	* pRegWnd;
-	CStackWnd		* pStackWnd;
-	Registers		* regs;
-	CM6800			* pm6800;
-	CEnvironment	* pEnv;
-	Word			* pwRetStack;
-	int				  iRetStackSize;
-	CFont Font;
-	TimeMode		  timing;
-	CAddressManager * memory;
-	int				  iLeftPercent;
-	int				  iTopPercent;
-	Word			  execMode;
-	Word			  StopAt;
-	StopMode		  stopMode;
-	bool			  Running;
+class CDebugWnd : public CMDIChildWnd
+{
+    FILETIME         lastTimeRecorded;
+    int              collectedCycles;
+    int              threadPri;
+    CDisasmWnd      *pDasm;
+    CMemDumpWnd     *pMemDump;
+    CRegisterWnd    *pRegWnd;
+    CStackWnd       *pStackWnd;
+    Registers       *regs;
+    CM6800          *pm6800;
+    CEnvironment    *pEnv;
+    Word            *pwRetStack;
+    int              iRetStackSize;
+    CFont            Font;
+    TimeMode         timing;
+    CAddressManager *memory;
+    int              iLeftPercent;
+    int              iTopPercent;
+    Word             execMode;
+    Word             StopAt;
+    StopMode         stopMode;
+    bool             Running;
 
-	void DoReturnStack(BYTE opcode);
-	void DoStack(BYTE opcode);
-	void BlockRun();
+    void DoReturnStack(BYTE opcode);
+    void DoStack(BYTE opcode);
+    void BlockRun();
+
 public:
-	CDebugWnd(CEnvironment * pEnv);
-	~CDebugWnd();
-	bool ExecuteNext();
-	void Run();
-	void StepOver();
-	void StepIn();
-	void StepOut();
-	void RunToCursor();
-	void UpdateAll();
-	void Stop();
-	void InsBkPt();
-	int LoadSFile(CString & str);
-	int WriteSFile(Word wBegin, Word wEnd, CString & str);
-	void SetThreadPriority(int priority);
-	afx_msg void OnDestroy();
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg LRESULT OnUpdateDbgWnd(WPARAM wParam, LPARAM lParam);
-	DECLARE_MESSAGE_MAP()
+    CDebugWnd(CEnvironment *pEnv);
+    ~CDebugWnd();
+    bool            ExecuteNext();
+    void            Run();
+    void            StepOver();
+    void            StepIn();
+    void            StepOut();
+    void            RunToCursor();
+    void            UpdateAll();
+    void            Stop();
+    void            InsBkPt();
+    int             LoadSFile(CString &str);
+    int             WriteSFile(Word wBegin, Word wEnd, CString &str);
+    void            SetThreadPriority(int priority);
+    afx_msg void    OnDestroy();
+    afx_msg void    OnShowWindow(BOOL bShow, UINT nStatus);
+    afx_msg BOOL    OnEraseBkgnd(CDC *pDC);
+    afx_msg void    OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+    afx_msg void    OnSize(UINT nType, int cx, int cy);
+    afx_msg LRESULT OnUpdateDbgWnd(WPARAM wParam, LPARAM lParam);
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif

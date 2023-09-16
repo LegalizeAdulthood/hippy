@@ -22,84 +22,96 @@
  * STRING TABLE
  */
 
-CStringTable::CStringTable(){
-	memset(listSize, 0, sizeof(int)*256);
-	memset(tree, 0, sizeof(tree));
+CStringTable::CStringTable()
+{
+    memset(listSize, 0, sizeof(int) * 256);
+    memset(tree, 0, sizeof(tree));
 }
 
-CStringTable::~CStringTable(){
-	for(int i=0;i<256;i++)
-		for(int k = 0;k<listSize[i];k++)
-			free(tree[i][k]);
+CStringTable::~CStringTable()
+{
+    for (int i = 0; i < 256; i++)
+        for (int k = 0; k < listSize[i]; k++)
+            free(tree[i][k]);
 }
 
-LPSTR	CStringTable::AddString(BYTE hash, LPCSTR lpcStr){
-	bool found = false;;
-	LPSTR retval;
+LPSTR CStringTable::AddString(BYTE hash, LPCSTR lpcStr)
+{
+    bool found = false;
+    ;
+    LPSTR retval;
 
-	retval = Find(hash, lpcStr);
+    retval = Find(hash, lpcStr);
 
-	if(!retval){
-		tree[hash] = (char**)realloc(tree[hash], sizeof(LPSTR)*(listSize[hash]+1));
-		tree[hash][listSize[hash]] = (char*)malloc(strlen(lpcStr)+1);
-		strcpy(tree[hash][listSize[hash]], lpcStr);
-		retval = tree[hash][listSize[hash]];
-		listSize[hash]++;
-		
-	}
-	return retval;
+    if (!retval)
+    {
+        tree[hash] = (char **) realloc(tree[hash], sizeof(LPSTR) * (listSize[hash] + 1));
+        tree[hash][listSize[hash]] = (char *) malloc(strlen(lpcStr) + 1);
+        strcpy(tree[hash][listSize[hash]], lpcStr);
+        retval = tree[hash][listSize[hash]];
+        listSize[hash]++;
+    }
+    return retval;
 }
 
-LPSTR	CStringTable::Find(BYTE hash, LPCSTR lpcStr){
-	LPSTR retval = NULL;
-	for(int i=0; i < listSize[hash];i++)
-		if(!strcmp(tree[hash][i], lpcStr)){
-			retval = tree[hash][i];
-			break;
-		}
-		return retval;
+LPSTR CStringTable::Find(BYTE hash, LPCSTR lpcStr)
+{
+    LPSTR retval = NULL;
+    for (int i = 0; i < listSize[hash]; i++)
+        if (!strcmp(tree[hash][i], lpcStr))
+        {
+            retval = tree[hash][i];
+            break;
+        }
+    return retval;
 }
 
 /*
  * SymbolTable
  */
 
-CSymbolTable::CSymbolTable(){
-	memset(listSize, 0, sizeof(int)*256);
-	memset(tree, 0, sizeof(tree));
+CSymbolTable::CSymbolTable()
+{
+    memset(listSize, 0, sizeof(int) * 256);
+    memset(tree, 0, sizeof(tree));
 }
 
-CSymbolTable::~CSymbolTable(){
-		for(int i=0;i<256;i++)
-		for(int k = 0;k<listSize[i];k++)
-			free(tree[i][k]);
+CSymbolTable::~CSymbolTable()
+{
+    for (int i = 0; i < 256; i++)
+        for (int k = 0; k < listSize[i]; k++)
+            free(tree[i][k]);
 }
 
-bool	CSymbolTable::Insert(BYTE hash, PSymbol pSym){
-	bool found = false;;
-	bool retval;
+bool CSymbolTable::Insert(BYTE hash, PSymbol pSym)
+{
+    bool found = false;
+    ;
+    bool retval;
 
-	retval = Find(hash, pSym);
+    retval = Find(hash, pSym);
 
-	if(!retval){
-		tree[hash] = (PSymbol*)realloc(tree[hash], sizeof(LPSTR)*(listSize[hash]+1));
-		tree[hash][listSize[hash]] = (PSymbol)malloc(sizeof(Symbol));
-		memcpy(tree[hash][listSize[hash]], pSym, sizeof(Symbol));
-		listSize[hash]++;
-		retval = true;
-		
-	}
-	return retval;
+    if (!retval)
+    {
+        tree[hash] = (PSymbol *) realloc(tree[hash], sizeof(LPSTR) * (listSize[hash] + 1));
+        tree[hash][listSize[hash]] = (PSymbol) malloc(sizeof(Symbol));
+        memcpy(tree[hash][listSize[hash]], pSym, sizeof(Symbol));
+        listSize[hash]++;
+        retval = true;
+    }
+    return retval;
 }
 
-bool	CSymbolTable::Find(BYTE hash, PSymbol pSym){
-	bool retval = false;
-	for(int i=0; i < listSize[hash];i++)
-		if(!strcmp(tree[hash][i]->name, pSym->name)){
-			pSym->addr = tree[hash][i]->addr;
-			pSym->type = tree[hash][i]->type;
-			retval = true;
-			break;
-		}
-		return retval;
+bool CSymbolTable::Find(BYTE hash, PSymbol pSym)
+{
+    bool retval = false;
+    for (int i = 0; i < listSize[hash]; i++)
+        if (!strcmp(tree[hash][i]->name, pSym->name))
+        {
+            pSym->addr = tree[hash][i]->addr;
+            pSym->type = tree[hash][i]->type;
+            retval = true;
+            break;
+        }
+    return retval;
 }

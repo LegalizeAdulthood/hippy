@@ -19,54 +19,58 @@
 #ifndef _ASMEDITOR_H__
 #define _ASMEDITOR_H__
 #include <afx.h>
-#include <afxwin.h>
 #include <afxcmn.h>
+#include <afxwin.h>
 
 #include "hippy.h"
 #include "string.h"
 
-class CAsmEdit : public CRichEditCtrl{
+class CAsmEdit : public CRichEditCtrl
+{
 public:
-	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
-	DECLARE_MESSAGE_MAP()
+    afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+    DECLARE_MESSAGE_MAP()
 };
 
-class CBuildEdit : public CEdit{
+class CBuildEdit : public CEdit
+{
 public:
-	afx_msg void OnLButtonDblClk( UINT nFlags, CPoint point);
-	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
-	DECLARE_MESSAGE_MAP()
+    afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+    afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+    DECLARE_MESSAGE_MAP()
 };
 
 static int filenumber = 0;
 
-class CAsmEditorWnd : public CMDIChildWnd{
+class CAsmEditorWnd : public CMDIChildWnd
+{
 private:
-	CAsmEdit		Editor;
-	CString			szFileName;
-	CFont			Font;
-	CFont		*	oldFont;
-	bool			newFile;
-	CBuildEdit		buildWnd;
-	int				buildWndHeight;
-	bool OpenFile();
-	int	SaveFile();
+    CAsmEdit   Editor;
+    CString    szFileName;
+    CFont      Font;
+    CFont     *oldFont;
+    bool       newFile;
+    CBuildEdit buildWnd;
+    int        buildWndHeight;
+    bool       OpenFile();
+    int        SaveFile();
+
 public:
-	DECLARE_DYNAMIC(CAsmEditorWnd)
-	CAsmEditorWnd(CMDIFrameWnd * pParent, LPCSTR lpcFileName);
-	~CAsmEditorWnd();
-	bool IsNewFile();
-	void GetFileName(CString & str);
-	int CompileCode();
-	int	Save();
-	int	SaveAs(CString szFileName);
-	CString	GetHexFileName();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg bool OnEraseBkgnd(CDC *pDC);
-	afx_msg void OnClose();
-	afx_msg LRESULT OnJumpToLine(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnHideBuildWnd(WPARAM wParam, LPARAM lParam);
-	DECLARE_MESSAGE_MAP()
+    DECLARE_DYNAMIC(CAsmEditorWnd)
+    CAsmEditorWnd(CMDIFrameWnd *pParent, LPCSTR lpcFileName);
+    ~CAsmEditorWnd();
+    bool            IsNewFile();
+    void            GetFileName(CString &str);
+    int             CompileCode();
+    int             Save();
+    int             SaveAs(CString szFileName);
+    CString         GetHexFileName();
+    afx_msg void    OnSize(UINT nType, int cx, int cy);
+    afx_msg bool    OnEraseBkgnd(CDC *pDC);
+    afx_msg void    OnClose();
+    afx_msg LRESULT OnJumpToLine(WPARAM wParam, LPARAM lParam);
+    afx_msg LRESULT OnHideBuildWnd(WPARAM wParam, LPARAM lParam);
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif
