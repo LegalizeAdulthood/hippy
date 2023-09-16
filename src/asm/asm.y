@@ -23,6 +23,7 @@
 #include "sym_table.h"
 
 #include <stdio.h>
+#include <vector>
 
 #define HI_BYTE(y) (unsigned char) (y >> 8)
 #define LO_BYTE(y) (unsigned char) (y & 0xff)
@@ -34,13 +35,12 @@ extern int  my_linenum;
 extern void err_msg(const char *fmt, ...);
 extern void yyerror(char *);
 
-FILE           *fout = NULL;
-int             pc = 0; // where to write next
-unsigned short *segments = NULL;
-unsigned short *segment_length = NULL;
-unsigned short  byte_list[40];
-int             num_byte_list = 0;
-int             num_segments = 0;
+FILE                       *fout = NULL;
+int                         pc = 0; // where to write next
+std::vector<unsigned short> segments;
+std::vector<unsigned short> segment_length;
+unsigned short              byte_list[40];
+int                         num_byte_list = 0;
 
 equation     *equations;
 int           num_eqns = 0;
@@ -465,15 +465,12 @@ void do_org(int addr)
         err_msg("error: line %d: parameter for ORG directive is out of address space.", my_linenum - 1);
         return;
     }
-    segments = (unsigned short *) realloc(segments, sizeof(unsigned short) * (num_segments + 1));
-    segments[num_segments] = addr;
-    segment_length = (unsigned short *) realloc(segment_length, sizeof(unsigned short) * (num_segments + 1));
-    segment_length[num_segments] = 0;
-    if (num_segments)
+    segments.push_back(addr);
+    segment_length.push_back(0);
+    if (!segments.empty())
     {
-        segment_length[num_segments - 1] = pc - segments[num_segments - 1];
+        segment_length[segments.size() - 1] = pc - segments[segments.size() - 1];
     }
-    num_segments++;
     pc = addr;
 }
 
@@ -607,7 +604,7 @@ void generate_hex()
     int           s_left, s_emit, addr;
     char          buf[44];
     resolve_refs();
-    for (i = 0; i < num_segments; i++)
+    for (i = 0; i < segments.size(); i++)
     {
         addr = segments[i];
         s_left = segment_length[i];
@@ -699,7 +696,7 @@ int main(int argc, char **argv)
 
     yyparse();
 
-    segment_length[num_segments - 1] = pc - segments[num_segments - 1];
+    segment_length[segments.size() - 1] = pc - segments[segments.size() - 1];
     generate_hex();
     printf("assembly complete with %d errors.\n", num_errors);
 
