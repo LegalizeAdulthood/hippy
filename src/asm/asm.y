@@ -640,14 +640,19 @@ extern "C" int yywrap(void)
     return 1;
 }
 
-void main(int argc, char **argv)
+[[noreturn]] void usage(const char *program)
+{
+    fprintf(stderr, "Usage:\n"
+                    "%s [<input> [<output>]]\n", program);
+    exit(1);
+}
+
+int main(int argc, char **argv)
 {
     extern FILE *yyin;
     char         buf[512], *p;
     int          out_is_stdout = 0;
     buf[0] = 0;
-    --argc;
-    ++argv;
 
     //printf("Hippy m6800 studio assembler\n"
     //       "contact: perreal@hotmail.com\n"
@@ -656,24 +661,28 @@ void main(int argc, char **argv)
 
     do_org(0x0000);
 
-    if (argc > 0)
+    if (argc > 3)
     {
-        while (argc--)
-        {
-            strcat(buf, *argv);
-            strcat(buf, " ");
-            argv++;
-        }
+        usage(argv[0]);
+    }
+    else if (argc >= 2)
+    {
+        strcpy(buf, argv[1]);
         yyin = fopen(buf, "r");
         if (!yyin)
         {
             err_msg("error: fatal: input file \"%s\" open error.", buf);
             exit(1);
         }
-        p = strstr(buf, ".");
-        if (p)
-            *p = 0;
-        strcat(buf, ".hex");
+        if (argc == 3)
+            strcpy(buf, argv[2]);
+        else
+        {
+            p = strstr(buf, ".");
+            if (p)
+                *p = 0;
+            strcat(buf, ".hex");
+        }
         fout = fopen(buf, "w");
         if (!fout)
         {
