@@ -64,7 +64,7 @@ static char *instList[108] = {
 		"CMPA","BITA","CMPB","BITB","BLE","TSTA","TSTB", 0
 	};
 
-typedef enum Instruction{
+enum Instruction{
 	ASL,BMI,ASR,BLS,BNE,SEC,BLT,DAA,SEI,
 		EORA,EORB,NEG,SEV,TAB,BPL,BRA,ANDA,ANDB,LSR,
 		TBA,ROL,CLC,DEC,TAP,ROR,CLI,ADCA,ADCB,LSRA,

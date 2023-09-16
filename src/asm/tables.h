@@ -103,7 +103,7 @@ typedef struct LookupEnt{
 
 class CLookupTable{
 private:
-	PLookupEnt list;
+    PLookupEnt list{};
 	int size;
 public:
 	CLookupTable(){
