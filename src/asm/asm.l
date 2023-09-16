@@ -1,4 +1,3 @@
-%option never-interactive
 %option nounistd
 %{
 
@@ -33,6 +32,7 @@ int num_errors = 0;
 int  do_id(char *);
 void yyerror(char *msg);
 int  str2int(char *str, int base);
+int  isatty(int fileno);
 
 %}
 
@@ -75,6 +75,11 @@ ignore          "."
 {err_oct}       yylval.ival = 0; yyerror("Bad octal"); return NUMBER;
 {err_bin}       yylval.ival = 0; yyerror("Bad binary"); return NUMBER;
 %%
+
+int isatty(int fileno)
+{
+    return (yyin == stdin) ? 1 : 0;
+}
 
 void err_msg(const char *fmt, ...)
 {
