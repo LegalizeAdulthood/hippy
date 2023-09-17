@@ -23,5 +23,5 @@ add_executable(asm
     stack.h
     y.tab.hpp
 )
-#target_compile_definitions(asm PUBLIC YY_NO_UNISTD_H)
+target_compile_definitions(asm PUBLIC $<$<CONFIG:DEBUG>:YYDEBUG>)
 target_include_directories(asm PUBLIC .)
