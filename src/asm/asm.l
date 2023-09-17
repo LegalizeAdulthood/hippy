@@ -56,7 +56,7 @@ arith           "*"|"+"|"-"|"/"
 ignore          "."
 
 %%
-{identifier}    return do_id(yytext);
+{identifier}    { return do_id(yytext); }
 {decimal}       { yylval.ival = atoi(yytext); return NUMBER; }
 {hex_num_t1}    { yylval.ival = str2int(yytext+2, 16); return NUMBER; }
 {hex_num_t2}    { yylval.ival = str2int(yytext+1, 16); return NUMBER; }
@@ -66,14 +66,14 @@ ignore          "."
 {comment}       { my_linenum++; return '\n'; }
 {text}          { yylval.pse = insert_id(yytext); return TEXT; }
 {newline}       { my_linenum++; return '\n';}
-{delim}         return yytext[0];
-{arith}         return yytext[0];
+{delim}         { return yytext[0]; }
+{arith}         { return yytext[0]; }
 [ \t]+ 
 {ignore}        ;
-{err_hex}       yylval.ival = 0; yyerror("Bad hexadecimal."); return NUMBER;
-{err_num}       yylval.ival = 0; yyerror("Bad decimal."); return NUMBER;
-{err_oct}       yylval.ival = 0; yyerror("Bad octal"); return NUMBER;
-{err_bin}       yylval.ival = 0; yyerror("Bad binary"); return NUMBER;
+{err_hex}       { yylval.ival = 0; yyerror("Bad hexadecimal."); return NUMBER; }
+{err_num}       { yylval.ival = 0; yyerror("Bad decimal."); return NUMBER; }
+{err_oct}       { yylval.ival = 0; yyerror("Bad octal"); return NUMBER; }
+{err_bin}       { yylval.ival = 0; yyerror("Bad binary"); return NUMBER; }
 %%
 
 int isatty(int fileno)
@@ -190,8 +190,11 @@ retid:
     return ID;
 }
 
-/*int main( int  argc , char**  argv  ){
-    while(1) lexer->yylex();
+#if 0
+int main(int argc, char **argv)
+{
+    while (1)
+        lexer->yylex();
     return 0;
-}*/
-
+}
+#endif
