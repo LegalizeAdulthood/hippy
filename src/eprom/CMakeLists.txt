@@ -1,10 +1,11 @@
 add_library(eprom SHARED
     eprom.h
     eprom.cpp
+    eprom.def
+    eprom.rc
     StdAfx.h
     StdAfx.cpp
     Resource.h
-    eprom.rc
     ../device.h
     ../device.cpp
     ../hippy.h
