@@ -1,7 +1,6 @@
-
 <HDF version="1.0">
 
-<DEVICE name="KEYPAD" chip="8279">
+<DEVICE name="KEYPAD" chip="KEYPAD">
   <WORD_SELECT>
     <AI id="00"> PA00 </AI>
   </WORD_SELECT>

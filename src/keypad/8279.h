@@ -1,4 +1,4 @@
-// 8279_dll.h : main header file for the 8279_DLL DLL
+// 8279.h : main header file for the 8279_DLL DLL
 //
 //
 // Copyright (c) Yeditepe University Computer Engineering Department, 2005.
@@ -34,7 +34,7 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CMy8279_dllApp
-// See 8279_dll.cpp for the implementation of this class
+// See 8279.cpp for the implementation of this class
 //
 
 class CMy8279_dllApp : public CWinApp

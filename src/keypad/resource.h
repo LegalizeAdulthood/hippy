@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by 8279_dll.rc
+// Used by 8279.rc
 //
 #define IDB_BMP_KEYPAD                  1000
 

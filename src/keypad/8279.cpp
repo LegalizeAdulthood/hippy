@@ -1,4 +1,4 @@
-// 8279_dll.cpp : Defines the initialization routines for the DLL.
+// 8279.cpp : Defines the initialization routines for the DLL.
 //
 //
 // Copyright (c) Yeditepe University Computer Engineering Department, 2005.
@@ -21,7 +21,7 @@
 
 #include "stdafx.h"
 
-#include "8279_dll.h"
+#include "8279.h"
 #include "keypad.h"
 
 #ifdef _DEBUG

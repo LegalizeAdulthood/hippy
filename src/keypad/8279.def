@@ -1,0 +1,6 @@
+; 8279.def : Declares the module parameters for the DLL.
+
+LIBRARY      "keypad"
+
+EXPORTS
+    ; Explicit exports can go here

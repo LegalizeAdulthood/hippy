@@ -41,6 +41,6 @@ add_executable(hippy WIN32
     Hippy.rc
 )
 
-add_subdirectory(8279_dll)
+add_subdirectory(keypad)
 add_subdirectory(asm)
 add_subdirectory(eprom)

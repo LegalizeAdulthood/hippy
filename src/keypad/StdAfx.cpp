@@ -1,5 +1,5 @@
 // stdafx.cpp : source file that includes just the standard includes
-//	8279_dll.pch will be the pre-compiled header
+//	8279.pch will be the pre-compiled header
 //	stdafx.obj will contain the pre-compiled type information
 //
 // Copyright (c) Yeditepe University Computer Engineering Department, 2005.
