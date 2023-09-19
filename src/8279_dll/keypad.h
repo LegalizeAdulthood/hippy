@@ -152,10 +152,10 @@ private:
     CKeyPad     *pKeyPad;
 
 protected:
-    void Reset();
-    void OnInitialize();
-    BYTE OnRead(Word addr);
-    void OnWrite(Word addr, BYTE bVal);
+    void Reset() override;
+    void OnInitialize() override;
+    BYTE OnRead(Word addr) override;
+    void OnWrite(Word addr, BYTE bVal) override;
 
 public:
 };

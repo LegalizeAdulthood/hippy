@@ -46,13 +46,13 @@ protected:
     CString *lpszDeviceName;
     CString *lpszLibraryName;
 
-    void Reset()
+    virtual void Reset()
     {
     }
     virtual void OnInitialize()
     {
     }
-    void OnFinalize()
+    virtual void OnFinalize()
     {
     }
     virtual BYTE OnRead(Word addr)
@@ -65,7 +65,7 @@ protected:
 
 public:
     CDevice();
-    ~CDevice();
+    virtual ~CDevice();
 
     int  Create(CWnd *parentWnd, CString szName);
     void Interrupt(TInterrupt tint);

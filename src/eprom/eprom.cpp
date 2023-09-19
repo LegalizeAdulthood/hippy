@@ -35,13 +35,13 @@ static char THIS_FILE[] = __FILE__;
 class CEprom : public CDevice
 {
 private:
-    BYTE    memory[0x2000];
+    BYTE    memory[0x2000]{};
     bool    LoadFile();
     CString GetRomFileName();
 
 public:
-    BYTE OnRead(Word addr);
-    void OnInitialize();
+    BYTE OnRead(Word addr) override;
+    void OnInitialize() override;
 };
 
 /////////////////////////////////////////////////////////////////////////////
