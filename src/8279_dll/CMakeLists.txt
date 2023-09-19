@@ -14,4 +14,5 @@ add_library(8279 SHARED
     ../res/keypad.bmp
     ReadMe.txt
 )
+target_compile_definitions(8279 PRIVATE _USRDLL)
 target_include_directories(8279 PUBLIC ..)

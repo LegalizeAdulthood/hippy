@@ -10,4 +10,5 @@ add_library(eprom SHARED
     ../hippy.h
     res/eprom.rc2
 )
+target_compile_definitions(eprom PRIVATE _USRDLL)
 target_include_directories(eprom PUBLIC ..)
