@@ -371,5 +371,6 @@ CDebugWnd::CDebugWnd(CEnvironment *pEnv)
 CDebugWnd::~CDebugWnd()
 {
     delete pDasm;
+    delete pStackWnd;
     this->DestroyWindow();
 }

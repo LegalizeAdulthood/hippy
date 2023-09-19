@@ -24,6 +24,8 @@
 #include "hippy.h"
 #include <afxwin.h>
 
+#include <vector>
+
 typedef enum
 {
     _ACCA,
@@ -45,11 +47,11 @@ typedef struct StackInfo
 class CStackWnd : public CBaseWnd
 {
 private:
-    bool             continuous;
-    StackInfo       *pCodes;
-    Registers       *pRegs;
-    HexDumper        hexer;
-    CAddressManager *mem;
+    bool                   continuous;
+    std::vector<StackInfo> pCodes;
+    Registers             *pRegs;
+    HexDumper              hexer;
+    CAddressManager       *mem;
 
     void drawLine(LINENUMBER lnActualLine);
     void paintBkgnd(LPCRECT lpcRect);

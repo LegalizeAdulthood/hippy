@@ -167,9 +167,10 @@ void CStackWnd::CheckStack(BYTE code, bool paint)
 void CStackWnd::PushEx(RegName rn, Word addr)
 {
     totNumLines++;
-    pCodes = (StackInfo *) realloc(pCodes, sizeof(StackInfo) * totNumLines);
-    pCodes[totNumLines - 1].reg = rn;
-    pCodes[totNumLines - 1].addr = addr;
+    StackInfo info;
+    info.reg = rn;
+    info.addr = addr;
+    pCodes.push_back(info);
 }
 
 void CStackWnd::Push(BYTE code, bool paint)
@@ -236,7 +237,7 @@ void CStackWnd::PopEx(int numPop)
     totNumLines -= numPop;
     if (totNumLines < 0)
         totNumLines = 0;
-    pCodes = (StackInfo *) realloc(pCodes, sizeof(StackInfo) * totNumLines);
+    pCodes.resize(totNumLines);
 }
 
 void CStackWnd::Pop(BYTE code, bool paint)
@@ -279,9 +280,8 @@ void CStackWnd::Pop(BYTE code, bool paint)
             break;
         case 0x02: // RESET
             totNumLines = 0;
-            free(pCodes);
+            pCodes.clear();
             lnPageStart = 0;
-            pCodes = NULL;
             break;
         default:
             return;
@@ -293,10 +293,8 @@ CStackWnd::CStackWnd(CWnd *pParentWnd, CRect &rcPos) :
 {
     totNumLines = 0;
     lnPageStart = 0;
-    pCodes = NULL;
 }
 
 CStackWnd::~CStackWnd()
 {
-    free(pCodes);
 }
