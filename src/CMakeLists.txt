@@ -40,6 +40,7 @@ add_executable(hippy WIN32
     xmlparser.cpp
     Hippy.rc
 )
+set_property(TARGET hippy PROPERTY VS_DPI_AWARE "OFF")
 
 add_subdirectory(keypad)
 add_subdirectory(asm)
