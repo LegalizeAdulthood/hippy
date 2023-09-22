@@ -1,6 +1,5 @@
 ; eprom.def : Declares the module parameters for the DLL.
 
 LIBRARY      "eprom"
-DESCRIPTION  'eprom Windows Dynamic Link Library'
 
 EXPORTS
