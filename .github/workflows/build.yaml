@@ -13,7 +13,7 @@ jobs:
         os: [windows-latest]
     runs-on: ${{matrix.os}}
     env:
-      SOURCE_PATH: ${{github.workspace}}
+      SOURCE_PATH: ${{github.workspace}}/src
       BUILD_PATH: ${{github.workspace}}/../build
       BUILD_TYPE: Release
     steps:
@@ -37,7 +37,7 @@ jobs:
       - name: CMake version
         run: cmake --version
       - name: CMake configure ${{env.BUILD_TYPE}}
-        run: cmake -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${{env.SOURCE_PATH}}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE:STRING=${{env.BUILD_TYPE}} -S ${{env.SOURCE_PATH}} -B ${{env.BUILD_PATH}}
+        run: cmake -DCMAKE_BUILD_TYPE:STRING=${{env.BUILD_TYPE}} -S ${{env.SOURCE_PATH}} -B ${{env.BUILD_PATH}}
       - name: CMake build ${{env.BUILD_TYPE}}
         run: cmake --build ${{env.BUILD_PATH}} --config ${{env.BUILD_TYPE}}
       - name: CTest ${{env.BUILD_TYPE}}
