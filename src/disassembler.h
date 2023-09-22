@@ -117,7 +117,7 @@ static AddressingMode InstModes[0x100] = {
 };
 
 #define SZ_CODELEN 10   // A diseassembled code is this much bytes (0x32 stuffing is used)
-#define INVALID_CODE -1 // returned by Dasm function
+#define INVALID_CODE -1 // returned by m_dasm function
 
 /* class for disassembling given byte array
  */

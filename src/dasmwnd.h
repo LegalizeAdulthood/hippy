@@ -16,14 +16,13 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef __DASMWND_H__
-#define __DASMWND_H__
+#ifndef HIPPY_DASMWND_H
+#define HIPPY_DASMWND_H
 
 #include "basewnd.h"
-#include "dialogs.h"
 #include "disassembler.h"
 #include "hippy.h"
-#include "resource.h"
+
 #include <afxwin.h>
 
 typedef struct Listnode
@@ -35,19 +34,12 @@ typedef struct Listnode
 
 class LinkedList
 {
-private:
-    Listnode  head;
-    PListnode current;
-
 public:
-    LinkedList()
-    {
-        head.prev = head.next = NULL;
-        head.loc = 0;
-    }
+    LinkedList() = default;
+
     bool search(Word loc, PListnode &pnode)
     {
-        PListnode p = &head;
+        PListnode p = &m_head;
         while (p)
             if (p->loc == loc)
                 return true;
@@ -86,7 +78,7 @@ public:
     }
     void clearall()
     {
-        PListnode t, p = head.next;
+        PListnode t, p = m_head.next;
         while (p)
         {
             t = p;
@@ -98,47 +90,33 @@ public:
     {
         if (restart)
         {
-            current = &head;
+            m_current = &m_head;
         }
-        if (!current)
+        if (!m_current)
         {
             wLoc = 0xFFFF;
             return false;
         }
-        wLoc = current->loc;
-        current = current->next;
+        wLoc = m_current->loc;
+        m_current = m_current->next;
         return true;
     }
+
+private:
+    Listnode  m_head{};
+    PListnode m_current{};
 };
 
 class CDisasmWnd : public CBaseWnd
 {
-private:
-    LinkedList   code_listing;
-    Disassembler Dasm;
-    CMenu       *menu;
-
-    int ActiveLine;
-
-    CBrush brBrkpt;
-    BYTE   BreakPoints[0x10000];
-    BYTE   InstructionLength[0x10000]; // index is line number, value is the length of corresponding instr.
-    Word   InstructionPos[0x10000];    // index is the memory address, value is the line where that address is dasm'ed
-    Word   MemoryAddressLocator[0x10000]; // index is the line number, value is the memory address of the
-                                        // //first byte disassembled in that line
-
-    void paintBkgnd(LPCRECT lpcRect);
-    void drawLine(LINENUMBER lnActualNum);
-
 public:
-    CDisasmWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName = NULL);
-    ~CDisasmWnd();
+    CDisasmWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName = nullptr);
+    ~CDisasmWnd() override;
 
     void InsertBreakpoint(ADDRESS addr, bool soft = false);
     void InsertBrkPtHere();
     void RemoveBreakpoint(ADDRESS addr);
     int  IsBrkPoint(Word addr);
-
     void DasmHere(Word addr);
     void Update(Word pc); // pc is updated, active line changed
 
@@ -153,6 +131,21 @@ public:
     afx_msg void    OnLButtonDown(UINT nFlags, CPoint point);
     afx_msg void    OnRButtonUp(UINT nFlags, CPoint point);
     DECLARE_MESSAGE_MAP()
+
+private:
+    LinkedList   m_codeListing;
+    Disassembler m_dasm;
+    CMenu       *m_menu{};
+    int          m_activeLine{};
+    CBrush       m_breakpointBrush;
+    BYTE         m_breakpoints[0x10000]{};
+    BYTE         m_instructionLength[0x10000]{}; // index is line number, value is the length of corresponding instr.
+    Word m_instructionPos[0x10000]{}; // index is the memory address, value is the line where that address is dasm'ed
+    Word m_memoryAddressLocator[0x10000]{}; // index is the line number, value is the memory address of the
+                                            // //first byte disassembled in that line
+
+    void paintBkgnd(LPCRECT lpcRect);
+    void drawLine(LINENUMBER lnActualNum);
 };
 
 #endif

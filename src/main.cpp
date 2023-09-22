@@ -20,6 +20,7 @@
 #include "addrmng.h"
 #include "asmeditor.h"
 #include "debugwnd.h"
+#include "dialogs.h"
 #include "environment.h"
 #include "m6800.h"
 #include "resource.h"
