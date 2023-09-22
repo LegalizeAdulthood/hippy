@@ -42,11 +42,11 @@ void CMemDumpWnd::OnLButtonDown(UINT nFlags, CPoint point)
 {
     CBaseWnd::OnLButtonDown(nFlags, point);
     // which line is clicked?
-    int line = (point.y - SideMargin) / CharHeight + lnPageStart;
+    int line = (point.y - m_sideMargin) / m_charHeight + m_pageStart;
 
     // calculate the byte clicked
-    int offx = point.x - (SideMargin * 3 + CharWidth * 4);
-    offx /= CharWidth;
+    int offx = point.x - (m_sideMargin * 3 + m_charWidth * 4);
+    offx /= m_charWidth;
 
     // if the click targets to black chars btw bytes then offx mod 3 is 2
     if (offx % 3 == 2)
@@ -60,13 +60,13 @@ void CMemDumpWnd::OnLButtonDown(UINT nFlags, CPoint point)
 
     // if selected line is the same or selection is dismissed
     // then all we have to update is the old(new) selected line
-    if (SelectedByte == -1 || line == SelectedLine)
-        drawLine(SelectedLine);
+    if (SelectedByte == -1 || line == m_selectedLine)
+        drawLine(m_selectedLine);
     else
     {
-        int tmp = SelectedLine;
-        SelectedLine = line;
-        drawLine(SelectedLine);
+        int tmp = m_selectedLine;
+        m_selectedLine = line;
+        drawLine(m_selectedLine);
         drawLine(tmp);
     }
     editMask = 0x10;
@@ -87,13 +87,13 @@ void CMemDumpWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
     case VK_LEFT:
         if (SelectedByte > 0)
             SelectedByte--;
-        drawLine(SelectedLine);
+        drawLine(m_selectedLine);
         editMask = 0x10;
         break;
     case VK_RIGHT:
         if (SelectedByte < 7)
             SelectedByte++;
-        drawLine(SelectedLine);
+        drawLine(m_selectedLine);
         editMask = 0x10;
         break;
     }
@@ -107,33 +107,33 @@ void CMemDumpWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
     if (val >= 0)
     {
-        Word addr = SelectedLine * 8 + SelectedByte;
-        BYTE w = pbMemoryBase->Read(addr, true);
+        Word addr = m_selectedLine * 8 + SelectedByte;
+        BYTE w = m_memoryBase->Read(addr, true);
         if (editMask == 0x10)
             w &= 0x0f;
         else
             w &= 0xf0;
 
         w |= val * editMask;
-        pbMemoryBase->Write(addr, w);
+        m_memoryBase->Write(addr, w);
         invertMask();
         if (editMask == 0x10)
         {
             SelectedByte = (SelectedByte + 1) % 8;
             if (!SelectedByte)
             {
-                SelectedLine++;
-                if (SelectedLine == 0x2000)
+                m_selectedLine++;
+                if (m_selectedLine == 0x2000)
                 {
-                    SelectedLine--;
+                    m_selectedLine--;
                     SelectedByte = 7;
-                    drawLine(SelectedLine);
+                    drawLine(m_selectedLine);
                     return;
                 }
             }
-            drawLine(SelectedLine - 1);
+            drawLine(m_selectedLine - 1);
         }
-        drawLine(SelectedLine);
+        drawLine(m_selectedLine);
     }
 }
 
@@ -146,14 +146,14 @@ void CMemDumpWnd::drawLine(LINENUMBER lnActualNum)
     int       i;
     CClientDC dc(this);
 
-    GetLineRect(lnActualNum - lnPageStart, &rc);
-    dc.FillRect(&rc, &brNormal);
+    GetLineRect(lnActualNum - m_pageStart, &rc);
+    dc.FillRect(&rc, &m_normal);
 
-    dc.MoveTo(SideMargin * 2 + CharWidth * 4, rc.top);
-    dc.LineTo(SideMargin * 2 + CharWidth * 4, rc.bottom);
+    dc.MoveTo(m_sideMargin * 2 + m_charWidth * 4, rc.top);
+    dc.LineTo(m_sideMargin * 2 + m_charWidth * 4, rc.bottom);
 
-    dc.MoveTo(SideMargin * 4 + CharWidth * 28, rc.top);
-    dc.LineTo(SideMargin * 4 + CharWidth * 28, rc.bottom);
+    dc.MoveTo(m_sideMargin * 4 + m_charWidth * 28, rc.top);
+    dc.LineTo(m_sideMargin * 4 + m_charWidth * 28, rc.bottom);
 
     ADDRESS addr;
     BYTE    c[2];
@@ -162,21 +162,21 @@ void CMemDumpWnd::drawLine(LINENUMBER lnActualNum)
     c[0] = ((BYTE *) &addr)[1];
     c[1] = ((BYTE *) &addr)[0];
 
-    Hexer.ByteArrayToHexArray(c, 2, buffer);
-    dc.TextOut(SideMargin, rc.top, buffer, 4);
+    m_hexer.ByteArrayToHexArray(c, 2, buffer);
+    dc.TextOut(m_sideMargin, rc.top, buffer, 4);
 
-    if (SelectedLine == lnActualNum && SelectedByte > -1 && GetFocus() == this)
+    if (m_selectedLine == lnActualNum && SelectedByte > -1 && GetFocus() == this)
     {
-        rc.left = 3 * SideMargin + (4 + SelectedByte * 3) * CharWidth;
-        rc.right = rc.left + 2 * CharWidth;
-        dc.FillRect(&rc, &brSelected);
+        rc.left = 3 * m_sideMargin + (4 + SelectedByte * 3) * m_charWidth;
+        rc.right = rc.left + 2 * m_charWidth;
+        dc.FillRect(&rc, &m_selected);
         dc.DrawFocusRect(&rc);
     }
 
     for (i = 0; i < 8; i++)
-        b[i] = pbMemoryBase->Read(addr + i, true);
-    Hexer.ByteArrayToHexArrayEx(b, 8, buffer);
-    dc.TextOut(SideMargin * 3 + CharWidth * 4, rc.top, buffer, 23);
+        b[i] = m_memoryBase->Read(addr + i, true);
+    m_hexer.ByteArrayToHexArrayEx(b, 8, buffer);
+    dc.TextOut(m_sideMargin * 3 + m_charWidth * 4, rc.top, buffer, 23);
 }
 
 // paint the background
@@ -184,11 +184,11 @@ void CMemDumpWnd::paintBkgnd(LPCRECT lpcRect)
 {
     CClientDC dc(this);
 
-    int x = SideMargin * 2 + CharWidth * 4;
+    int x = m_sideMargin * 2 + m_charWidth * 4;
     dc.MoveTo(x, lpcRect->top + 1);
     dc.LineTo(x, lpcRect->bottom);
 
-    x += SideMargin * 2 + CharWidth * 24;
+    x += m_sideMargin * 2 + m_charWidth * 24;
     dc.MoveTo(x, lpcRect->top + 1);
     dc.LineTo(x, lpcRect->bottom);
 }
@@ -198,9 +198,9 @@ CMemDumpWnd::CMemDumpWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName) :
     CBaseWnd(pParentWnd, rcPos, szWindowName)
 {
     editMask = 0x10;
-    lnPageStart = 0x0000;
-    totNumLines = 0x10000 / 8;
+    m_pageStart = 0x0000;
+    m_totNumLines = 0x10000 / 8;
     // Scrollbar finetuning
-    SetScrollRange(SB_VERT, 0, totNumLines - 1, false);
-    SetScrollPos(SB_VERT, lnPageStart);
+    SetScrollRange(SB_VERT, 0, m_totNumLines - 1, false);
+    SetScrollPos(SB_VERT, m_pageStart);
 }

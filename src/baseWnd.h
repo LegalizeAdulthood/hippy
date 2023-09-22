@@ -16,43 +16,25 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef _BASEWND_H__
-#define _BASEWND_H__
+#ifndef HIPPY_BASEWND_H
+#define HIPPY_BASEWND_H
 
 #include "addrmng.h"
 #include "disassembler.h"
 #include "hippy.h"
+
 #include <afxwin.h>
 
 class CBaseWnd : public CWnd
 {
-protected:
-    CAddressManager *pbMemoryBase;
-    LINENUMBER       lnPageStart;
-    HexDumper        Hexer;
-    int              CharWidth;
-    int              CharHeight;
-    int              SideMargin;
-    LINENUMBER       numLines;
-    int              totNumLines;
-    int              LineWidth;
-    int              SelectedLine;
-    CBrush           brSelected, brActive, brNormal;
-    CFont            Font, *defFont;
-
-    virtual void drawLine(LINENUMBER lnActualLine){};
-    virtual void paintBkgnd(LPCRECT lpcRect){};
-    bool         isLineVisible(Word wLineNum);
-    void         UpdateMetrics();
-
 public:
     CBaseWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName = NULL);
-    ~CBaseWnd();
+    ~CBaseWnd() override;
 
     void GetLineRect(int screenNum, LPRECT lpRect);
     void SetMemory(CAddressManager *pbMem)
     {
-        pbMemoryBase = pbMem;
+        m_memoryBase = pbMem;
     }
     afx_msg void OnKillFocus(CWnd *pNewWnd);
     afx_msg void OnSetFocus(CWnd *pOldWnd);
@@ -62,7 +44,34 @@ public:
     afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
     afx_msg void OnSize(UINT p1, int p2, int p3);
     afx_msg BOOL OnMouseWheel(UINT nFlag, short zDelta, CPoint pt);
+
     DECLARE_MESSAGE_MAP()
+
+protected:
+    CAddressManager *m_memoryBase;
+    LINENUMBER       m_pageStart;
+    HexDumper        m_hexer;
+    int              m_charWidth;
+    int              m_charHeight;
+    int              m_sideMargin;
+    LINENUMBER       m_numLines;
+    int              m_totNumLines;
+    int              m_lineWidth;
+    int              m_selectedLine;
+    CBrush           m_selected;
+    CBrush           m_active;
+    CBrush           m_normal;
+    CFont            m_font;
+    CFont           *m_defaultFont;
+
+    virtual void drawLine(LINENUMBER lnActualLine)
+    {
+    }
+    virtual void paintBkgnd(LPCRECT lpcRect)
+    {
+    }
+    bool isLineVisible(Word wLineNum);
+    void UpdateMetrics();
 };
 
 #endif

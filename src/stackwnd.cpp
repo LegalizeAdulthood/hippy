@@ -33,10 +33,10 @@ bool CStackWnd::OnEraseBkgnd(CDC *pDC)
 LRESULT CStackWnd::OnRedrawAll(WPARAM wParam, LPARAM lParam)
 {
     int i;
-    for (i = 0; i < numLines; i++)
+    for (i = 0; i < m_numLines; i++)
         ClearLine(i);
-    for (i = 0; i < totNumLines; i++)
-        drawLine(lnPageStart + i);
+    for (i = 0; i < m_totNumLines; i++)
+        drawLine(m_pageStart + i);
     return TRUE;
 }
 
@@ -48,13 +48,13 @@ void CStackWnd::ClearLine(int line)
     CRect     rc;
     int       x;
 
-    GetLineRect(line - lnPageStart, &rc);
-    dc.FillRect(&rc, &brNormal);
+    GetLineRect(line - m_pageStart, &rc);
+    dc.FillRect(&rc, &m_normal);
 
-    x = CharWidth * 4 + 2 * SideMargin;
+    x = m_charWidth * 4 + 2 * m_sideMargin;
     dc.MoveTo(x, rc.top);
     dc.LineTo(x, rc.bottom);
-    x += CharWidth * 4 + 2 * SideMargin;
+    x += m_charWidth * 4 + 2 * m_sideMargin;
     dc.MoveTo(x, rc.top);
     dc.LineTo(x, rc.bottom);
 }
@@ -66,7 +66,7 @@ void CStackWnd::ScrollDown(int nl)
     CClientDC dc(this);
     CRect     rc;
     GetLineRect(0, &rc);
-    dc.BitBlt(0, SideMargin + CharHeight * nl, rc.right, CharHeight * (totNumLines - nl), (CDC *) &dc, 0, SideMargin,
+    dc.BitBlt(0, m_sideMargin + m_charHeight * nl, rc.right, m_charHeight * (m_totNumLines - nl), (CDC *) &dc, 0, m_sideMargin,
               SRCCOPY);
 }
 
@@ -77,7 +77,7 @@ void CStackWnd::ScrollUp(int nl)
     CClientDC dc(this);
     CRect     rc;
     GetLineRect(0, &rc);
-    dc.BitBlt(0, SideMargin, rc.right, CharHeight * (totNumLines - nl), (CDC *) &dc, 0, SideMargin + CharHeight * nl,
+    dc.BitBlt(0, m_sideMargin, rc.right, m_charHeight * (m_totNumLines - nl), (CDC *) &dc, 0, m_sideMargin + m_charHeight * nl,
               SRCCOPY);
 }
 
@@ -88,23 +88,23 @@ void CStackWnd::drawLine(LINENUMBER lnActualLine)
     CClientDC dc(this);
     CRect     rc;
     char      buffer[256];
-    int       scr_line = lnActualLine - lnPageStart;
-    int       code_ind = totNumLines - lnActualLine - 1;
+    int       scr_line = lnActualLine - m_pageStart;
+    int       code_ind = m_totNumLines - lnActualLine - 1;
 
     ClearLine(lnActualLine);
     GetLineRect(scr_line, &rc);
-    // if(SelectedLine == lnActualLine)
+    // if(m_selectedLine == lnActualLine)
     //	dc.DrawFocusRect(&rc);
     BYTE b[2];
     b[0] = (pCodes[code_ind].addr & 0xff00) >> 8;
     b[1] = pCodes[code_ind].addr & 0xff;
 
     hexer.ByteArrayToHexArray(b, 2, buffer);
-    dc.TextOut(SideMargin, rc.top, buffer);
+    dc.TextOut(m_sideMargin, rc.top, buffer);
     StackInfo si = pCodes[code_ind];
 
     hexer.ByteToHex(mem->Read(si.addr), buffer);
-    dc.TextOut(SideMargin * 3 + CharWidth * 6, rc.top, buffer);
+    dc.TextOut(m_sideMargin * 3 + m_charWidth * 6, rc.top, buffer);
 
     switch (si.reg)
     {
@@ -133,13 +133,13 @@ void CStackWnd::drawLine(LINENUMBER lnActualLine)
         strcpy(buffer, "");
     }
 
-    dc.TextOut(SideMargin * 5 + CharWidth * 8, rc.top, buffer);
+    dc.TextOut(m_sideMargin * 5 + m_charWidth * 8, rc.top, buffer);
 }
 
 void CStackWnd::UpdateScroll()
 {
-    SetScrollRange(SB_VERT, 0, totNumLines, false);
-    SetScrollPos(SB_VERT, lnPageStart);
+    SetScrollRange(SB_VERT, 0, m_totNumLines, false);
+    SetScrollPos(SB_VERT, m_pageStart);
 }
 
 void CStackWnd::paintBkgnd(LPCRECT lpcRect)
@@ -149,11 +149,11 @@ void CStackWnd::paintBkgnd(LPCRECT lpcRect)
     CClientDC dc(this);
     int       x;
 
-    x = CharWidth * 4 + 2 * SideMargin;
+    x = m_charWidth * 4 + 2 * m_sideMargin;
     dc.MoveTo(x, lpcRect->top + 1);
     dc.LineTo(x, lpcRect->bottom);
 
-    x += CharWidth * 4 + 2 * SideMargin;
+    x += m_charWidth * 4 + 2 * m_sideMargin;
     dc.MoveTo(x, lpcRect->top + 1);
     dc.LineTo(x, lpcRect->bottom);
 }
@@ -166,7 +166,7 @@ void CStackWnd::CheckStack(BYTE code, bool paint)
 
 void CStackWnd::PushEx(RegName rn, Word addr)
 {
-    totNumLines++;
+    m_totNumLines++;
     StackInfo info;
     info.reg = rn;
     info.addr = addr;
@@ -234,30 +234,30 @@ void CStackWnd::Push(BYTE code, bool paint)
 
 void CStackWnd::PopEx(int numPop)
 {
-    totNumLines -= numPop;
-    if (totNumLines < 0)
-        totNumLines = 0;
-    pCodes.resize(totNumLines);
+    m_totNumLines -= numPop;
+    if (m_totNumLines < 0)
+        m_totNumLines = 0;
+    pCodes.resize(m_totNumLines);
 }
 
 void CStackWnd::Pop(BYTE code, bool paint)
 {
-    if (totNumLines)
+    if (m_totNumLines)
         switch (code)
         {
         case 0x32: /*PULA*/
         case 0x33: /*PULB*/
             ScrollUp(1);
             if (paint)
-                ClearLine(totNumLines - 1);
+                ClearLine(m_totNumLines - 1);
             PopEx(1);
             break;
         case 0x39: /*RTS*/
             ScrollUp(2);
             if (paint)
             {
-                ClearLine(totNumLines - 1);
-                ClearLine(totNumLines - 2);
+                ClearLine(m_totNumLines - 1);
+                ClearLine(m_totNumLines - 2);
             }
             PopEx(2);
             break;
@@ -267,7 +267,7 @@ void CStackWnd::Pop(BYTE code, bool paint)
             for (int i = 0; i < 7; i++)
             {
                 if (paint)
-                    ClearLine(totNumLines - 1);
+                    ClearLine(m_totNumLines - 1);
                 PopEx(1);
             }
         }
@@ -276,12 +276,12 @@ void CStackWnd::Pop(BYTE code, bool paint)
             ScrollUp(1);
             PopEx(1);
             if (paint)
-                ClearLine(totNumLines - 1);
+                ClearLine(m_totNumLines - 1);
             break;
         case 0x02: // RESET
-            totNumLines = 0;
+            m_totNumLines = 0;
             pCodes.clear();
-            lnPageStart = 0;
+            m_pageStart = 0;
             break;
         default:
             return;
@@ -291,8 +291,8 @@ void CStackWnd::Pop(BYTE code, bool paint)
 CStackWnd::CStackWnd(CWnd *pParentWnd, CRect &rcPos) :
     CBaseWnd(pParentWnd, rcPos, "Stack Window")
 {
-    totNumLines = 0;
-    lnPageStart = 0;
+    m_totNumLines = 0;
+    m_pageStart = 0;
 }
 
 CStackWnd::~CStackWnd()

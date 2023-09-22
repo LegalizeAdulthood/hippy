@@ -53,8 +53,8 @@ void CDisasmWnd::OnDasmHere()
     {
         Word w = ib.AsWord();
         DasmHere(w);
-        SelectedLine = InstructionPos[w];
-        lnPageStart = InstructionPos[w];
+        m_selectedLine = InstructionPos[w];
+        m_pageStart = InstructionPos[w];
         RedrawWindow();
     }
 }
@@ -67,8 +67,8 @@ void CDisasmWnd::OnGoto()
     {
         CString str;
         Word    w = ib.AsWord();
-        SelectedLine = InstructionPos[w];
-        lnPageStart = InstructionPos[w];
+        m_selectedLine = InstructionPos[w];
+        m_pageStart = InstructionPos[w];
         RedrawWindow();
     }
 }
@@ -88,7 +88,7 @@ void CDisasmWnd::OnRButtonUp(UINT nFlags, CPoint point)
 // returns the screen line number of a point on the client dc
 int CDisasmWnd::GetLineFromPt(int x, int y)
 {
-    return (y - SideMargin) / CharHeight;
+    return (y - m_sideMargin) / m_charHeight;
 }
 
 /*
@@ -97,7 +97,7 @@ int CDisasmWnd::GetLineFromPt(int x, int y)
  */
 int CDisasmWnd::GetActiveMemLoc()
 {
-    return MemoryAddressLocator[SelectedLine];
+    return MemoryAddressLocator[m_selectedLine];
 }
 
 /*
@@ -106,11 +106,11 @@ int CDisasmWnd::GetActiveMemLoc()
  */
 void CDisasmWnd::InsertBrkPtHere()
 {
-    Word addr = MemoryAddressLocator[SelectedLine];
+    Word addr = MemoryAddressLocator[m_selectedLine];
     BYTE b = BreakPoints[addr];
     b = !(bool) b;
     BreakPoints[addr] = b;
-    drawLine(SelectedLine);
+    drawLine(m_selectedLine);
 }
 
 void CDisasmWnd::drawLine(LINENUMBER lnActualNum)
@@ -120,13 +120,13 @@ void CDisasmWnd::drawLine(LINENUMBER lnActualNum)
     int       x, y;
     CClientDC dc(this);
     CBrush    br;
-    int       screenNum = lnActualNum - lnPageStart;
+    int       screenNum = lnActualNum - m_pageStart;
     Word      addr = MemoryAddressLocator[lnActualNum];
     BYTE      bp = BreakPoints[addr];
     BYTE      b[2];
 
     // do nothing if line is not visible
-    if (screenNum < 0 && screenNum >= numLines)
+    if (screenNum < 0 && screenNum >= m_numLines)
         return;
 
     // if line is selected or active (next inst. to be executed)
@@ -134,51 +134,51 @@ void CDisasmWnd::drawLine(LINENUMBER lnActualNum)
     CRect rc;
     GetLineRect(screenNum, &rc);
 
-    if (SelectedLine == lnActualNum && GetFocus() == this)
+    if (m_selectedLine == lnActualNum && GetFocus() == this)
     {
-        dc.FillRect(&rc, &brSelected);
+        dc.FillRect(&rc, &m_selected);
         dc.DrawFocusRect(&rc);
     }
     else if (ActiveLine == lnActualNum)
-        dc.FillRect(&rc, &brActive);
+        dc.FillRect(&rc, &m_active);
     else
-        dc.FillRect(&rc, &brNormal);
+        dc.FillRect(&rc, &m_normal);
 
     // if there is a breakpoint on this line, draw a small rectangle
     if (bp)
     {
-        rc.right = 2 * SideMargin + 4 * CharWidth;
+        rc.right = 2 * m_sideMargin + 4 * m_charWidth;
         dc.FillRect(&rc, &brBrkpt);
     }
 
-    dc.MoveTo(SideMargin * 2 + 4 * CharWidth, rc.top);
-    dc.LineTo(SideMargin * 2 + 4 * CharWidth, rc.bottom);
-    dc.MoveTo(SideMargin * 4 + 10 * CharWidth, rc.top);
-    dc.LineTo(SideMargin * 4 + 10 * CharWidth, rc.bottom);
-    dc.MoveTo(SideMargin * 5 + 26 * CharWidth, rc.top);
-    dc.LineTo(SideMargin * 5 + 26 * CharWidth, rc.bottom);
+    dc.MoveTo(m_sideMargin * 2 + 4 * m_charWidth, rc.top);
+    dc.LineTo(m_sideMargin * 2 + 4 * m_charWidth, rc.bottom);
+    dc.MoveTo(m_sideMargin * 4 + 10 * m_charWidth, rc.top);
+    dc.LineTo(m_sideMargin * 4 + 10 * m_charWidth, rc.bottom);
+    dc.MoveTo(m_sideMargin * 5 + 26 * m_charWidth, rc.top);
+    dc.LineTo(m_sideMargin * 5 + 26 * m_charWidth, rc.bottom);
 
-    y = CharHeight * screenNum + SideMargin;
+    y = m_charHeight * screenNum + m_sideMargin;
 
     BYTE buff[3];
 
     int length = InstructionLength[lnActualNum] & 0x0f;
     for (int i = 0; i < length; i++)
-        buff[i] = pbMemoryBase->Read(MemoryAddressLocator[lnActualNum] + i, true);
+        buff[i] = m_memoryBase->Read(MemoryAddressLocator[lnActualNum] + i, true);
     ret = Dasm.Dasm((BYTE *) buff, InstructionLength[lnActualNum], buffer);
     if (ret == INVALID_CODE)
         ret = 1;
-    x = CharWidth * 10 + 5 * SideMargin;
+    x = m_charWidth * 10 + 5 * m_sideMargin;
     dc.TextOut(x, y, buffer);
 
-    Hexer.ByteArrayToHexArray(buff, ret, buffer);
-    x = CharWidth * 4 + 3 * SideMargin;
+    m_hexer.ByteArrayToHexArray(buff, ret, buffer);
+    x = m_charWidth * 4 + 3 * m_sideMargin;
     dc.TextOut(x, y, buffer);
 
     b[0] = (BYTE) (MemoryAddressLocator[lnActualNum] >> 8);
     b[1] = (BYTE) (MemoryAddressLocator[lnActualNum] & 0x00FF);
-    Hexer.ByteArrayToHexArray(b, 2, buffer);
-    x = SideMargin;
+    m_hexer.ByteArrayToHexArray(b, 2, buffer);
+    x = m_sideMargin;
     dc.TextOut(x, y, buffer);
 }
 
@@ -187,15 +187,15 @@ void CDisasmWnd::paintBkgnd(LPCRECT lpcRect)
     CClientDC dc(this);
     int       x;
 
-    x = CharWidth * 4 + 2 * SideMargin;
+    x = m_charWidth * 4 + 2 * m_sideMargin;
     dc.MoveTo(x, lpcRect->top + 1);
     dc.LineTo(x, lpcRect->bottom);
 
-    x += CharWidth * 6 + 2 * SideMargin;
+    x += m_charWidth * 6 + 2 * m_sideMargin;
     dc.MoveTo(x, lpcRect->top + 1);
     dc.LineTo(x, lpcRect->bottom);
 
-    x += CharWidth * 16 + SideMargin;
+    x += m_charWidth * 16 + m_sideMargin;
     dc.MoveTo(x, lpcRect->top + 1);
     dc.LineTo(x, lpcRect->bottom);
 }
@@ -207,14 +207,14 @@ void CDisasmWnd::OnLButtonDown(UINT nFlags, CPoint point)
 
     // figure out the line that received the click
     int i = GetLineFromPt(point.x, point.y);
-    if (i >= numLines)
+    if (i >= m_numLines)
         return;
     // i is a screen line, convert it to actual line
-    i += lnPageStart;
-    if (SelectedLine != i)
+    i += m_pageStart;
+    if (m_selectedLine != i)
     {
-        int olda = SelectedLine;
-        SelectedLine = i;
+        int olda = m_selectedLine;
+        m_selectedLine = i;
         // firstly, if selected line was shown, we need to redraw it
         drawLine(olda);
         drawLine(i);
@@ -236,11 +236,11 @@ void CDisasmWnd::Update(Word pc)
     // scroll window, in this case the old line is erased automatically
     if (!isLineVisible(ActiveLine))
     {
-        lnPageStart = ActiveLine;
+        m_pageStart = ActiveLine;
         // one last thing is to check the location of the line
         // if it is at the extreme end of the memory modify the first line so that
         // the last line show 0xFFFF
-        lnPageStart = (lnPageStart > (totNumLines - numLines)) ? (totNumLines - numLines) : lnPageStart;
+        m_pageStart = (m_pageStart > (m_totNumLines - m_numLines)) ? (m_totNumLines - m_numLines) : m_pageStart;
         RedrawWindow();
     }
     else
@@ -298,7 +298,7 @@ void CDisasmWnd::LoadProgram(Word wStart)
     ADDRESS addrCur, addrNext;
     int     codelength;
     BYTE    b;
-    totNumLines = 0;
+    m_totNumLines = 0;
     code_listing.GetNextLocation(addrCur, true);
     do
     {
@@ -307,7 +307,7 @@ void CDisasmWnd::LoadProgram(Word wStart)
 
         while (codelength)
         {
-            b = InstDescTbl[pbMemoryBase->Read(addrCur, true)] & 0x0F; // masking the cycle bits (num bytes left)
+            b = InstDescTbl[m_memoryBase->Read(addrCur, true)] & 0x0F; // masking the cycle bits (num bytes left)
             if (b == 0)
             {          // no such instruction exists
                 b = 1; // then it's 1 byte long INVALID_INSTRUCTION
@@ -316,33 +316,33 @@ void CDisasmWnd::LoadProgram(Word wStart)
             { // there is such an inst. but it does not fit here
                 for (; codelength; codelength--)
                 { // so the leftover bytes are marked as INVALID
-                    InstructionLength[totNumLines] = 1;
-                    MemoryAddressLocator[totNumLines] = addrCur;
-                    InstructionPos[addrCur] = totNumLines;
-                    totNumLines++;
+                    InstructionLength[m_totNumLines] = 1;
+                    MemoryAddressLocator[m_totNumLines] = addrCur;
+                    InstructionPos[addrCur] = m_totNumLines;
+                    m_totNumLines++;
                     addrCur++;
                 }
                 break; // since codelength consumed escape while
             }
 
-            InstructionLength[totNumLines] = b;
+            InstructionLength[m_totNumLines] = b;
             // all memory locations starting from this byte following inst. length bytes,
             // correspond to this line in the window
             for (int i = 0; i < b; i++)
-                InstructionPos[addrCur + i] = totNumLines;
-            MemoryAddressLocator[totNumLines] = addrCur;
-            totNumLines++;
+                InstructionPos[addrCur + i] = m_totNumLines;
+            MemoryAddressLocator[m_totNumLines] = addrCur;
+            m_totNumLines++;
             addrCur += b;
             codelength -= b;
         }
         addrCur = addrNext;
     } while (addrCur != 0xFFFF);
 
-    lnPageStart = InstructionPos[wStart];
+    m_pageStart = InstructionPos[wStart];
 
     // Scrollbar finetuning
-    SetScrollRange(SB_VERT, 0, totNumLines - numLines, false);
-    SetScrollPos(SB_VERT, lnPageStart);
+    SetScrollRange(SB_VERT, 0, m_totNumLines - m_numLines, false);
+    SetScrollPos(SB_VERT, m_pageStart);
 }
 
 CDisasmWnd::~CDisasmWnd()

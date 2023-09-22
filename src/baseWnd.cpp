@@ -41,11 +41,19 @@ BOOL CBaseWnd::OnMouseWheel(UINT nFlag, short zDelta, CPoint pt)
 {
     zDelta /= 120;
     if (zDelta < 0)
+    {
         for (; zDelta; zDelta++)
-            OnVScroll(SB_PAGEDOWN, 0, NULL);
+        {
+            OnVScroll(SB_PAGEDOWN, 0, nullptr);
+        }
+    }
     else
+    {
         for (; zDelta; zDelta--)
-            OnVScroll(SB_PAGEUP, 0, NULL);
+        {
+            OnVScroll(SB_PAGEUP, 0, nullptr);
+        }
+    }
 
     return true;
 }
@@ -82,12 +90,14 @@ bool CBaseWnd::isLineVisible(Word wLineNum)
 {
     bool res = false;
     int  line = wLineNum;
-    line -= lnPageStart;
+    line -= m_pageStart;
     if (line >= 0)
     {
-        line -= numLines;
+        line -= m_numLines;
         if (line < 0)
+        {
             res = true;
+        }
     }
     return res;
 }
@@ -95,56 +105,58 @@ bool CBaseWnd::isLineVisible(Word wLineNum)
 // returns the bounding rectangle of a line. no test is done.
 void CBaseWnd::GetLineRect(int screenNum, LPRECT lpRect)
 {
-    lpRect->left = SideMargin;
-    lpRect->right = LineWidth;
-    lpRect->top = SideMargin + screenNum * CharHeight;
-    lpRect->bottom = lpRect->top + CharHeight;
+    lpRect->left = m_sideMargin;
+    lpRect->right = m_lineWidth;
+    lpRect->top = m_sideMargin + screenNum * m_charHeight;
+    lpRect->bottom = lpRect->top + m_charHeight;
 }
 
 // paints the window
 void CBaseWnd::OnPaint()
 {
     // BYTE * p = pbMemoryPageStart;
-    ADDRESS a = lnPageStart;
+    ADDRESS a = m_pageStart;
     // int ret;
     // char buffer[1024];
     PAINTSTRUCT ps;
     BeginPaint(&ps);
 
     // First paint the borders and grids for columns
-
     CRect     rc;
     CClientDC dc(this);
-
-    CPen *oldp, newp;
+    CPen      newp;
 
     // if the window has got the focus draw a stronger border
     if (GetFocus() == this)
+    {
         newp.CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
+    }
     else
+    {
         newp.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+    }
 
-    oldp = dc.SelectObject(&newp);
+    CPen *oldp = dc.SelectObject(&newp);
     GetClientRect(&rc);
 
     // draw the rectangle around the window
-    {
-        dc.MoveTo(rc.left + 1, rc.top + 1);
-        dc.LineTo(rc.right - 1, rc.top + 1);
-        dc.LineTo(rc.right - 1, rc.bottom - 1);
-        dc.LineTo(rc.left + 1, rc.bottom - 1);
-        dc.LineTo(rc.left + 1, rc.top + 1);
-    }
+    dc.MoveTo(rc.left + 1, rc.top + 1);
+    dc.LineTo(rc.right - 1, rc.top + 1);
+    dc.LineTo(rc.right - 1, rc.bottom - 1);
+    dc.LineTo(rc.left + 1, rc.bottom - 1);
+    dc.LineTo(rc.left + 1, rc.top + 1);
 
     dc.SelectObject(oldp);
     newp.DeleteObject();
 
     paintBkgnd(&rc);
 
-    for (int start = numLines - 1; start >= 0; start--)
+    for (int start = m_numLines - 1; start >= 0; start--)
     {
-        if (totNumLines <= a)
+        if (m_totNumLines <= a)
+        {
             break;
+        }
         drawLine(a);
         a++;
     }
@@ -158,21 +170,27 @@ void CBaseWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
     {
     case VK_PRIOR:
     {
-        if (!lnPageStart)
+        if (!m_pageStart)
+        {
             break;
-        int i = lnPageStart;
-        i -= numLines;
-        lnPageStart = (i < 0) ? 0 : i;
+        }
+        int i = m_pageStart;
+        i -= m_numLines;
+        m_pageStart = (i < 0) ? 0 : i;
         this->RedrawWindow();
     }
     break;
     case VK_NEXT:
     {
-        int line = lnPageStart + numLines;
-        if (line + numLines >= totNumLines)
-            lnPageStart = totNumLines - numLines;
+        int line = m_pageStart + m_numLines;
+        if (line + m_numLines >= m_totNumLines)
+        {
+            m_pageStart = m_totNumLines - m_numLines;
+        }
         else
-            lnPageStart += numLines;
+        {
+            m_pageStart += m_numLines;
+        }
         this->RedrawWindow();
     }
     break;
@@ -181,38 +199,36 @@ void CBaseWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
         // selection shifts to the above line if possible
         // if the new selected line is not shown then the
         //  we jump there
-        if (SelectedLine > 0)
+        if (m_selectedLine > 0)
         { // we a an even smaller line there
-            int old = SelectedLine;
-            int olds = old - lnPageStart;
-            SelectedLine--;
+            int old = m_selectedLine;
+            int olds = old - m_pageStart;
+            m_selectedLine--;
             if (olds > 0)
             {
                 // no need for shifts
                 drawLine(old);
-                drawLine(SelectedLine);
+                drawLine(m_selectedLine);
             }
             else if (olds)
             {
                 // old was not shown, so we need a jump
-                lnPageStart = SelectedLine;
+                m_pageStart = m_selectedLine;
                 RedrawWindow();
             }
             else
             {
                 // Shift 1 line
-                lnPageStart--;
-                if (lnPageStart < 0)
+                if (m_pageStart > 0)
                 {
-                    lnPageStart = 0;
-                    break;
+                    m_pageStart--;
                 }
                 CClientDC dc(this);
                 CRect     rc;
                 GetClientRect(&rc);
-                dc.BitBlt(0, SideMargin + CharHeight * 2, rc.right, CharHeight * (numLines - 2), (CDC *) &dc, 0,
-                          SideMargin + CharHeight, SRCCOPY);
-                drawLine(lnPageStart);
+                dc.BitBlt(0, m_sideMargin + m_charHeight * 2, rc.right, m_charHeight * (m_numLines - 2), (CDC *) &dc, 0,
+                          m_sideMargin + m_charHeight, SRCCOPY);
+                drawLine(m_pageStart);
                 drawLine(old);
             }
         }
@@ -223,38 +239,38 @@ void CBaseWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
         // selection shifts to the below line if possible
         // if the new selected line is not shown then the
         //  we jump there
-        if (SelectedLine < totNumLines - 1)
+        if (m_selectedLine < m_totNumLines - 1)
         { // we a an even greater line there
-            int old = SelectedLine;
-            int olds = old - lnPageStart;
-            SelectedLine++;
-            if (olds >= -1 && olds < numLines - 1)
+            int old = m_selectedLine;
+            int olds = old - m_pageStart;
+            m_selectedLine++;
+            if (olds >= -1 && olds < m_numLines - 1)
             {
                 // no need for shifts
                 drawLine(old);
-                drawLine(SelectedLine);
+                drawLine(m_selectedLine);
             }
-            else if (olds == numLines - 1)
+            else if (olds == m_numLines - 1)
             {
                 // Shift 1 line
-                lnPageStart++;
-                if (lnPageStart > totNumLines - numLines)
+                m_pageStart++;
+                if (m_pageStart > m_totNumLines - m_numLines)
                 {
-                    lnPageStart = totNumLines - numLines;
+                    m_pageStart = m_totNumLines - m_numLines;
                     break;
                 }
                 CClientDC dc(this);
                 CRect     rc;
                 GetClientRect(&rc);
-                dc.BitBlt(0, SideMargin, rc.right, CharHeight * (numLines - 2), (CDC *) &dc, 0, SideMargin + CharHeight,
+                dc.BitBlt(0, m_sideMargin, rc.right, m_charHeight * (m_numLines - 2), (CDC *) &dc, 0, m_sideMargin + m_charHeight,
                           SRCCOPY);
-                drawLine(SelectedLine);
+                drawLine(m_selectedLine);
                 drawLine(old);
             }
             else
             {
                 // old was not shown, so we need a jump
-                lnPageStart = SelectedLine;
+                m_pageStart = m_selectedLine;
                 RedrawWindow();
             }
         }
@@ -263,7 +279,9 @@ void CBaseWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
     case VK_TAB:
         CWnd *wnd = GetNextWindow();
         if (wnd)
+        {
             wnd->SetFocus();
+        }
         break;
     }
 }
@@ -276,13 +294,11 @@ void CBaseWnd::UpdateMetrics()
     CClientDC  dc(this);
     dc.GetTextMetrics(&tm);
     GetClientRect(&rc);
-    // GetWindowRect(rc);
-    //	numCharsPerLine = (rc.right - rc.left - 2 * SideMargin) / tm.tmMaxCharWidth;
-    CharWidth = tm.tmMaxCharWidth;
-    SideMargin = CharWidth / 2;
-    LineWidth = rc.right - CharWidth;
-    numLines = (LINENUMBER) ((rc.bottom - rc.top - 2 * SideMargin) / tm.tmHeight);
-    CharHeight = tm.tmHeight;
+    m_charWidth = tm.tmMaxCharWidth;
+    m_sideMargin = m_charWidth / 2;
+    m_lineWidth = rc.right - m_charWidth;
+    m_numLines = (LINENUMBER) ((rc.bottom - rc.top - 2 * m_sideMargin) / tm.tmHeight);
+    m_charHeight = tm.tmHeight;
 }
 
 void CBaseWnd::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar)
@@ -297,36 +313,36 @@ void CBaseWnd::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar)
         OnKeyDown(VK_PRIOR, 0, 0);
         break;
     case SB_LINEDOWN:
-        if (lnPageStart + numLines < totNumLines)
+        if (m_pageStart + m_numLines < m_totNumLines)
         {
             CRect rc;
             GetClientRect(&rc);
-            dc.BitBlt(0, SideMargin, rc.right, CharHeight * (numLines - 1), (CDC *) &dc, 0, SideMargin + CharHeight,
+            dc.BitBlt(0, m_sideMargin, rc.right, m_charHeight * (m_numLines - 1), (CDC *) &dc, 0, m_sideMargin + m_charHeight,
                       SRCCOPY);
-            lnPageStart++;
-            drawLine(lnPageStart + numLines - 1);
+            m_pageStart++;
+            drawLine(m_pageStart + m_numLines - 1);
         }
         break;
     case SB_LINEUP:
-        if (lnPageStart)
+        if (m_pageStart)
         {
             CRect rc;
             GetClientRect(&rc);
-            dc.BitBlt(0, SideMargin + CharHeight, rc.right, CharHeight * (numLines - 1), (CDC *) &dc, 0, SideMargin,
+            dc.BitBlt(0, m_sideMargin + m_charHeight, rc.right, m_charHeight * (m_numLines - 1), (CDC *) &dc, 0, m_sideMargin,
                       SRCCOPY);
-            lnPageStart--;
-            drawLine(lnPageStart);
+            m_pageStart--;
+            drawLine(m_pageStart);
         }
         break;
     case SB_THUMBPOSITION:
         nPos &= 0xFFFF;
-        lnPageStart = ((int) nPos > totNumLines - numLines) ? totNumLines - numLines : nPos;
+        m_pageStart = ((int) nPos > m_totNumLines - m_numLines) ? m_totNumLines - m_numLines : nPos;
         SetScrollPos(SB_VERT, nPos);
         RedrawWindow();
         break;
     case SB_THUMBTRACK:
         nPos &= 0xFFFF;
-        lnPageStart = ((int) nPos > totNumLines - numLines) ? totNumLines - numLines : nPos;
+        m_pageStart = ((int) nPos > m_totNumLines - m_numLines) ? m_totNumLines - m_numLines : nPos;
         SetScrollPos(SB_VERT, nPos);
         RedrawWindow();
         break;
@@ -335,11 +351,10 @@ void CBaseWnd::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar)
 
 CBaseWnd::CBaseWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName)
 {
-
-    const char *p = AfxRegisterWndClass(CS_OWNDC | CS_SAVEBITS, LoadCursor(NULL, IDC_ARROW), NULL, 0);
+    const char *p = AfxRegisterWndClass(CS_OWNDC | CS_SAVEBITS, LoadCursor(nullptr, IDC_ARROW), nullptr, nullptr);
     Create(p, "Base Window", WS_CHILD | WS_TABSTOP | WS_VSCROLL, rcPos, pParentWnd, 0);
 
-    Font.CreateFont(12,                       // nHeight
+    m_font.CreateFont(12,                       // nHeight
                     0,                        // nWidth
                     0,                        // nEscapement
                     0,                        // nOrientation
@@ -354,22 +369,22 @@ CBaseWnd::CBaseWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName)
                     DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
                     _T("FixedSys"));          // lpszFacename
 
-    this->SetFont(&Font, false);
+    this->SetFont(&m_font, false);
     CClientDC dc(this);
-    brSelected.CreateSolidBrush(RGB(180, 180, 180));
-    brActive.CreateSolidBrush(RGB(200, 200, 0));
-    brNormal.CreateSolidBrush(RGB(255, 255, 255));
+    m_selected.CreateSolidBrush(RGB(180, 180, 180));
+    m_active.CreateSolidBrush(RGB(200, 200, 0));
+    m_normal.CreateSolidBrush(RGB(255, 255, 255));
 
-    defFont = dc.SelectObject(&Font);
+    m_defaultFont = dc.SelectObject(&m_font);
     dc.SetBkMode(TRANSPARENT);
-    SelectedLine = 0xEE;
+    m_selectedLine = 0xEE;
     UpdateMetrics();
 }
 
 CBaseWnd::~CBaseWnd()
 {
-    brActive.DeleteObject();
-    brNormal.DeleteObject();
-    brSelected.DeleteObject();
-    Font.DeleteObject();
+    m_active.DeleteObject();
+    m_normal.DeleteObject();
+    m_selected.DeleteObject();
+    m_font.DeleteObject();
 }
