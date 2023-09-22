@@ -18,23 +18,21 @@
 //
 
 #include "addrmng.h"
+#include "disassembler.h"
+#include "environment.h"
 
 ///////////////////////////////////////
 
 int HexToByte(char c)
 {
     c = toupper(c);
-    if (c <= 'F' && c >= 'A')
-        return c - 'A' + 10;
-    else
-        return c - '0';
+    return c >= 'A' && c <= 'F' ? c - 'A' + 10 : c - '0';
 }
 
 BYTE GetNextByte(FILE *f)
 {
-    int hi, lo;
-    hi = fgetc(f);
-    lo = fgetc(f);
+    int hi = fgetc(f);
+    int lo = fgetc(f);
     return HexToByte(hi) * 0x10 + HexToByte(lo);
 }
 
@@ -42,44 +40,47 @@ BYTE GetNextByte(FILE *f)
 
 bool CAddressManager::LoadFile(char *fname, CArray<Word, Word &> &adr_arr)
 {
-    int   hi, lo;
-    int   lg;
-    Word  addr;
-    BYTE  val, ck;
-    BYTE  checksum;
+    int   hi{};
     Word  last_addr = 0xffff;
     int   dbg = 0;
     FILE *f = fopen(fname, "r");
     if (!f)
+    {
         return false;
+    }
     while (!feof(f))
     {
         do
         {
             if (feof(f))
+            {
                 break;
+            }
             hi = fgetc(f);
         } while (hi != 'S');
-        lo = fgetc(f);
+        int lo = fgetc(f);
         dbg++;
         if (hi == 'S')
         {
             if (lo == '0' || lo == '9')
             {
                 while (fgetc(f) != '\n' && !feof(f))
-                    ;
+                {
+                }
             }
             else
             {
-                lg = GetNextByte(f);
-                addr = GetNextByte(f);
-                checksum = addr + lg;
-                val = GetNextByte(f);
+                int  lg = GetNextByte(f);
+                Word addr = GetNextByte(f);
+                BYTE checksum = addr + lg;
+                BYTE val = GetNextByte(f);
                 checksum += val;
                 addr = addr * 0x100 + val;
                 lg -= 3;
                 if (last_addr != addr)
+                {
                     adr_arr.Add(addr);
+                }
                 for (; lg > 0; lg--)
                 {
                     val = GetNextByte(f);
@@ -89,7 +90,7 @@ bool CAddressManager::LoadFile(char *fname, CArray<Word, Word &> &adr_arr)
                 }
                 last_addr = addr;
 
-                ck = GetNextByte(f);
+                BYTE ck = GetNextByte(f);
                 if ((BYTE) ~checksum != ck)
                 {
                     MessageBox(NULL, "CHECK SUM ERROR, S file seems to be badly formatted.", "ERROR",
@@ -120,7 +121,9 @@ int CAddressManager::SaveSFile(CString str, Word wBegin, Word wEnd)
     buf_out[0] = 'S';
     buf_out[1] = '1';
     if (!file.Open(str, CFile::modeWrite | CFile::modeCreate, &fe))
+    {
         return 0;
+    }
     while (num_bytes)
     {
         cksum = 0;
@@ -151,39 +154,39 @@ int CAddressManager::SaveSFile(CString str, Word wBegin, Word wEnd)
 
 void CAddressManager::Write(Word wIndex, BYTE bVal)
 {
-    int ind = AddrResTbl[wIndex].devIndex;
+    int ind = m_AddrResTbl[wIndex].devIndex;
     if (ind < 255)
-        devices[ind]->Write(AddrResTbl[wIndex].decodedAddr, bVal, false);
+    {
+        m_devices[ind]->Write(m_AddrResTbl[wIndex].decodedAddr, bVal, false);
+    }
     else
-        memory[wIndex] = bVal;
-    wLastWrite = wIndex;
+    {
+        m_memory[wIndex] = bVal;
+    }
+    m_wLastWrite = wIndex;
 }
 
 BYTE CAddressManager::Read(Word wIndex, bool bDbg)
 {
     BYTE val;
-    int  ind = AddrResTbl[wIndex].devIndex;
+    int  ind = m_AddrResTbl[wIndex].devIndex;
     if (ind < 255)
-        devices[ind]->Read(AddrResTbl[wIndex].decodedAddr, val, bDbg);
+    {
+        m_devices[ind]->Read(m_AddrResTbl[wIndex].decodedAddr, val, bDbg);
+    }
     else
-        val = memory[wIndex];
-    wLastRead = wIndex;
+    {
+        val = m_memory[wIndex];
+    }
+    m_wLastRead = wIndex;
     return val;
 }
 
 void CAddressManager::Create(CEnvironment *pEnv)
 {
     CStrArray sa;
-    memset(memory, 0, 0x10000);
-    this->pEnv = pEnv;
+    memset(m_memory, 0, sizeof(m_memory));
+    this->m_env = pEnv;
     // read the device file
-    xp.ParseFile((CWnd *) pEnv->GetMainWnd(), pEnv->GetDeviceFile(), devices, AddrResTbl);
-}
-
-CAddressManager::CAddressManager()
-{
-}
-
-CAddressManager::~CAddressManager()
-{
+    m_xp.ParseFile((CWnd *) pEnv->GetMainWnd(), pEnv->GetDeviceFile(), m_devices, m_AddrResTbl);
 }

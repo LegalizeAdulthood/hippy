@@ -18,6 +18,7 @@
 //
 
 #include "debugwnd.h"
+#include "environment.h"
 
 // clang-format off
 BEGIN_MESSAGE_MAP(CDebugWnd, CMDIChildWnd)
