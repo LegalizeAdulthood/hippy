@@ -18,6 +18,9 @@
 //
 
 #include "asmeditor.h"
+#include "hippy.h"
+
+static int s_fileNumber = 0;
 
 // clang-format off
 BEGIN_MESSAGE_MAP(CAsmEditorWnd, CMDIChildWnd)
@@ -25,7 +28,6 @@ BEGIN_MESSAGE_MAP(CAsmEditorWnd, CMDIChildWnd)
     ON_WM_CLOSE()
     ON_MESSAGE(WM_JUMPTOLINE, OnJumpToLine)
     ON_MESSAGE(WM_HIDEBUILDWND, OnHideBuildWnd)
-    //  ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 BEGIN_MESSAGE_MAP(CAsmEdit, CRichEditCtrl)
@@ -52,19 +54,20 @@ void CBuildEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CBuildEdit::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-    int  nBegin, nEnd, line, d;
-    char buffer[1024];
-    // retreive selected chars
+    int nBegin;
+    int nEnd;
+    // retrieve selected chars
     GetSel(nBegin, nEnd);
     // now get selected line
-    line = LineFromChar(nBegin);
+    int line = LineFromChar(nBegin);
     // receive the contents of the line, if no problems yet
     if (line >= 0)
     {
+        char buffer[1024];
         GetLine(line, buffer, sizeof(buffer));
         // printf("Line %d : Error: %s\n", line, msg);
         // strip off the line number
-        d = -1;
+        int d = -1;
         sscanf(buffer, "error: line %d: ", &d);
         if (d >= 0)
         {
@@ -72,13 +75,15 @@ void CBuildEdit::OnLButtonDblClk(UINT nFlags, CPoint point)
             GetParent()->SendMessage(WM_JUMPTOLINE, (WPARAM) d);
         }
         else
+        {
             MessageBeep(1);
+        }
     }
 }
 
 LRESULT CAsmEditorWnd::OnHideBuildWnd(WPARAM wParam, LPARAM lParam)
 {
-    buildWnd.ShowWindow(SW_HIDE);
+    m_buildWnd.ShowWindow(SW_HIDE);
     CRect rc;
     GetClientRect(&rc);
     OnSize(0, rc.right, rc.bottom);
@@ -89,29 +94,31 @@ LRESULT CAsmEditorWnd::OnJumpToLine(WPARAM wParam, LPARAM lParam)
 {
     int nBegin, nEnd;
 
-    if ((nBegin = Editor.LineIndex(wParam - 1)) != -1)
+    if ((nBegin = m_editor.LineIndex(wParam - 1)) != -1)
     {
         char buffer[1024];
-        Editor.GetLine(wParam - 1, buffer, 1024);
+        m_editor.GetLine(wParam - 1, buffer, 1024);
         nEnd = strlen(buffer) + nBegin;
-        Editor.SetSel(nBegin, nEnd);
-        Editor.SetFocus();
-        Editor.LineScroll((wParam - 1) - Editor.GetFirstVisibleLine());
+        m_editor.SetSel(nBegin, nEnd);
+        m_editor.SetFocus();
+        m_editor.LineScroll((wParam - 1) - m_editor.GetFirstVisibleLine());
     }
     else
+    {
         MessageBeep(1);
+    }
 
     return TRUE;
 }
 
-bool CAsmEditorWnd::IsNewFile()
+bool CAsmEditorWnd::IsNewFile() const
 {
-    return newFile;
+    return m_newFile;
 }
 
 void CAsmEditorWnd::GetFileName(CString &str)
 {
-    str = szFileName;
+    str = m_fileName;
 }
 
 bool CAsmEditorWnd::OnEraseBkgnd(CDC *pDC)
@@ -133,35 +140,24 @@ void CAsmEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
     break;
     case ':':
     {
-        long start, end, curs, cure;
-
-        /*	char buffer[1024];
-                GetLine(-1, buffer, sizeof(buffer));
-                CString str(buffer);
-                str.TrimLeft("\t ");
-                str = str + "\t\t";
-                SetSel(LineIndex(), LineIndex()+ LineLength(LineIndex()));
-                ReplaceSel(str.GetBuffer(1), false);
-                */
+        long curs, cure;
+        GetSel(curs, cure);
+        long start = LineIndex();
+        long end = start + 2;
+        SetSel(start, end);
+        CString str = GetSelText();
+        if (str[0] != ' ' && str[0] != '\t')
         {
-            GetSel(curs, cure);
-            start = LineIndex();
-            end = start + 2;
-            SetSel(start, end);
-            CString str = GetSelText();
-            if (str[0] != ' ' && str[0] != '\t')
-            {
-                SetSel(curs, cure);
-                break;
-            }
-
-            ReplaceSel("", false);
-            curs -= 2;
-            cure -= 2;
-            SetSel(cure, cure);
-            ReplaceSel("\t\t", false);
-            SetSel(curs + 1, cure + 1);
+            SetSel(curs, cure);
+            break;
         }
+
+        ReplaceSel("", false);
+        curs -= 2;
+        cure -= 2;
+        SetSel(cure, cure);
+        ReplaceSel("\t\t", false);
+        SetSel(curs + 1, cure + 1);
     }
     break;
     case VK_ESCAPE:
@@ -173,23 +169,25 @@ void CAsmEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CAsmEditorWnd::OnSize(UINT nType, int cx, int cy)
 {
     CWnd::OnSize(nType, cx, cy);
-    if (!IsWindow(Editor.m_hWnd))
+    if (!IsWindow(m_editor.m_hWnd))
+    {
         return;
+    }
     // if build output window is visible then it needs care
-    if (buildWnd.IsWindowVisible())
+    if (m_buildWnd.IsWindowVisible())
     {
         WINDOWPLACEMENT wp;
-        buildWnd.GetWindowPlacement(&wp);
-        buildWnd.SetWindowPos(NULL, 5, cy - 5 - buildWndHeight, cx - 10, buildWndHeight, 0);
-        Editor.SetWindowPos(NULL, 5, 5, cx - 10, cy - buildWndHeight - 15, 0);
+        m_buildWnd.GetWindowPlacement(&wp);
+        m_buildWnd.SetWindowPos(nullptr, 5, cy - 5 - m_buildWndHeight, cx - 10, m_buildWndHeight, 0);
+        m_editor.SetWindowPos(nullptr, 5, 5, cx - 10, cy - m_buildWndHeight - 15, 0);
     }
     else
     {
-        Editor.SetWindowPos(NULL, 5, 5, cx - 10, cy - 10, 0);
+        m_editor.SetWindowPos(nullptr, 5, 5, cx - 10, cy - 10, 0);
     }
 }
 
-// saves current file with the name szFileName, assumes that
+// saves current file with the name m_fileName, assumes that
 // it is a valid filename
 int CAsmEditorWnd::SaveFile()
 {
@@ -197,7 +195,7 @@ int CAsmEditorWnd::SaveFile()
     CFileException fe;
     char           ln[3] = {0x0d, 0x0a, 0};
     char           buffer[2048];
-    if (!file.Open(szFileName, CFile::modeWrite | CFile::typeText | CFile::modeCreate, &fe))
+    if (!file.Open(m_fileName, CFile::modeWrite | CFile::typeText | CFile::modeCreate, &fe))
     {
         buffer[1000];
         fe.GetErrorMessage(buffer, sizeof(buffer));
@@ -207,20 +205,20 @@ int CAsmEditorWnd::SaveFile()
 
     file.SetLength(0);
 
-    int c = Editor.GetLineCount();
+    int c = m_editor.GetLineCount();
     int size;
     for (int i = 0; i < c; i++)
     {
-        size = Editor.LineLength(Editor.LineIndex(i));
-        Editor.GetLine(i, buffer, size);
+        size = m_editor.LineLength(m_editor.LineIndex(i));
+        m_editor.GetLine(i, buffer, size);
         buffer[size] = '\n';
         buffer[size + 1] = 0;
         file.WriteString(buffer);
     }
     file.Close();
-    Editor.SetModify(false);
-    SetWindowText(szFileName);
-    newFile = false;
+    m_editor.SetModify(false);
+    SetWindowText(m_fileName);
+    m_newFile = false;
     return 1;
 }
 
@@ -228,25 +226,30 @@ int CAsmEditorWnd::SaveFile()
 // returns -1, then we have to call Save As
 int CAsmEditorWnd::Save()
 {
-    if (szFileName == "")
+    if (m_fileName == "")
+    {
         return false;
-    else
-        SaveFile();
+    }
+    SaveFile();
     return true;
 }
 
-int CAsmEditorWnd::SaveAs(CString szFileName)
+int CAsmEditorWnd::SaveAs(CString fileName)
 {
-    this->szFileName = szFileName;
+    m_fileName = fileName;
     return SaveFile();
 }
 
 void CAsmEditorWnd::OnClose()
 {
-    if (Editor.GetModify())
+    if (m_editor.GetModify())
+    {
         MessageBeep(1);
+    }
     else
+    {
         DestroyWindow();
+    }
 }
 
 // tries to open the file specified by lpFileName returns true on success
@@ -256,22 +259,22 @@ bool CAsmEditorWnd::OpenFile()
     CString    str;
     CString    szBuffer;
 
-    if (file.Open(szFileName.GetBuffer(1), CFile::modeRead | CFile::typeText))
+    if (file.Open(m_fileName.GetBuffer(1), CFile::modeRead | CFile::typeText))
     {
         while (file.ReadString(str))
         {
             szBuffer += str + '\13';
         }
-        Editor.SendMessage(WM_SETTEXT, (WPARAM) 0, (LPARAM) szBuffer.GetBuffer(1));
+        m_editor.SendMessage(WM_SETTEXT, (WPARAM) 0, (LPARAM) szBuffer.GetBuffer(1));
         file.Close();
         return true;
     }
     else
     {
         LPVOID lpMsgBuf;
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
-                      GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                      (LPTSTR) &lpMsgBuf, 0, NULL);
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                      nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+                      (LPTSTR) &lpMsgBuf, 0, nullptr);
         MessageBox((LPCSTR) lpMsgBuf);
         LocalFree(lpMsgBuf);
         return false;
@@ -281,7 +284,7 @@ bool CAsmEditorWnd::OpenFile()
 CString CAsmEditorWnd::GetHexFileName()
 {
     char buffer[1024];
-    strcpy(buffer, szFileName.GetBuffer(1));
+    strcpy(buffer, m_fileName.GetBuffer(1));
 
     char *p = strrchr(buffer, '.');
     if (p)
@@ -310,7 +313,7 @@ int CAsmEditorWnd::CompileCode()
 
     sa.nLength = sizeof(sa);
     sa.bInheritHandle = true;
-    sa.lpSecurityDescriptor = NULL;
+    sa.lpSecurityDescriptor = nullptr;
     HANDLE rd, wr;
     DWORD  bavail = 0, bread = 0;
 
@@ -319,51 +322,51 @@ int CAsmEditorWnd::CompileCode()
         TRACE0(_T("Stdout pipe creation failed\n"));
         return 0;
     }
+
+    // code below prepares the startup structure and forks a process for assembler
+    GetStartupInfo(&si);
+    si.hStdOutput = wr;
+    // si.hStdInput = st_out;
+    si.hStdError = wr;
+    si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+    si.wShowWindow = SW_HIDE;
+    si.hStdInput = nullptr;
+    si.cb = sizeof(si);
+    sprintf(buffer, "%s %s", "assembler.exe", m_fileName.GetBuffer(1));
+    CreateProcess(nullptr, buffer, nullptr, nullptr, true, CREATE_NEW_CONSOLE /*creation flags*/, nullptr /*envirn*/,
+                  nullptr /*cur dir*/, &si, &pi);
+
+    if (pi.hProcess)
+    {
+        WaitForSingleObject(pi.hProcess, INFINITE);
+        while (!bread)
+        {
+            PeekNamedPipe(rd, buffer, 0x50000, &bread, &bavail, nullptr);
+        }
+        ReadFile(rd, buffer, 0x50000, &bread, nullptr);
+        buffer[bread] = 0;
+        m_buildWnd.SetWindowText(buffer);
+        // show the window if hidden
+        if (!m_buildWnd.IsWindowVisible())
+        {
+            m_buildWnd.ShowWindow(SW_SHOW);
+            // then the window size needs to be calculated
+            CRect rc;
+            GetClientRect(&rc);
+            OnSize(0, rc.right, rc.bottom);
+        }
+    }
     else
     {
-        // code below prepares the startup structure and forks a process for assembler
-        GetStartupInfo(&si);
-        si.hStdOutput = wr;
-        // si.hStdInput = st_out;
-        si.hStdError = wr;
-        si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
-        si.wShowWindow = SW_HIDE;
-        si.hStdInput = NULL;
-        si.cb = sizeof(si);
-        sprintf(buffer, "%s %s", "assembler.exe", szFileName.GetBuffer(1));
-        CreateProcess(NULL, buffer, NULL, NULL, true, CREATE_NEW_CONSOLE /*creation flags*/, NULL /*envirn*/,
-                      NULL /*cur dir*/, &si, &pi);
+        TRACE(_T("CREATING NEW PROCESS FAILED : GetLatError -->  0x%8.8X\n"), ::GetLastError());
 
-        if (pi.hProcess)
-        {
-            WaitForSingleObject(pi.hProcess, INFINITE);
-            while (!bread)
-                PeekNamedPipe(rd, buffer, 0x50000, &bread, &bavail, NULL);
-            ReadFile(rd, buffer, 0x50000, &bread, NULL);
-            buffer[bread] = 0;
-            buildWnd.SetWindowText(buffer);
-            // show the window if hidden
-            if (!buildWnd.IsWindowVisible())
-            {
-                buildWnd.ShowWindow(SW_SHOW);
-                // then the window size needs to be calculated
-                CRect rc;
-                GetClientRect(&rc);
-                OnSize(0, rc.right, rc.bottom);
-            }
-        }
-        else
-        {
-            TRACE(_T("CREATING NEW PROCESS FAILED : GetLatError -->  0x%8.8X\n"), ::GetLastError());
-
-            LPVOID lpMsgBuf;
-            FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                          NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                          (LPTSTR) &lpMsgBuf, 0, NULL);
-            TRACE((char *) lpMsgBuf);
-            // Free the buffer.
-            LocalFree(lpMsgBuf);
-        }
+        LPVOID lpMsgBuf;
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                      nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+                      (LPTSTR) &lpMsgBuf, 0, nullptr);
+        TRACE((char *) lpMsgBuf);
+        // Free the buffer.
+        LocalFree(lpMsgBuf);
     }
 
     return 1;
@@ -377,51 +380,54 @@ int CAsmEditorWnd::CompileCode()
 //				 otherwise it will attempt to open the file.
 CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCSTR lpcFileName)
 {
-    Create(NULL, "Editor", WS_VISIBLE | WS_CHILD | WS_OVERLAPPEDWINDOW, rectDefault, pParent);
-    Editor.Create(WS_CHILD | ES_MULTILINE | WS_VSCROLL, rectDefault, this, 101);
-    buildWnd.Create(WS_CHILD | WS_VISIBLE | ES_MULTILINE | WS_VSCROLL | WS_TABSTOP | WS_BORDER, rectDefault, this, 102);
-    buildWndHeight = 100;
-    buildWnd.SetReadOnly();
-    szFileName = lpcFileName;
-    newFile = (szFileName == "");
-    if (newFile)
+    Create(nullptr, "Editor", WS_VISIBLE | WS_CHILD | WS_OVERLAPPEDWINDOW, rectDefault, pParent);
+    m_editor.Create(WS_CHILD | ES_MULTILINE | WS_VSCROLL, rectDefault, this, 101);
+    m_buildWnd.Create(WS_CHILD | WS_VISIBLE | ES_MULTILINE | WS_VSCROLL | WS_TABSTOP | WS_BORDER, rectDefault, this,
+                      102);
+    m_buildWndHeight = 100;
+    m_buildWnd.SetReadOnly();
+    m_fileName = lpcFileName;
+    m_newFile = m_fileName.IsEmpty();
+    if (m_newFile)
     {
         char buffer[100];
-        filenumber++;
-        sprintf(buffer, "%03d", filenumber);
-        szFileName = CString("NewFile") + CString(buffer) + CString(".asm");
+        s_fileNumber++;
+        sprintf(buffer, "%03d", s_fileNumber);
+        m_fileName = CString("NewFile") + CString(buffer) + CString(".asm");
     }
 
     CRect rc;
-    Font.CreateFont(12,                       // nHeight
-                    0,                        // nWidth
-                    0,                        // nEscapement
-                    0,                        // nOrientation
-                    FW_NORMAL,                // nWeight
-                    FALSE,                    // bItalic
-                    FALSE,                    // bUnderline
-                    0,                        // cStrikeOut
-                    ANSI_CHARSET,             // nCharSet
-                    OUT_DEFAULT_PRECIS,       // nOutPrecision
-                    CLIP_DEFAULT_PRECIS,      // nClipPrecision
-                    DEFAULT_QUALITY,          // nQuality
-                    DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
-                    _T("FixedSys"));          // lpszFacename
-    Editor.SetFont(&Font, false);
+    m_font.CreateFont(12,                       // nHeight
+                      0,                        // nWidth
+                      0,                        // nEscapement
+                      0,                        // nOrientation
+                      FW_NORMAL,                // nWeight
+                      FALSE,                    // bItalic
+                      FALSE,                    // bUnderline
+                      0,                        // cStrikeOut
+                      ANSI_CHARSET,             // nCharSet
+                      OUT_DEFAULT_PRECIS,       // nOutPrecision
+                      CLIP_DEFAULT_PRECIS,      // nClipPrecision
+                      DEFAULT_QUALITY,          // nQuality
+                      DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
+                      _T("FixedSys"));          // lpszFacename
+    m_editor.SetFont(&m_font, false);
 
     GetClientRect(&rc);
     OnSize(0, rc.right, rc.bottom);
-    this->SetWindowText(szFileName);
-    if (!newFile)
+    SetWindowText(m_fileName);
+    if (!m_newFile)
+    {
         OpenFile();
-    Editor.LimitText(100 * 1024);
-    Editor.ShowWindow(SW_SHOW);
-    Editor.SetFocus();
-    Editor.SetModify(false);
+    }
+    m_editor.LimitText(100 * 1024);
+    m_editor.ShowWindow(SW_SHOW);
+    m_editor.SetFocus();
+    m_editor.SetModify(false);
 }
 
 CAsmEditorWnd::~CAsmEditorWnd()
 {
-    Editor.DestroyWindow();
-    buildWnd.DestroyWindow();
+    m_editor.DestroyWindow();
+    m_buildWnd.DestroyWindow();
 }

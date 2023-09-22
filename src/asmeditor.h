@@ -16,61 +16,68 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef _ASMEDITOR_H__
-#define _ASMEDITOR_H__
+#ifndef HIPPY_ASMEDITOR_H
+#define HIPPY_ASMEDITOR_H
+
 #include <afx.h>
 #include <afxcmn.h>
 #include <afxwin.h>
 
-#include "hippy.h"
-#include "string.h"
-
 class CAsmEdit : public CRichEditCtrl
 {
 public:
+    ~CAsmEdit() override = default;
+
     afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+
     DECLARE_MESSAGE_MAP()
 };
 
 class CBuildEdit : public CEdit
 {
 public:
+    ~CBuildEdit() override = default;
+
     afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
     afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+
     DECLARE_MESSAGE_MAP()
 };
 
-static int filenumber = 0;
-
 class CAsmEditorWnd : public CMDIChildWnd
 {
-private:
-    CAsmEdit   Editor;
-    CString    szFileName;
-    CFont      Font;
-    CFont     *oldFont;
-    bool       newFile;
-    CBuildEdit buildWnd;
-    int        buildWndHeight;
-    bool       OpenFile();
-    int        SaveFile();
-
 public:
-    DECLARE_DYNAMIC(CAsmEditorWnd)
+    CAsmEditorWnd() = default;
     CAsmEditorWnd(CMDIFrameWnd *pParent, LPCSTR lpcFileName);
-    ~CAsmEditorWnd();
-    bool            IsNewFile();
+    ~CAsmEditorWnd() override;
+
+    DECLARE_DYNAMIC(CAsmEditorWnd)
+
+    bool            IsNewFile() const;
     void            GetFileName(CString &str);
     int             CompileCode();
     int             Save();
-    int             SaveAs(CString szFileName);
+    int             SaveAs(CString fileName);
     CString         GetHexFileName();
     afx_msg void    OnSize(UINT nType, int cx, int cy);
     afx_msg bool    OnEraseBkgnd(CDC *pDC);
     afx_msg void    OnClose();
     afx_msg LRESULT OnJumpToLine(WPARAM wParam, LPARAM lParam);
     afx_msg LRESULT OnHideBuildWnd(WPARAM wParam, LPARAM lParam);
+
     DECLARE_MESSAGE_MAP()
+
+private:
+    bool OpenFile();
+    int  SaveFile();
+
+    CAsmEdit   m_editor;
+    CString    m_fileName;
+    CFont      m_font;
+    CFont     *m_oldFont{};
+    bool       m_newFile{};
+    CBuildEdit m_buildWnd;
+    int        m_buildWndHeight{};
 };
 
 #endif
