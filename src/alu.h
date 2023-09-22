@@ -16,24 +16,18 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef _ALU_111_H_
-#define _ALU_111_H_
+#ifndef HIPPY_ALU_H
+#define HIPPY_ALU_H
 
 #include "hippy.h"
-#include <afx.h>
 
 class ALU
 {
-private:
-    CCR *pccr;
-    BYTE RESULT;
-    void ResetCCR();
-    void CheckRESULT();
-
 public:
-    ALU(CCR *pccr)
+    ALU(CCR *pccr) :
+        m_pccr(pccr),
+        m_result{}
     {
-        this->pccr = pccr;
         ResetCCR();
     }
     BYTE Add(BYTE v1, BYTE v2);
@@ -57,6 +51,12 @@ public:
     BYTE Dec(BYTE v1);
     BYTE Eor(BYTE v1, BYTE v2);
     BYTE Inc(BYTE v1);
+
+private:
+    CCR *m_pccr;
+    BYTE m_result;
+    void ResetCCR();
+    void CheckRESULT();
 };
 
 #endif
