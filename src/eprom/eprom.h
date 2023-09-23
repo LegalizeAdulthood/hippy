@@ -40,7 +40,7 @@
 class CEpromApp : public CWinApp
 {
 public:
-    CEpromApp();
+    CEpromApp() = default;
 
     // Overrides
     // ClassWizard generated virtual function overrides

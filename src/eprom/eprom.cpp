@@ -34,30 +34,28 @@ static char THIS_FILE[] = __FILE__;
 
 class CEprom : public CDevice
 {
-private:
-    BYTE    memory[0x2000]{};
-    bool    LoadFile();
-    CString GetRomFileName();
-
 public:
     BYTE OnRead(Word addr) override;
     void OnInitialize() override;
+
+private:
+    BYTE    m_memory[0x2000]{};
+
+    bool    LoadFile();
+    CString GetRomFileName();
 };
 
 /////////////////////////////////////////////////////////////////////////////
 // The one and only CEpromApp object
 
-CEpromApp theApp;
+CEpromApp g_theApp;
 
 ///////////////////////////////////////
 
 int HexToByte(char c)
 {
     c = toupper(c);
-    if (c <= 'F' && c >= 'A')
-        return c - 'A' + 10;
-    else
-        return c - '0';
+    return c <= 'F' && c >= 'A' ? c - 'A' + 10 : c - '0';
 }
 
 BYTE GetNextByte(FILE *f)
@@ -71,11 +69,13 @@ BYTE GetNextByte(FILE *f)
 CString CEprom::GetRomFileName()
 {
     char buf[256];
-    GetModuleFileName(theApp.m_hInstance, buf, 256);
+    GetModuleFileName(g_theApp.m_hInstance, buf, 256);
 
     int i = strlen(buf);
     while (buf[i] != '\\')
+    {
         i--;
+    }
     buf[i + 1] = 0;
     CString str(buf);
 
@@ -109,7 +109,9 @@ bool CEprom::LoadFile()
         do
         {
             if (feof(f))
+            {
                 break;
+            }
             hi = fgetc(f);
         } while (hi != 'S');
         lo = fgetc(f);
@@ -118,7 +120,8 @@ bool CEprom::LoadFile()
             if (lo == '0' || lo == '9')
             {
                 while (fgetc(f) != '\n' && !feof(f))
-                    ;
+                {
+                }
             }
             else
             {
@@ -133,15 +136,18 @@ bool CEprom::LoadFile()
                 {
                     val = GetNextByte(f);
                     checksum += val;
-                    memory[addr] = val;
+                    m_memory[addr] = val;
                     addr++;
                 }
 
                 ck = GetNextByte(f);
-                //	if( (BYTE)~checksum != ck ){
-                // MessageBox(NULL, "CHECK SUM ERROR", "ERROR", MB_OK|MB_ICONWARNING);
-                //	return false;
-                //}
+#if 0
+                if ((BYTE) ~checksum != ck)
+                {
+                    MessageBox(nullptr, "CHECK SUM ERROR", "ERROR", MB_OK | MB_ICONWARNING);
+                    return false;
+                }
+#endif
                 fgetc(f); // newline
             }
         }
@@ -160,7 +166,7 @@ BYTE CEprom::OnRead(Word addr)
     BYTE ret = 0xff;
     if (addr < 0x2000)
     {
-        ret = memory[addr];
+        ret = m_memory[addr];
     }
     return ret;
 }
@@ -180,10 +186,3 @@ BEGIN_MESSAGE_MAP(CEpromApp, CWinApp)
 //    DO NOT EDIT what you see in these blocks of generated code!
 //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CEpromApp construction
-
-CEpromApp::CEpromApp()
-{
-}
