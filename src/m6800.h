@@ -17,41 +17,59 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef _M6800_H__
-#define _M6800_H__
+#ifndef HIPPY_M6800_H
+#define HIPPY_M6800_H
 
 #include "addrmng.h"
 #include "alu.h"
-#include "disassembler.h"
+//#include "disassembler.h"
 #include "hippy.h"
 #include "stackwnd.h"
 #include <afx.h>
 #include <afxwin.h>
 
 class CM6800;
+class CStackWnd;
 
-typedef void (CM6800::*ftype)(void);
+using FnType = void (CM6800::*)();
 
 class CM6800
 {
 
+public:
+    CM6800(CStackWnd *psw);
+    ~CM6800();
+
+    void SetRunMode(int mode)
+    {
+        m_runMode = mode;
+    }
+    bool             MemLocChanged(Word &w);
+    CAddressManager *GetMemPtr()
+    {
+        return &m_memory;
+    }
+    Registers *GetRegsPtr()
+    {
+        return &m_regs;
+    }
+    void Step();
+
 private:
-    int             runMode;
-    CAddressManager memory;
-    Registers       regs;
-    ALU            *pAlu;
-    Word            mar; // memory address register
-    BYTE            mdr; // memory data register
-    bool            done;
-    bool            bMemLocChanged;
-
-    CSemaphore *psem_irq;
-    CSemaphore *psem_nmi;
-    CSemaphore *psem_reset;
-
-    CStackWnd *stack_wnd;
-    ftype      functions[256];
-    BYTE       opcode;
+    int             m_runMode{};
+    CAddressManager m_memory;
+    Registers       m_regs;
+    ALU            *m_alu;
+    Word            m_mar{}; // memory address register
+    BYTE            m_mdr{}; // memory data register
+    bool            m_done{};
+    bool            m_memLocChanged{};
+    CSemaphore     *m_irq;
+    CSemaphore     *m_nmi;
+    CSemaphore     *m_reset;
+    CStackWnd      *m_stackWnd{};
+    FnType          m_functions[256]{};
+    BYTE            m_opcode{};
 
     void saveState();
     void initFunctions();
@@ -136,25 +154,6 @@ private:
     void nmi();
     void irq();
     void reset();
-
-public:
-    CM6800(CStackWnd *psw);
-    ~CM6800();
-
-    void SetRunMode(int mode)
-    {
-        runMode = mode;
-    }
-    bool             MemLocChanged(Word &w);
-    CAddressManager *GetMemPtr()
-    {
-        return &memory;
-    }
-    Registers *GetRegsPtr()
-    {
-        return &regs;
-    }
-    void Step();
 };
 
 #endif

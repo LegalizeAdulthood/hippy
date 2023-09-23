@@ -51,7 +51,7 @@ bool CDebugWnd::ExecuteNext()
 
     m_m6800->Step();
     m_dasm->add_codePt(m_regs->pc);
-    // DoStack(opcode);
+    // DoStack(m_opcode);
 
     m_collectedCycles += (g_instDescTbl[opcode] & 0xf0) >> 4;
 
@@ -102,7 +102,7 @@ bool CDebugWnd::ExecuteNext()
 
 void CDebugWnd::DoStack(BYTE opcode)
 {
-    // m_stackWnd->CheckStack(opcode, false);
+    // m_stackWnd->CheckStack(m_opcode, false);
 }
 
 void CDebugWnd::DoReturnStack(BYTE opcode)
