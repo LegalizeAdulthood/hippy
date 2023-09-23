@@ -19,16 +19,16 @@
 #ifndef HIPPY_BASEWND_H
 #define HIPPY_BASEWND_H
 
-#include "addrmng.h"
-#include "disassembler.h"
 #include "hippy.h"
 
 #include <afxwin.h>
 
+class CAddressManager;
+
 class CBaseWnd : public CWnd
 {
 public:
-    CBaseWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName = NULL);
+    CBaseWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName = nullptr);
     ~CBaseWnd() override;
 
     void GetLineRect(int screenNum, LPRECT lpRect);
@@ -50,7 +50,6 @@ public:
 protected:
     CAddressManager *m_memoryBase;
     LINENUMBER       m_pageStart;
-    HexDumper        m_hexer;
     int              m_charWidth;
     int              m_charHeight;
     int              m_sideMargin;

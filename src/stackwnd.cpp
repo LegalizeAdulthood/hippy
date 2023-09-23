@@ -18,6 +18,9 @@
 //
 #include "stackwnd.h"
 
+#include "addrmng.h"
+#include "disassembler.h"
+
 // clang-format off
 BEGIN_MESSAGE_MAP(CStackWnd, CBaseWnd)
     ON_MESSAGE(WM_REDRAWALL, OnRedrawAll)
@@ -42,7 +45,7 @@ LRESULT CStackWnd::OnRedrawAll(WPARAM wParam, LPARAM lParam)
 
 void CStackWnd::ClearLine(int line)
 {
-    if (continuous)
+    if (m_continuous)
         return;
     CClientDC dc(this);
     CRect     rc;
@@ -61,7 +64,7 @@ void CStackWnd::ClearLine(int line)
 
 void CStackWnd::ScrollDown(int nl)
 {
-    if (continuous)
+    if (m_continuous)
         return;
     CClientDC dc(this);
     CRect     rc;
@@ -72,7 +75,7 @@ void CStackWnd::ScrollDown(int nl)
 
 void CStackWnd::ScrollUp(int nl)
 {
-    if (continuous)
+    if (m_continuous)
         return;
     CClientDC dc(this);
     CRect     rc;
@@ -83,7 +86,7 @@ void CStackWnd::ScrollUp(int nl)
 
 void CStackWnd::drawLine(LINENUMBER lnActualLine)
 {
-    if (continuous)
+    if (m_continuous)
         return;
     CClientDC dc(this);
     CRect     rc;
@@ -96,14 +99,14 @@ void CStackWnd::drawLine(LINENUMBER lnActualLine)
     // if(m_selectedLine == lnActualLine)
     //	dc.DrawFocusRect(&rc);
     BYTE b[2];
-    b[0] = (pCodes[code_ind].addr & 0xff00) >> 8;
-    b[1] = pCodes[code_ind].addr & 0xff;
+    b[0] = (m_codes[code_ind].addr & 0xff00) >> 8;
+    b[1] = m_codes[code_ind].addr & 0xff;
 
-    hexer.ByteArrayToHexArray(b, 2, buffer);
+    HexDumper::ByteArrayToHexArray(b, 2, buffer);
     dc.TextOut(m_sideMargin, rc.top, buffer);
-    StackInfo si = pCodes[code_ind];
+    StackInfo si = m_codes[code_ind];
 
-    hexer.ByteToHex(mem->Read(si.addr), buffer);
+    HexDumper::ByteToHex(m_memory->Read(si.addr), buffer);
     dc.TextOut(m_sideMargin * 3 + m_charWidth * 6, rc.top, buffer);
 
     switch (si.reg)
@@ -144,7 +147,7 @@ void CStackWnd::UpdateScroll()
 
 void CStackWnd::paintBkgnd(LPCRECT lpcRect)
 {
-    if (continuous)
+    if (m_continuous)
         return;
     CClientDC dc(this);
     int       x;
@@ -170,7 +173,7 @@ void CStackWnd::PushEx(RegName rn, Word addr)
     StackInfo info;
     info.reg = rn;
     info.addr = addr;
-    pCodes.push_back(info);
+    m_codes.push_back(info);
 }
 
 void CStackWnd::Push(BYTE code, bool paint)
@@ -179,13 +182,13 @@ void CStackWnd::Push(BYTE code, bool paint)
     {
     case 0x36: /*PSHA*/
         ScrollDown(1);
-        PushEx(_ACCA, pRegs->sp + 1);
+        PushEx(_ACCA, m_regs->sp + 1);
         if (paint)
             drawLine(0);
         break;
     case 0x37: /*PSHB*/
         ScrollDown(1);
-        PushEx(_ACCB, pRegs->sp + 1);
+        PushEx(_ACCB, m_regs->sp + 1);
         if (paint)
             drawLine(0);
         break;
@@ -193,8 +196,8 @@ void CStackWnd::Push(BYTE code, bool paint)
     case 0xad:
     case 0xbd: /*BSR, JSR(IND), JSR(EXT)*/
         ScrollDown(2);
-        PushEx(_PCL, pRegs->sp + 2);
-        PushEx(_PCH, pRegs->sp + 1);
+        PushEx(_PCL, m_regs->sp + 2);
+        PushEx(_PCH, m_regs->sp + 1);
         if (paint)
         {
             drawLine(0);
@@ -203,13 +206,13 @@ void CStackWnd::Push(BYTE code, bool paint)
         break;
     case 0x00: /*INTERRUPT*/
         ScrollDown(7);
-        PushEx(_PCL, pRegs->sp + 7);
-        PushEx(_PCH, pRegs->sp + 6);
-        PushEx(_XL, pRegs->sp + 5);
-        PushEx(_XH, pRegs->sp + 4);
-        PushEx(_ACCA, pRegs->sp + 3);
-        PushEx(_ACCB, pRegs->sp + 2);
-        PushEx(_CCR, pRegs->sp + 1);
+        PushEx(_PCL, m_regs->sp + 7);
+        PushEx(_PCH, m_regs->sp + 6);
+        PushEx(_XL, m_regs->sp + 5);
+        PushEx(_XH, m_regs->sp + 4);
+        PushEx(_ACCA, m_regs->sp + 3);
+        PushEx(_ACCB, m_regs->sp + 2);
+        PushEx(_CCR, m_regs->sp + 1);
         if (paint)
         {
             drawLine(0);
@@ -223,7 +226,7 @@ void CStackWnd::Push(BYTE code, bool paint)
         break;
     case 0x31:
         ScrollDown(1);
-        PushEx(_NONE, pRegs->sp + 1);
+        PushEx(_NONE, m_regs->sp + 1);
         if (paint)
             drawLine(0);
         break;
@@ -237,7 +240,7 @@ void CStackWnd::PopEx(int numPop)
     m_totNumLines -= numPop;
     if (m_totNumLines < 0)
         m_totNumLines = 0;
-    pCodes.resize(m_totNumLines);
+    m_codes.resize(m_totNumLines);
 }
 
 void CStackWnd::Pop(BYTE code, bool paint)
@@ -280,7 +283,7 @@ void CStackWnd::Pop(BYTE code, bool paint)
             break;
         case 0x02: // RESET
             m_totNumLines = 0;
-            pCodes.clear();
+            m_codes.clear();
             m_pageStart = 0;
             break;
         default:

@@ -19,6 +19,8 @@
 
 #include "m6800.h"
 
+#include "disassembler.h"
+
 /*
  * returns true if the last operation changed
  * the value stored in a memory location.

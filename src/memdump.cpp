@@ -18,6 +18,9 @@
 //
 #include "memdump.h"
 
+#include "addrmng.h"
+#include "disassembler.h"
+
 // clang-format off
 BEGIN_MESSAGE_MAP(CMemDumpWnd, CBaseWnd)
     ON_WM_LBUTTONDOWN()
@@ -179,7 +182,7 @@ void CMemDumpWnd::drawLine(LINENUMBER lnActualNum)
     c[0] = ((BYTE *) &addr)[1];
     c[1] = ((BYTE *) &addr)[0];
 
-    m_hexer.ByteArrayToHexArray(c, 2, buffer);
+    HexDumper::ByteArrayToHexArray(c, 2, buffer);
     dc.TextOut(m_sideMargin, rc.top, buffer, 4);
 
     if (m_selectedLine == lnActualNum && SelectedByte > -1 && GetFocus() == this)
@@ -194,7 +197,7 @@ void CMemDumpWnd::drawLine(LINENUMBER lnActualNum)
     {
         b[i] = m_memoryBase->Read(addr + i, true);
     }
-    m_hexer.ByteArrayToHexArrayEx(b, 8, buffer);
+    HexDumper::ByteArrayToHexArrayEx(b, 8, buffer);
     dc.TextOut(m_sideMargin * 3 + m_charWidth * 4, rc.top, buffer, 23);
 }
 

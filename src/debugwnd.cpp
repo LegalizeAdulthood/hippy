@@ -141,7 +141,7 @@ void CDebugWnd::BlockRun()
 {
     m_m6800->SetRunMode(0);
     m_running = true;
-    m_stackWnd->toggleContinuous(true);
+    m_stackWnd->SetContinuous(true);
     GetSystemTimeAsFileTime(&m_lastTimeRecorded);
     AfxBeginThread((AFX_THREADPROC) ThreadedRun, (LPVOID) this, m_threadPri);
     m_dasm->LoadProgram(0x0100);
@@ -220,7 +220,7 @@ void CDebugWnd::Stop()
 
 LRESULT CDebugWnd::OnUpdateDbgWnd(WPARAM wParam, LPARAM lParam)
 {
-    m_stackWnd->toggleContinuous(false);
+    m_stackWnd->SetContinuous(false);
     UpdateAll();
     return TRUE;
 }

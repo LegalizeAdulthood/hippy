@@ -19,6 +19,7 @@
 
 #include "dasmwnd.h"
 
+#include "addrmng.h"
 #include "dialogs.h"
 #include "resource.h"
 
@@ -179,13 +180,13 @@ void CDisasmWnd::drawLine(LINENUMBER lnActualNum)
     x = m_charWidth * 10 + 5 * m_sideMargin;
     dc.TextOut(x, y, buffer);
 
-    m_hexer.ByteArrayToHexArray(buff, ret, buffer);
+    HexDumper::ByteArrayToHexArray(buff, ret, buffer);
     x = m_charWidth * 4 + 3 * m_sideMargin;
     dc.TextOut(x, y, buffer);
 
     b[0] = (BYTE) (m_memoryAddressLocator[lnActualNum] >> 8);
     b[1] = (BYTE) (m_memoryAddressLocator[lnActualNum] & 0x00FF);
-    m_hexer.ByteArrayToHexArray(b, 2, buffer);
+    HexDumper::ByteArrayToHexArray(b, 2, buffer);
     x = m_sideMargin;
     dc.TextOut(x, y, buffer);
 }
