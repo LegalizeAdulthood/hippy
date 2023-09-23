@@ -19,8 +19,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#if !defined(AFX_8279_DLL_H__86E0892B_47D3_4E44_A310_91EC9ADB4FA7__INCLUDED_)
-#define AFX_8279_DLL_H__86E0892B_47D3_4E44_A310_91EC9ADB4FA7__INCLUDED_
+#ifndef AFX_KEYPAD_DLL_H_86E0892B_47D3_4E44_A310_91EC9ADB4FA7_INCLUDED
+#define AFX_KEYPAD_DLL_H_86E0892B_47D3_4E44_A310_91EC9ADB4FA7_INCLUDED
 
 #if _MSC_VER > 1000
 #pragma once
@@ -33,21 +33,21 @@
 #include "resource.h" // main symbols
 
 /////////////////////////////////////////////////////////////////////////////
-// CMy8279_dllApp
+// CKeypadApp
 // See 8279.cpp for the implementation of this class
 //
 
-class CMy8279_dllApp : public CWinApp
+class CKeypadApp : public CWinApp
 {
 public:
-    CMy8279_dllApp();
+    CKeypadApp();
 
     // Overrides
     // ClassWizard generated virtual function overrides
-    //{{AFX_VIRTUAL(CMy8279_dllApp)
+    //{{AFX_VIRTUAL(CKeypadApp)
     //}}AFX_VIRTUAL
 
-    //{{AFX_MSG(CMy8279_dllApp)
+    //{{AFX_MSG(CKeypadApp)
     // NOTE - the ClassWizard will add and remove member functions here.
     //    DO NOT EDIT what you see in these blocks of generated code !
     //}}AFX_MSG
@@ -59,4 +59,4 @@ public:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_8279_DLL_H__86E0892B_47D3_4E44_A310_91EC9ADB4FA7__INCLUDED_)
+#endif // AFX_KEYPAD_DLL_H_86E0892B_47D3_4E44_A310_91EC9ADB4FA7_INCLUDED

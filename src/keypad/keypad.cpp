@@ -19,24 +19,26 @@
 
 #include "keypad.h"
 
+#include "resource.h"
+
 CFifo::CFifo()
 {
     ClearFifo();
 }
 
-bool CFifo::IsFifoFull()
+bool CFifo::IsFifoFull() const
 {
     return GetNumChar() == 7;
 }
 
-bool CFifo::IsFifoEmpty()
+bool CFifo::IsFifoEmpty() const
 {
-    return fifoHead == fifoTail;
+    return m_fifoHead == m_fifoTail;
 }
 
 void CFifo::ClearFifo()
 {
-    fifoHead = fifoTail = 0;
+    m_fifoHead = m_fifoTail = 0;
 }
 
 BYTE CFifo::RemoveFromFifo()
@@ -44,28 +46,34 @@ BYTE CFifo::RemoveFromFifo()
     BYTE ret = 0;
     if (!IsFifoEmpty())
     {
-        ret = buffer[fifoHead];
-        fifoHead = (fifoHead + 1) % 8;
+        ret = m_buffer[m_fifoHead];
+        m_fifoHead = (m_fifoHead + 1) % 8;
     }
     else
-        underflow = true;
+    {
+        m_underflow = true;
+    }
     return ret;
 }
 
-int CFifo::GetNumChar()
+int CFifo::GetNumChar() const
 {
-    int i = (fifoTail - fifoHead);
+    int i = (m_fifoTail - m_fifoHead);
     if (i < 0)
+    {
         i = i + 8;
+    }
     return (i % 8);
 }
 
 void CFifo::InsertIntoFifo(BYTE val)
 {
     if (IsFifoFull())
-        overflow = true;
-    buffer[fifoTail] = val;
-    fifoTail = (1 + fifoTail) % 8;
+    {
+        m_overflow = true;
+    }
+    m_buffer[m_fifoTail] = val;
+    m_fifoTail = (1 + m_fifoTail) % 8;
 }
 
 //////////////////////////////////////////////
@@ -89,57 +97,63 @@ void CKeyPad::OnPaint()
     CRect     rc;
 
     GetClientRect(&rc);
-    dc.FillRect(rc, &brBoard);
+    dc.FillRect(rc, &m_board);
     DrawDisplay();
     BmpDC.CreateCompatibleDC(NULL);
-    BmpDC.SelectObject(&bmp);
-    dc.BitBlt(rcKeyPad.left, rcKeyPad.top, rcKeyPad.Width(), rcKeyPad.Height(), &BmpDC, 0, 0, SRCCOPY);
+    BmpDC.SelectObject(&m_bmp);
+    dc.BitBlt(m_keyPadRect.left, m_keyPadRect.top, m_keyPadRect.Width(), m_keyPadRect.Height(), &BmpDC, 0, 0, SRCCOPY);
     BmpDC.DeleteDC();
     EndPaint(&ps);
 }
 
 void CKeyPad::OnLButtonDown(UINT nFlags, CPoint point)
 {
-
-    if (PtInRect(&rcKeyPad, point))
+    if (PtInRect(&m_keyPadRect, point))
     {
-        point.x -= rcKeyPad.left;
-        point.y -= rcKeyPad.top;
+        point.x -= m_keyPadRect.left;
+        point.y -= m_keyPadRect.top;
         int row = point.x / 35;
         int col = point.y / 35;
         if (row > 5)
+        {
             return;
+        }
         if (col > 3)
+        {
             return;
+        }
         int code;
         code = col * 10 + row;
         if (code == 20 || code == 30)
+        {
             return;
+        }
         PushKey(row, col);
-        ptDownKey.x = row;
-        ptDownKey.y = col;
+        m_downKeyPoint.x = row;
+        m_downKeyPoint.y = col;
         if (KeyMap[code] == 0xff)
-            ;
+        {
+        }
         else if (KeyMap[code] == 0xbb)
         {
             switch (code)
             {
             case 0x00: /*reset*/
-                pdevParent->Interrupt(RESET);
+                m_devParent->Interrupt(RESET);
                 break;
             case 0x0a: /*irq*/
-                pdevParent->Interrupt(IRQ);
+                m_devParent->Interrupt(IRQ);
                 break;
             }
         }
         else
         {
             /*num pad key*/
-            if (FifoRAM.IsFifoFull())
+            if (m_fifoRAM.IsFifoFull())
             {
                 // buffer overflow
             }
-            FifoRAM.InsertIntoFifo(KeyMap[code]);
+            m_fifoRAM.InsertIntoFifo(KeyMap[code]);
         }
 
         DrawDisplay();
@@ -148,10 +162,10 @@ void CKeyPad::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CKeyPad::OnLButtonUp(UINT nFlags, CPoint point)
 {
-    if (ptDownKey.x != -1)
+    if (m_downKeyPoint.x != -1)
     {
-        RestoreKey(ptDownKey.x, ptDownKey.y);
-        ptDownKey.x = -1;
+        RestoreKey(m_downKeyPoint.x, m_downKeyPoint.y);
+        m_downKeyPoint.x = -1;
     }
 }
 
@@ -169,7 +183,7 @@ void CKeyPad::PushKey(int row, int col)
     CClientDC dc(this);
 
     GetKeyRect(CPoint(row, col), rc);
-    rc.OffsetRect(CPoint(rcKeyPad.left, rcKeyPad.top));
+    rc.OffsetRect(CPoint(m_keyPadRect.left, m_keyPadRect.top));
     CPen pen, *oldp;
     pen.CreatePen(PS_SOLID, 2, RGB(255, 255, 0));
     oldp = dc.SelectObject(&pen);
@@ -193,9 +207,9 @@ void CKeyPad::RestoreKey(int row, int col)
 
     GetKeyRect(CPoint(row, col), rc);
     BmpDC.CreateCompatibleDC(NULL);
-    BmpDC.SelectObject(&bmp);
-    dc.BitBlt(rcKeyPad.left + rc.left, rcKeyPad.top + rc.top, key_size + 3, key_size + 3, &BmpDC, rc.left, rc.top,
-              SRCCOPY);
+    BmpDC.SelectObject(&m_bmp);
+    dc.BitBlt(m_keyPadRect.left + rc.left, m_keyPadRect.top + rc.top, key_size + 3, key_size + 3, &BmpDC, rc.left,
+              rc.top, SRCCOPY);
     BmpDC.DeleteDC();
 }
 
@@ -204,10 +218,12 @@ void CKeyPad::DrawDisplay()
     if (IsWindow(this->m_hWnd))
     {
         CClientDC dc(this);
-        dc.FillRect(&rcDisplay, &brBack);
+        dc.FillRect(&m_displayRect, &m_back);
         for (int i = 0; i < 8; i++)
-            Draw7Segment(rcDisplay.left + disp_spacing + i * (disp_width + disp_spacing), rcDisplay.top + disp_spacing,
-                         DispRAM[i]);
+        {
+            Draw7Segment(m_displayRect.left + disp_spacing + i * (disp_width + disp_spacing),
+                         m_displayRect.top + disp_spacing, m_dispRAM[i]);
+        }
     }
 }
 
@@ -219,58 +235,37 @@ void CKeyPad::Draw7Segment(int x, int y, BYTE val)
     CRect   rc;
     CBrush *br;
 
-    if (val & 0x01)
-        br = &brLight;
-    else
-        br = &brDark;
+    br = val & 0x01 ? &m_light : &m_dark;
     rc.left = x + led_height;
     rc.right = rc.left + led_width;
     rc.top = y;
     rc.bottom = y + led_height;
     dc.FillRect(&rc, br);
 
-    if (val & 0x40)
-        br = &brLight;
-    else
-        br = &brDark;
+    br = val & 0x40 ? &m_light : &m_dark;
     rc.OffsetRect(CPoint(0, offsety));
     dc.FillRect(&rc, br);
 
-    if (val & 0x08)
-        br = &brLight;
-    else
-        br = &brDark;
+    br = val & 0x08 ? &m_light : &m_dark;
     rc.OffsetRect(CPoint(0, offsety));
     dc.FillRect(&rc, br);
 
-    if (val & 0x20)
-        br = &brLight;
-    else
-        br = &brDark;
+    br = val & 0x20 ? &m_light : &m_dark;
     rc.left = x;
     rc.top = y + led_height + led_spacing;
     rc.right = x + led_height;
     rc.bottom = rc.top + led_width;
     dc.FillRect(&rc, br);
 
-    if (val & 0x10)
-        br = &brLight;
-    else
-        br = &brDark;
+    br = val & 0x10 ? &m_light : &m_dark;
     rc.OffsetRect(CPoint(0, offsety));
     dc.FillRect(&rc, br);
 
-    if (val & 0x04)
-        br = &brLight;
-    else
-        br = &brDark;
+    br = val & 0x04 ? &m_light : &m_dark;
     rc.OffsetRect(CPoint(led_width + led_height, 0));
     dc.FillRect(&rc, br);
 
-    if (val & 0x02)
-        br = &brLight;
-    else
-        br = &brDark;
+    br = val & 0x02 ? &m_light : &m_dark;
     rc.OffsetRect(CPoint(0, -offsety));
     dc.FillRect(&rc, br);
 }
@@ -278,54 +273,53 @@ void CKeyPad::Draw7Segment(int x, int y, BYTE val)
 void CKeyPad::ClearDisplay()
 {
     for (int i = 0; i < 8; i++)
-        DispRAM[i] = 0;
+    {
+        m_dispRAM[i] = 0;
+    }
 }
 
 void CKeyPad::ClearFifoRAM()
 {
-    FifoRAM.ClearFifo();
+    m_fifoRAM.ClearFifo();
 }
 void CKeyPad::SetDisplayValue(int segment, BYTE wVal)
 {
-    DispRAM[segment] = wVal;
+    m_dispRAM[segment] = wVal;
     DrawDisplay();
 }
 
-CKeyPad::CKeyPad(CDevice *pdevParent, CWnd *parent)
+CKeyPad::CKeyPad(CDevice *pdevParent, CWnd *parent) :
+    m_parent(parent),
+    m_devParent(pdevParent)
 {
+    m_light.CreateSolidBrush(RGB(255, 0, 0));
+    m_dark.CreateSolidBrush(RGB(160, 0, 0));
+    m_back.CreateSolidBrush(RGB(170, 0, 0));
+    m_board.CreateSolidBrush(RGB(50, 140, 50));
+    m_displayRect.left = 5;
+    m_displayRect.top = 5;
+    m_displayRect.right = m_displayRect.left + 9 * disp_spacing + 8 * disp_width;
+    m_displayRect.bottom = m_displayRect.top + 2 * disp_spacing + 3 * led_spacing + 2 * led_width + 3 * led_height;
 
-    brLight.CreateSolidBrush(RGB(255, 0, 0));
-    brDark.CreateSolidBrush(RGB(160, 0, 0));
-    brBack.CreateSolidBrush(RGB(170, 0, 0));
-    brBoard.CreateSolidBrush(RGB(50, 140, 50));
-    rcDisplay.left = 5;
-    rcDisplay.top = 5;
-    rcDisplay.right = rcDisplay.left + 9 * disp_spacing + 8 * disp_width;
-    rcDisplay.bottom = rcDisplay.top + 2 * disp_spacing + 3 * led_spacing + 2 * led_width + 3 * led_height;
+    m_keyPadRect.left = m_displayRect.left;
+    m_keyPadRect.top = m_displayRect.bottom + disp_spacing;
+    m_keyPadRect.bottom = m_keyPadRect.top + keyboard_height;
+    m_keyPadRect.right = m_keyPadRect.left + keyboard_width;
 
-    rcKeyPad.left = rcDisplay.left;
-    rcKeyPad.top = rcDisplay.bottom + disp_spacing;
-    rcKeyPad.bottom = rcKeyPad.top + keyboard_height;
-    rcKeyPad.right = rcKeyPad.left + keyboard_width;
-
-    int x, y;
-    x = y = 200;
-
-    pParent = parent;
+    int y = 200;
+    int x = 200;
 
     Create(NULL, "KeyPad", WS_SYSMENU | WS_VISIBLE,
-           CRect(x, y, x + rcDisplay.right + 20, y + rcKeyPad.bottom + disp_spacing + 35), pParent, NULL,
+           CRect(x, y, x + m_displayRect.right + 20, y + m_keyPadRect.bottom + disp_spacing + 35), m_parent, NULL,
            WS_EX_TOOLWINDOW);
 
     HANDLE hBmp = LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDB_BMP_KEYPAD), IMAGE_BITMAP, 0, 0,
                             LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
-    bmp.Attach((HBITMAP) hBmp);
+    m_bmp.Attach((HBITMAP) hBmp);
 
     ClearDisplay();
-
     ClearFifoRAM();
-    ptDownKey.x = -1;
-    this->pdevParent = pdevParent;
+    m_downKeyPoint.x = -1;
 }
 
 //////////////////////////////////////////////
@@ -342,72 +336,86 @@ void CIntel8279::OnWrite(Word addr, BYTE bVal)
         switch ((bVal & 0xe0) >> 5)
         {
         case 0: // MODE SET
-            dispMode = (DisplayMode) (bVal & 0x18);
-            keyMode = (KeyboardMode) (bVal & 0x07);
+            m_dispMode = (DisplayMode) (bVal & 0x18);
+            m_keyMode = (KeyboardMode) (bVal & 0x07);
             break;
         case 1:
             break;
         case 2: // READ FIFO
-            readFrom = FIFO;
+            m_readFrom = FIFO;
             break;
         case 3: // READ DISPLAY
-            readFrom = DISPLAY;
-            addrRW = bVal & 0x0f;
-            AutoInc = (bVal & 0x10) != 0;
+            m_readFrom = DISPLAY;
+            m_addrRW = bVal & 0x0f;
+            m_autoInc = (bVal & 0x10) != 0;
             break;
         case 4: // WRITE DISPLAY
-            writeTo = DISPLAY;
-            addrRW = bVal & 0x0f;
-            AutoInc = (bVal & 0x10) != 0;
+            m_writeTo = DISPLAY;
+            m_addrRW = bVal & 0x0f;
+            m_autoInc = (bVal & 0x10) != 0;
             break;
         case 5: // BLANKING
             break;
         case 6: // CLEAR
             if (bVal & 0x01)
             { // CLEAR ALL
-                pKeyPad->ClearDisplay();
-                pKeyPad->ClearFifoRAM();
+                m_keyPad->ClearDisplay();
+                m_keyPad->ClearFifoRAM();
                 //& clear fifo status
-                status = 0;
+                m_status = 0;
             }
             else
             {
                 if (bVal & 0x02)
-                    pKeyPad->ClearFifoRAM();
+                {
+                    m_keyPad->ClearFifoRAM();
+                }
                 if (bVal & 0x10)
+                {
                     switch (bVal & 0x0c)
                     {
                     case 0x08:
                         for (i = 0; i < 8; i++)
-                            pKeyPad->DispRAM[i] = 0xff;
+                        {
+                            m_keyPad->SetDispRAM(i, 0xff);
+                        }
                         break;
                     case 0x0c:
                         for (i = 0; i < 8; i++)
-                            pKeyPad->DispRAM[i] = 0x20;
+                        {
+                            m_keyPad->SetDispRAM(i, 0x20);
+                        }
                         break;
                     default:
-                        pKeyPad->ClearDisplay();
+                        m_keyPad->ClearDisplay();
                         break;
                     }
+                }
             }
 
             break;
         case 7:
             if (bVal & 0x10)
             {
-                errMode = true;
+                m_errMode = true;
             }
             break;
         }
     }
     else
     { // DATA WRITE -- TO DISPLAY RAM
-        pKeyPad->SetDisplayValue(addrRW, bVal);
-        if (AutoInc)
-            if (dispMode == dm8x8bitLeft)
-                addrRW = (addrRW - 1) % 8;
+        m_keyPad->SetDisplayValue(m_addrRW, bVal);
+        if (m_autoInc)
+        {
+            if (m_dispMode == dm8x8bitLeft)
+            {
+                m_addrRW = (m_addrRW - 1) % 8;
+            }
             else
-                addrRW = (addrRW + 1) % 8;
+            {
+                m_addrRW = (m_addrRW + 1) % 8;
+            }
+        }
     }
 }
 
@@ -418,48 +426,58 @@ BYTE CIntel8279::OnRead(Word addr)
     BYTE res = 0;
     if (addr == 0x00)
     { // read data
-        if (readFrom == FIFO)
+        if (m_readFrom == FIFO)
         {
-            res = pKeyPad->FifoRAM.RemoveFromFifo();
+            res = m_keyPad->RemoveFromFifo();
         }
         else
         {
-            res = pKeyPad->DispRAM[addrRW];
-            if (AutoInc)
+            res = m_keyPad->GetDispRAM(m_addrRW);
+            if (m_autoInc)
             {
-                if (dispMode == dm8x8bitLeft)
-                    addrRW = (addrRW - 1) % 8;
+                if (m_dispMode == dm8x8bitLeft)
+                {
+                    m_addrRW = (m_addrRW - 1) % 8;
+                }
                 else
-                    addrRW = (addrRW + 1) % 8;
+                {
+                    m_addrRW = (m_addrRW + 1) % 8;
+                }
             }
         }
     }
     else
     { // status
-        status = 0;
+        m_status = 0;
         // last 3 bits number of chars in fifo
-        res = (status & 0xf0) + pKeyPad->FifoRAM.GetNumChar();
+        res = (m_status & 0xf0) + m_keyPad->GetFifoNumChar();
         // 4th bit --> fifo full?
-        if (pKeyPad->FifoRAM.IsFifoFull())
+        if (m_keyPad->IsFifoFull())
+        {
             res |= 0x080;
-        if (pKeyPad->FifoRAM.IsOverFlow())
+        }
+        if (m_keyPad->IsFifoOverFlow())
+        {
             res |= 0x20;
-        if (pKeyPad->FifoRAM.IsUnderFlow())
+        }
+        if (m_keyPad->IsFifoUnderFlow())
+        {
             res |= 0x10;
+        }
     }
     return res;
 }
 
 void CIntel8279::Reset()
 {
-    dispMode = dm8x8bitLeft;
-    keyMode = kmEncNKeyRoll;
-    errMode = false;
-    AutoInc = false;
+    m_dispMode = dm8x8bitLeft;
+    m_keyMode = kmEncNKeyRoll;
+    m_errMode = false;
+    m_autoInc = false;
 }
 
 void CIntel8279::OnInitialize()
 {
     TRACE0("Generated KeyPad.\n");
-    pKeyPad = new CKeyPad(this, m_parentWnd);
+    m_keyPad = new CKeyPad(this, m_parentWnd);
 }

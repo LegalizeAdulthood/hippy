@@ -37,25 +37,25 @@ __declspec(dllexport) CDevice *GetNewDevice()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CMy8279_dllApp
+// CKeypadApp
 
-BEGIN_MESSAGE_MAP(CMy8279_dllApp, CWinApp)
-//{{AFX_MSG_MAP(CMy8279_dllApp)
+BEGIN_MESSAGE_MAP(CKeypadApp, CWinApp)
+//{{AFX_MSG_MAP(CKeypadApp)
 // NOTE - the ClassWizard will add and remove mapping macros here.
 //    DO NOT EDIT what you see in these blocks of generated code!
 //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CMy8279_dllApp construction
+// CKeypadApp construction
 
-CMy8279_dllApp::CMy8279_dllApp()
+CKeypadApp::CKeypadApp()
 {
     // TODO: add construction code here,
     // Place all significant initialization in InitInstance
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// The one and only CMy8279_dllApp object
+// The one and only CKeypadApp object
 
-CMy8279_dllApp theApp;
+CKeypadApp theApp;

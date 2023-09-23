@@ -16,45 +16,46 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef _KEYPAD_H__
-#define _KEYPAD_H__
+#ifndef HIPPY_KEYPAD_H
+#define HIPPY_KEYPAD_H
 
-#include "resource.h"
-#include <afxwin.h>
 #include <device.h>
 #include <hippy.h>
+
+#include <afxwin.h>
 
 /*-----------------------------------
  * FIFO
  *-----------------------------------*/
 class CFifo
 {
-private:
-    BYTE buffer[8];
-    int  fifoHead, fifoTail;
-    bool overflow;
-    bool underflow;
-
 public:
     CFifo();
     void Reset()
     {
-        overflow = underflow = false;
+        m_overflow = m_underflow = false;
     }
-    int  GetNumChar();
-    bool IsUnderFlow()
+    int  GetNumChar() const;
+    bool IsUnderFlow() const
     {
-        return underflow;
+        return m_underflow;
     }
-    bool IsOverFlow()
+    bool IsOverFlow() const
     {
-        return overflow;
+        return m_overflow;
     }
-    bool IsFifoFull();
-    bool IsFifoEmpty();
+    bool IsFifoFull() const;
+    bool IsFifoEmpty() const;
     void ClearFifo();
     BYTE RemoveFromFifo();
     void InsertIntoFifo(BYTE val);
+
+private:
+    BYTE m_buffer[8]{};
+    int  m_fifoHead{};
+    int  m_fifoTail{};
+    bool m_overflow{};
+    bool m_underflow{};
 };
 
 /*-----------------------------------
@@ -80,53 +81,86 @@ const BYTE KeyMap[36] = {0xbb, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0xff, 0xff, 0xff, 0
 
 class CKeyPad : public CFrameWnd
 {
-private:
-    CBrush   brLight;
-    CBrush   brDark;
-    CBrush   brBack;
-    CBrush   brBoard;
-    CBitmap  bmp;
-    int      padwidth;
-    int      padheight;
-    CRect    rcDisplay;
-    CRect    rcKeyPad;
-    CPoint   ptDownKey;
-    CWnd    *pParent;
-    CDevice *pdevParent;
-    void     DrawDisplay();
-    void     Draw7Segment(int x, int y, BYTE val);
-    void     PushKey(int row, int col);
-    void     RestoreKey(int row, int col);
-    void     GetKeyRect(CPoint point, CRect &rc);
-
 public:
     CKeyPad(CDevice *pdevParent, CWnd *parent);
-    CFifo        FifoRAM;
-    BYTE         DispRAM[8];
+    ~CKeyPad() override = default;
+
+    int GetFifoNumChar() const
+    {
+        return m_fifoRAM.GetNumChar();
+    }
+    bool IsFifoFull() const
+    {
+        return m_fifoRAM.IsFifoFull();
+    }
+    bool IsFifoOverFlow() const
+    {
+        return m_fifoRAM.IsOverFlow();
+    }
+    bool IsFifoUnderFlow() const
+    {
+        return m_fifoRAM.IsUnderFlow();
+    }
+    BYTE GetDispRAM(Word word) const
+    {
+        return m_dispRAM[word];
+    }
+    void SetDispRAM(int i, BYTE value)
+    {
+        m_dispRAM[i] = value;
+    }
+    BYTE RemoveFromFifo()
+    {
+        return m_fifoRAM.RemoveFromFifo();
+    }
+
     void         ClearDisplay();
     void         ClearFifoRAM();
     void         SetDisplayValue(int segment, BYTE wVal);
     afx_msg void OnPaint();
     afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
     afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+
     DECLARE_MESSAGE_MAP()
+
+private:
+    CFifo    m_fifoRAM;
+    BYTE     m_dispRAM[8]{};
+    CBrush   m_light;
+    CBrush   m_dark;
+    CBrush   m_back;
+    CBrush   m_board;
+    CBitmap  m_bmp;
+    int      m_padWidth{};
+    int      m_padHeight{};
+    CRect    m_displayRect;
+    CRect    m_keyPadRect;
+    CPoint   m_downKeyPoint;
+    CWnd    *m_parent{};
+    CDevice *m_devParent{};
+
+    void     DrawDisplay();
+    void     Draw7Segment(int x, int y, BYTE val);
+    void     PushKey(int row, int col);
+    void     RestoreKey(int row, int col);
+    void     GetKeyRect(CPoint point, CRect &rc);
 };
 
-typedef enum
+enum IODevice
 {
     FIFO,
     DISPLAY
-} IODevice;
+};
 
-typedef enum
+enum DisplayMode
 {
     dm8x8bitLeft,
     dm16x8bitLeft,
     dm8x8bitRight,
     dm16x8bitRight
-} DisplayMode;
+};
 
-typedef enum
+enum KeyboardMode
 {
     kmEnc2KeyLock,
     kmDec2KeyLock,
@@ -136,28 +170,26 @@ typedef enum
     kmDecMatrix,
     kmStrobeEncScan,
     kmStrobeDecScan
-} KeyboardMode;
+};
 
 class CIntel8279 : public CDevice
 {
-private:
-    BYTE         status;
-    KeyboardMode keyMode;
-    DisplayMode  dispMode;
-    bool         errMode;
-    IODevice     writeTo;
-    IODevice     readFrom;
-    Word         addrRW;
-    bool         AutoInc;
-    CKeyPad     *pKeyPad;
-
 protected:
     void Reset() override;
     void OnInitialize() override;
     BYTE OnRead(Word addr) override;
     void OnWrite(Word addr, BYTE bVal) override;
 
-public:
+private:
+    BYTE         m_status{};
+    KeyboardMode m_keyMode{};
+    DisplayMode  m_dispMode{};
+    bool         m_errMode{};
+    IODevice     m_writeTo{};
+    IODevice     m_readFrom{};
+    Word         m_addrRW{};
+    bool         m_autoInc{};
+    CKeyPad     *m_keyPad{};
 };
 
 #endif
