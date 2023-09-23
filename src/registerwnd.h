@@ -16,14 +16,14 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef _REGISTERWND_H_
-#define _REGISTERWND_H_
+#ifndef HIPPY_REGISTERWND_H
+#define HIPPY_REGISTERWND_H
 
-#include "disassembler.h"
 #include "hippy.h"
+
 #include <afxwin.h>
 
-typedef enum RegEnum
+enum RegEnum
 {
     rgNone,
     rgA,
@@ -37,31 +37,14 @@ typedef enum RegEnum
     rgZ,
     rgV,
     rgC
-} RegEnum;
+};
 
 class CRegisterWnd : public CWnd
 {
-private:
-    CFont      Font, *defFont;
-    CBrush     brNormal, brSelected, brRecent;
-    int        CharWidth, CharHeight, SideMargin;
-    Registers *pRegs;       // points to actual processor registers
-    Registers  prevRegs;    // previous register states
-    Registers  prevRegsAct; // used as boolean type, true for each element if
-                           // that element was modified in previous instruction.
-    RegEnum   selReg; // shows the selected reg
-    HexDumper Hexer;
-
-    // editing-----------
-    Word editMask; // mask showing last quadrant edited (like 0x0f)
-
-    void drawRegister(bool bActive, LPCRECT lprc, RegEnum reReg, int regsize, int regval);
-    void UpdateMetrics();
-
 public:
     // constructor & destructor
-    CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPCTSTR szWindowName = NULL);
-    ~CRegisterWnd();
+    CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPCTSTR szWindowName = nullptr);
+    ~CRegisterWnd() override;
 
     void            Update(bool drawAll = false);
     afx_msg LRESULT OnRedrawAll(WPARAM wParam, LPARAM lParam);
@@ -71,7 +54,29 @@ public:
     afx_msg void    OnPaint();
     afx_msg void    OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
     afx_msg BOOL    OnEraseBkgnd(CDC *pDC);
+
     DECLARE_MESSAGE_MAP()
+
+private:
+    CFont      m_font;
+    CFont     *m_defaultFont{};
+    CBrush     m_normal;
+    CBrush     m_selected;
+    CBrush     m_recent;
+    int        m_charWidth{};
+    int        m_charHeight{};
+    int        m_sideMargin{};
+    Registers *m_regs{};        // points to actual processor registers
+    Registers  m_prevRegs{};    // previous register states
+    Registers  m_prevRegsAct{}; // used as boolean type, true for each element if
+                                // that element was modified in previous instruction.
+    RegEnum m_selReg{};         // shows the selected reg
+
+    // editing-----------
+    Word m_editMask{}; // mask showing last quadrant edited (like 0x0f)
+
+    void drawRegister(bool bActive, LPCRECT lprc, RegEnum reReg, int regsize, int regval);
+    void UpdateMetrics();
 };
 
 #endif

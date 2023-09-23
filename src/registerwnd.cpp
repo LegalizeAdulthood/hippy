@@ -18,6 +18,8 @@
 //
 #include "registerwnd.h"
 
+#include "disassembler.h"
+
 // clang-format off
 BEGIN_MESSAGE_MAP(CRegisterWnd, CWnd)
     ON_WM_PAINT()
@@ -38,36 +40,33 @@ void CRegisterWnd::UpdateMetrics()
     CClientDC  dc(this);
     dc.GetTextMetrics(&tm);
     GetClientRect(&rc);
-    CharWidth = tm.tmMaxCharWidth;
-    SideMargin = CharWidth / 2;
-    CharHeight = tm.tmHeight;
+    m_charWidth = tm.tmMaxCharWidth;
+    m_sideMargin = m_charWidth / 2;
+    m_charHeight = tm.tmHeight;
 }
 
 void CRegisterWnd::drawRegister(bool bActive, LPCRECT lprc, RegEnum reReg, int regsize, int regval)
 {
     CClientDC dc(this);
-    COLORREF  cr;
     char      buffer[100];
     CRect     rc(lprc);
-    rc.left -= SideMargin;
-    rc.right += SideMargin;
+    rc.left -= m_sideMargin;
+    rc.right += m_sideMargin;
 
     // set the color of text (red for recently changed registers)
-    if (bActive)
-        cr = RGB(200, 10, 20);
-    else
-        cr = RGB(0, 0, 0);
-
+    COLORREF cr = bActive ? RGB(200, 10, 20) : RGB(0, 0, 0);
     dc.SetTextColor(cr);
 
     // if the register is selected then draw selection rectangle
-    if (selReg == reReg)
+    if (m_selReg == reReg)
     {
-        dc.FillRect(&rc, &brSelected);
+        dc.FillRect(&rc, &m_selected);
         dc.DrawFocusRect(&rc);
     }
     else
-        dc.FillRect(&rc, &brNormal);
+    {
+        dc.FillRect(&rc, &m_normal);
+    }
 
     if (regsize == 1)
     { // condition code bit
@@ -77,7 +76,7 @@ void CRegisterWnd::drawRegister(bool bActive, LPCRECT lprc, RegEnum reReg, int r
     else if (regsize == 2)
     {
         BYTE b = (BYTE) regval;
-        Hexer.ByteToHex(b, buffer);
+        HexDumper::ByteToHex(b, buffer);
         dc.TextOut(lprc->left, lprc->top, buffer, 2);
     }
     else
@@ -86,7 +85,7 @@ void CRegisterWnd::drawRegister(bool bActive, LPCRECT lprc, RegEnum reReg, int r
         ADDRESS ad = (ADDRESS) regval;
         b[0] = ((BYTE *) &ad)[1];
         b[1] = ((BYTE *) &ad)[0];
-        Hexer.ByteArrayToHexArray(b, 2, buffer);
+        HexDumper::ByteArrayToHexArray(b, 2, buffer);
         dc.TextOut(lprc->left, lprc->top, buffer, 4);
     }
 }
@@ -111,99 +110,99 @@ void CRegisterWnd::Update(bool drawAll)
     if (drawAll)
     {
         // find changed registers
-        regValChanged = prevRegsAct;
+        regValChanged = m_prevRegsAct;
     }
     else
     {
         // find the registers that are modified
-        regValChanged.a = (prevRegs.a ^ pRegs->a);
-        regValChanged.b = (prevRegs.b ^ pRegs->b);
-        regValChanged.x = (prevRegs.x ^ pRegs->x);
-        regValChanged.sp = (prevRegs.sp ^ pRegs->sp);
-        regValChanged.pc = (prevRegs.pc ^ pRegs->pc);
-        regValChanged.ccr.c = (prevRegs.ccr.c ^ pRegs->ccr.c);
-        regValChanged.ccr.v = (prevRegs.ccr.v ^ pRegs->ccr.v);
-        regValChanged.ccr.i = (prevRegs.ccr.i ^ pRegs->ccr.i);
-        regValChanged.ccr.h = (prevRegs.ccr.h ^ pRegs->ccr.h);
-        regValChanged.ccr.z = (prevRegs.ccr.z ^ pRegs->ccr.z);
-        regValChanged.ccr.n = (prevRegs.ccr.n ^ pRegs->ccr.n);
+        regValChanged.a = (m_prevRegs.a ^ m_regs->a);
+        regValChanged.b = (m_prevRegs.b ^ m_regs->b);
+        regValChanged.x = (m_prevRegs.x ^ m_regs->x);
+        regValChanged.sp = (m_prevRegs.sp ^ m_regs->sp);
+        regValChanged.pc = (m_prevRegs.pc ^ m_regs->pc);
+        regValChanged.ccr.c = (m_prevRegs.ccr.c ^ m_regs->ccr.c);
+        regValChanged.ccr.v = (m_prevRegs.ccr.v ^ m_regs->ccr.v);
+        regValChanged.ccr.i = (m_prevRegs.ccr.i ^ m_regs->ccr.i);
+        regValChanged.ccr.h = (m_prevRegs.ccr.h ^ m_regs->ccr.h);
+        regValChanged.ccr.z = (m_prevRegs.ccr.z ^ m_regs->ccr.z);
+        regValChanged.ccr.n = (m_prevRegs.ccr.n ^ m_regs->ccr.n);
 
         //
     }
 
-    int    y = SideMargin * 3 + CharHeight;
-    int    x = SideMargin * 4 + 15 * CharWidth;
-    CPoint pt(0, SideMargin * 2 + CharHeight);
+    int    y = m_sideMargin * 3 + m_charHeight;
+    int    x = m_sideMargin * 4 + 15 * m_charWidth;
+    CPoint pt(0, m_sideMargin * 2 + m_charHeight);
 
-    CRect rc(x, y, x + 2 * CharWidth, y + CharHeight);
+    CRect rc(x, y, x + 2 * m_charWidth, y + m_charHeight);
 
-    if (regValChanged.a || drawAll || prevRegsAct.a)
+    if (regValChanged.a || drawAll || m_prevRegsAct.a)
     {
-        drawRegister(regValChanged.a > 0, &rc, rgA, 2, pRegs->a);
+        drawRegister(regValChanged.a > 0, &rc, rgA, 2, m_regs->a);
     }
     rc.OffsetRect(pt);
-    if (regValChanged.b || drawAll || prevRegsAct.b)
+    if (regValChanged.b || drawAll || m_prevRegsAct.b)
     {
-        drawRegister(regValChanged.b > 0, &rc, rgB, 2, pRegs->b);
+        drawRegister(regValChanged.b > 0, &rc, rgB, 2, m_regs->b);
     }
     rc.OffsetRect(pt);
-    rc.right += 2 * CharWidth;
-    if (regValChanged.pc || drawAll || prevRegsAct.pc)
+    rc.right += 2 * m_charWidth;
+    if (regValChanged.pc || drawAll || m_prevRegsAct.pc)
     {
-        drawRegister(regValChanged.pc > 0, &rc, rgPC, 4, pRegs->pc);
+        drawRegister(regValChanged.pc > 0, &rc, rgPC, 4, m_regs->pc);
     }
     rc.OffsetRect(pt);
-    if (regValChanged.x || drawAll || prevRegsAct.x)
+    if (regValChanged.x || drawAll || m_prevRegsAct.x)
     {
-        drawRegister(regValChanged.x > 0, &rc, rgX, 4, pRegs->x);
+        drawRegister(regValChanged.x > 0, &rc, rgX, 4, m_regs->x);
     }
     rc.OffsetRect(pt);
-    if (regValChanged.sp || drawAll || prevRegsAct.sp)
+    if (regValChanged.sp || drawAll || m_prevRegsAct.sp)
     {
-        drawRegister(regValChanged.sp > 0, &rc, rgSP, 4, pRegs->sp);
+        drawRegister(regValChanged.sp > 0, &rc, rgSP, 4, m_regs->sp);
     }
     rc.OffsetRect(pt);
     dc.SetTextColor(RGB(0, 0, 0));
     dc.TextOut(rc.left, rc.top, "H I N Z V C", 11);
     rc.OffsetRect(pt);
-    rc.right = rc.left + CharWidth;
-    if (regValChanged.ccr.h || drawAll || prevRegsAct.ccr.h)
+    rc.right = rc.left + m_charWidth;
+    if (regValChanged.ccr.h || drawAll || m_prevRegsAct.ccr.h)
     {
-        drawRegister(regValChanged.ccr.h, &rc, rgH, 1, pRegs->ccr.h);
+        drawRegister(regValChanged.ccr.h, &rc, rgH, 1, m_regs->ccr.h);
     }
-    pt.x = 2 * CharWidth;
+    pt.x = 2 * m_charWidth;
     pt.y = 0;
 
     rc.OffsetRect(pt);
-    if (regValChanged.ccr.i || drawAll || prevRegsAct.ccr.i)
+    if (regValChanged.ccr.i || drawAll || m_prevRegsAct.ccr.i)
     {
-        drawRegister(regValChanged.ccr.i, &rc, rgI, 1, pRegs->ccr.i);
+        drawRegister(regValChanged.ccr.i, &rc, rgI, 1, m_regs->ccr.i);
     }
     rc.OffsetRect(pt);
-    if (regValChanged.ccr.n || drawAll || prevRegsAct.ccr.n)
+    if (regValChanged.ccr.n || drawAll || m_prevRegsAct.ccr.n)
     {
-        drawRegister(regValChanged.ccr.n, &rc, rgN, 1, pRegs->ccr.n);
+        drawRegister(regValChanged.ccr.n, &rc, rgN, 1, m_regs->ccr.n);
     }
     rc.OffsetRect(pt);
-    if (regValChanged.ccr.z || drawAll || prevRegsAct.ccr.z)
+    if (regValChanged.ccr.z || drawAll || m_prevRegsAct.ccr.z)
     {
-        drawRegister(regValChanged.ccr.z, &rc, rgZ, 1, pRegs->ccr.z);
+        drawRegister(regValChanged.ccr.z, &rc, rgZ, 1, m_regs->ccr.z);
     }
     rc.OffsetRect(pt);
-    if (regValChanged.ccr.v || drawAll || prevRegsAct.ccr.v)
+    if (regValChanged.ccr.v || drawAll || m_prevRegsAct.ccr.v)
     {
-        drawRegister(regValChanged.ccr.v, &rc, rgV, 1, pRegs->ccr.v);
+        drawRegister(regValChanged.ccr.v, &rc, rgV, 1, m_regs->ccr.v);
     }
     rc.OffsetRect(pt);
-    if (regValChanged.ccr.c || drawAll || prevRegsAct.ccr.c)
+    if (regValChanged.ccr.c || drawAll || m_prevRegsAct.ccr.c)
     {
-        drawRegister(regValChanged.ccr.c, &rc, rgC, 1, pRegs->ccr.c);
+        drawRegister(regValChanged.ccr.c, &rc, rgC, 1, m_regs->ccr.c);
     }
     // if this is not a paint call then store the new state
     if (!drawAll)
     {
-        prevRegs = *pRegs;
-        prevRegsAct = regValChanged;
+        m_prevRegs = *m_regs;
+        m_prevRegsAct = regValChanged;
     }
 }
 
@@ -218,10 +217,7 @@ void CRegisterWnd::OnPaint()
     BeginPaint(&ps);
 
     // if the window has got the focus draw a stronger border
-    if (GetFocus() == this)
-        newp.CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
-    else
-        newp.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+    newp.CreatePen(PS_SOLID, GetFocus() == this ? 2 : 1, RGB(0, 0, 0));
 
     oldp = dc.SelectObject(&newp);
     GetClientRect(&rc);
@@ -244,33 +240,33 @@ void CRegisterWnd::OnPaint()
     int y, x;
     for (int i = 1; i < 7; i++)
     {
-        y = i * (2 * SideMargin + CharHeight);
-        dc.MoveTo(SideMargin, y);
-        dc.LineTo(rc.right - SideMargin, y);
+        y = i * (2 * m_sideMargin + m_charHeight);
+        dc.MoveTo(m_sideMargin, y);
+        dc.LineTo(rc.right - m_sideMargin, y);
     }
 
-    x = 15 * CharWidth + 2 * SideMargin;
-    dc.MoveTo(x, SideMargin);
-    dc.LineTo(x, rc.bottom - SideMargin);
+    x = 15 * m_charWidth + 2 * m_sideMargin;
+    dc.MoveTo(x, m_sideMargin);
+    dc.LineTo(x, rc.bottom - m_sideMargin);
 
     // write the table header (register, value) and Reg names
-    y = SideMargin;
+    y = m_sideMargin;
     dc.SetTextColor(RGB(0, 0, 0));
-    dc.TextOut(SideMargin, y, "Register", 8);
-    dc.TextOut(x + 2 * SideMargin, y, "Value", 5);
-    y += 2 * SideMargin + CharHeight;
+    dc.TextOut(m_sideMargin, y, "Register", 8);
+    dc.TextOut(x + 2 * m_sideMargin, y, "Value", 5);
+    y += 2 * m_sideMargin + m_charHeight;
     dc.SetTextColor(RGB(100, 100, 100));
-    dc.TextOut(SideMargin, y, "Accumulator A", 13);
-    y += 2 * SideMargin + CharHeight;
-    dc.TextOut(SideMargin, y, "Accumulator B", 13);
-    y += 2 * SideMargin + CharHeight;
-    dc.TextOut(SideMargin, y, "Program Counter", 15);
-    y += 2 * SideMargin + CharHeight;
-    dc.TextOut(SideMargin, y, "Index Reg.", 10);
-    y += 2 * SideMargin + CharHeight;
-    dc.TextOut(SideMargin, y, "Stack Pointer", 13);
-    y += 2 * SideMargin + CharHeight;
-    dc.TextOut(SideMargin, y, "Cond. Code Reg.", 15);
+    dc.TextOut(m_sideMargin, y, "Accumulator A", 13);
+    y += 2 * m_sideMargin + m_charHeight;
+    dc.TextOut(m_sideMargin, y, "Accumulator B", 13);
+    y += 2 * m_sideMargin + m_charHeight;
+    dc.TextOut(m_sideMargin, y, "Program Counter", 15);
+    y += 2 * m_sideMargin + m_charHeight;
+    dc.TextOut(m_sideMargin, y, "Index Reg.", 10);
+    y += 2 * m_sideMargin + m_charHeight;
+    dc.TextOut(m_sideMargin, y, "Stack Pointer", 13);
+    y += 2 * m_sideMargin + m_charHeight;
+    dc.TextOut(m_sideMargin, y, "Cond. Code Reg.", 15);
 
     dc.SelectObject(oldp);
     newp.DeleteObject();
@@ -288,63 +284,67 @@ void CRegisterWnd::OnLButtonDown(UINT nFlags, CPoint point)
     SetFocus();
 
     // find selection
-    RegEnum re = selReg;
-    selReg = rgNone;
-    int y = point.y / (CharHeight + SideMargin * 2);
-    int x = point.x - (SideMargin * 4 + 15 * CharWidth);
+    RegEnum re = m_selReg;
+    m_selReg = rgNone;
+    int y = point.y / (m_charHeight + m_sideMargin * 2);
+    int x = point.x - (m_sideMargin * 4 + 15 * m_charWidth);
     if (y < 8 && y > 0 && x > 0)
     {
         switch (y)
         {
         case 1:
-            selReg = rgA;
+            m_selReg = rgA;
             break;
         case 2:
-            selReg = rgB;
+            m_selReg = rgB;
             break;
         case 3:
-            selReg = rgPC;
+            m_selReg = rgPC;
             break;
         case 4:
-            selReg = rgX;
+            m_selReg = rgX;
             break;
         case 5:
-            selReg = rgSP;
+            m_selReg = rgSP;
             break;
         case 7:
         {
-            x /= CharWidth * 2;
+            x /= m_charWidth * 2;
             switch (x)
             {
             case 0:
-                selReg = rgH;
+                m_selReg = rgH;
                 break;
             case 1:
-                selReg = rgI;
+                m_selReg = rgI;
                 break;
             case 2:
-                selReg = rgN;
+                m_selReg = rgN;
                 break;
             case 3:
-                selReg = rgZ;
+                m_selReg = rgZ;
                 break;
             case 4:
-                selReg = rgV;
+                m_selReg = rgV;
                 break;
             case 5:
-                selReg = rgC;
+                m_selReg = rgC;
                 break;
             }
         }
         };
     }
 
-    if (selReg == rgNone)
-        selReg = re;
-    else if (re != selReg)
+    if (m_selReg == rgNone)
+    {
+        m_selReg = re;
+    }
+    else if (re != m_selReg)
+    {
         Update(true);
+    }
 
-    editMask = 0; // reset the mask
+    m_editMask = 0; // reset the mask
 }
 
 void CRegisterWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -353,48 +353,50 @@ void CRegisterWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
     {
     case VK_UP:
     {
-        int i = (int) selReg - 1;
+        int i = (int) m_selReg - 1;
         if (i)
         {
             if (i >= 6)
+            {
                 i = 5;
-            selReg = (RegEnum) i;
+            }
+            m_selReg = (RegEnum) i;
             Update(true);
         }
-        editMask = 0; // reset the mask
+        m_editMask = 0; // reset the mask
     }
     break;
     case VK_DOWN:
     {
-        int i = (int) selReg + 1;
+        int i = (int) m_selReg + 1;
         if (i < 7)
         {
-            selReg = (RegEnum) i;
+            m_selReg = (RegEnum) i;
             Update(true);
         }
-        editMask = 0; // reset the mask
+        m_editMask = 0; // reset the mask
     }
     break;
     case VK_RIGHT:
     {
-        int i = (int) selReg + 1;
+        int i = (int) m_selReg + 1;
         if (i >= 7 && i <= 11)
         {
-            selReg = (RegEnum) i;
+            m_selReg = (RegEnum) i;
             Update(true);
         }
-        editMask = 0; // reset the mask
+        m_editMask = 0; // reset the mask
     }
     break;
     case VK_LEFT:
     {
-        int i = (int) selReg - 1;
+        int i = (int) m_selReg - 1;
         if (i >= 6 && i <= 11)
         {
-            selReg = (RegEnum) i;
+            m_selReg = (RegEnum) i;
             Update(true);
         }
-        editMask = 0; // reset the mask
+        m_editMask = 0; // reset the mask
     }
     };
 
@@ -402,78 +404,84 @@ void CRegisterWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
     int val = -1;
 
     if ((nChar >= '0') && (nChar <= '9'))
+    {
         val = nChar - '0';
+    }
     else if ((nChar >= 'A') && (nChar <= 'F'))
+    {
         val = nChar - 'A' + 10;
+    }
 
     if (val >= 0)
     {
-        if (selReg >= rgH && val < 2)
+        if (m_selReg >= rgH && val < 2)
         { // bit field ? (CCR bit)
             // edit mask has no meaning, just change the value
-            switch (selReg)
+            switch (m_selReg)
             {
             case rgH:
-                pRegs->ccr.h = val;
+                m_regs->ccr.h = val;
                 break;
             case rgI:
-                pRegs->ccr.i = val;
+                m_regs->ccr.i = val;
                 break;
             case rgN:
-                pRegs->ccr.n = val;
+                m_regs->ccr.n = val;
                 break;
             case rgZ:
-                pRegs->ccr.z = val;
+                m_regs->ccr.z = val;
                 break;
             case rgV:
-                pRegs->ccr.v = val;
+                m_regs->ccr.v = val;
                 break;
             case rgC:
-                pRegs->ccr.c = val;
+                m_regs->ccr.c = val;
                 break;
             };
 
             Update();
         }
-        else if ((selReg < rgH) && val < 16)
+        else if ((m_selReg < rgH) && val < 16)
         { // byte or word
             int   editSize;
             Word *pwEdit;
 
-            switch (selReg)
+            switch (m_selReg)
             {
             case rgA:
                 editSize = 2;
-                pwEdit = (Word *) &pRegs->a;
+                pwEdit = (Word *) &m_regs->a;
                 break;
             case rgB:
                 editSize = 2;
-                pwEdit = (Word *) &pRegs->b;
+                pwEdit = (Word *) &m_regs->b;
                 break;
             case rgPC:
                 editSize = 4;
-                pwEdit = &pRegs->pc;
+                pwEdit = &m_regs->pc;
                 break;
             case rgX:
                 editSize = 4;
-                pwEdit = &pRegs->x;
+                pwEdit = &m_regs->x;
                 break;
             case rgSP:
                 editSize = 4;
-                pwEdit = &pRegs->sp;
+                pwEdit = &m_regs->sp;
                 break;
-            };
+            }
 
-            int  m = editSize - editMask - 1;
+            int  m = editSize - m_editMask - 1;
             Word mask = 0x000f << (m * 4);
             mask = ~mask;
             *pwEdit &= mask; // the portion to be edited is now all zero
             mask = val << (m * 4);
             *pwEdit |= mask;
             Update();
-            editMask++;
-            if (editMask >= editSize)
-                editMask = 0;
+            m_editMask++;
+            if (m_editMask >= editSize)
+            {
+                m_editMask = 0;
+            }
         }
     }
 }
@@ -488,16 +496,16 @@ void CRegisterWnd::OnKillFocus(CWnd *pNewWnd)
     RedrawWindow();
 }
 
-// cosntructor:
+// constructor:
 // register wnd class, create window and font
 CRegisterWnd::CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPCTSTR szWindowName)
 {
-    const char *p = AfxRegisterWndClass(CS_OWNDC | CS_SAVEBITS, LoadCursor(NULL, IDC_ARROW), NULL, 0);
-    Create(p, szWindowName, WS_CHILD | WS_TABSTOP, rcPos, pParentWnd, 1);
+    const char *p = AfxRegisterWndClass(CS_OWNDC | CS_SAVEBITS, LoadCursor(nullptr, IDC_ARROW), nullptr, nullptr);
+    CWnd::Create(p, szWindowName, WS_CHILD | WS_TABSTOP, rcPos, pParentWnd, 1);
 
-    this->pRegs = pRegs;
+    m_regs = pRegs;
 
-    Font.CreateFont(12,                       // nHeight
+    m_font.CreateFont(12,                       // nHeight
                     0,                        // nWidth
                     0,                        // nEscapement
                     0,                        // nOrientation
@@ -512,12 +520,12 @@ CRegisterWnd::CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPC
                     DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
                     _T("FixedSys"));          // lpszFacename
 
-    this->SetFont(&Font, false);
+    SetFont(&m_font, false);
     CClientDC dc(this);
-    brSelected.CreateSolidBrush(RGB(180, 180, 180));
-    brRecent.CreateSolidBrush(RGB(255, 50, 50));
-    brNormal.CreateSolidBrush(RGB(255, 255, 255));
-    defFont = dc.SelectObject(&Font);
+    m_selected.CreateSolidBrush(RGB(180, 180, 180));
+    m_recent.CreateSolidBrush(RGB(255, 50, 50));
+    m_normal.CreateSolidBrush(RGB(255, 255, 255));
+    m_defaultFont = dc.SelectObject(&m_font);
     dc.SetBkMode(TRANSPARENT);
     UpdateMetrics();
 }
@@ -525,9 +533,9 @@ CRegisterWnd::CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPC
 CRegisterWnd::~CRegisterWnd()
 {
     CClientDC dc(this);
-    dc.SelectObject(defFont);
-    Font.DeleteObject();
-    brNormal.DeleteObject();
-    brRecent.DeleteObject();
-    brSelected.DeleteObject();
+    dc.SelectObject(m_defaultFont);
+    m_font.DeleteObject();
+    m_normal.DeleteObject();
+    m_recent.DeleteObject();
+    m_selected.DeleteObject();
 }
