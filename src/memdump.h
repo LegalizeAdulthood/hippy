@@ -16,27 +16,28 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef _MEMDUMP_H__
-#define _MEMDUMP_H__
+#ifndef HIPPY_MEMDUMP_H
+#define HIPPY_MEMDUMP_H
 
 #include "baseWnd.h"
 
 class CMemDumpWnd : public CBaseWnd
 {
+public:
+    CMemDumpWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName = nullptr);
+
+    afx_msg void    OnLButtonDown(UINT nFlags, CPoint point);
+    afx_msg void    OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+    afx_msg LRESULT OnMemLocChange(WPARAM wParam, LPARAM lParam);
+
+    DECLARE_MESSAGE_MAP()
+
 private:
     BYTE editMask;
     void invertMask();
     int  SelectedByte;
     void paintBkgnd(LPCRECT lpcRect);
     void drawLine(LINENUMBER lnActualNum);
-
-public:
-    CMemDumpWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName = NULL);
-
-    afx_msg void    OnLButtonDown(UINT nFlags, CPoint point);
-    afx_msg void    OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-    afx_msg LRESULT OnMemLocChange(WPARAM wParam, LPARAM lParam);
-    DECLARE_MESSAGE_MAP()
 };
 
 #endif

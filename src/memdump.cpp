@@ -27,14 +27,16 @@ END_MESSAGE_MAP()
 // clang-format on
 
 /*
- * Message recieved when data stored in a memory location changes
+ * Message received when data stored in a memory location changes
  * wParam in the memory location changes.
  */
 LRESULT CMemDumpWnd::OnMemLocChange(WPARAM wParam, LPARAM lParam)
 {
     Word w = (Word) wParam;
     if (isLineVisible(w / 8))
+    {
         drawLine(w / 8);
+    }
     return TRUE;
 }
 
@@ -50,18 +52,26 @@ void CMemDumpWnd::OnLButtonDown(UINT nFlags, CPoint point)
 
     // if the click targets to black chars btw bytes then offx mod 3 is 2
     if (offx % 3 == 2)
+    {
         // in which case the selection is dismissed
         SelectedByte = -1;
+    }
     else
+    {
         SelectedByte = offx / 3;
+    }
 
     if (SelectedByte > 7)
+    {
         SelectedByte = -1;
+    }
 
     // if selected line is the same or selection is dismissed
     // then all we have to update is the old(new) selected line
     if (SelectedByte == -1 || line == m_selectedLine)
+    {
         drawLine(m_selectedLine);
+    }
     else
     {
         int tmp = m_selectedLine;
@@ -76,7 +86,9 @@ void CMemDumpWnd::invertMask()
 {
     editMask = editMask << 0x4;
     if (!editMask)
+    {
         editMask = 1;
+    }
 }
 
 void CMemDumpWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -86,13 +98,17 @@ void CMemDumpWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
     {
     case VK_LEFT:
         if (SelectedByte > 0)
+        {
             SelectedByte--;
+        }
         drawLine(m_selectedLine);
         editMask = 0x10;
         break;
     case VK_RIGHT:
         if (SelectedByte < 7)
+        {
             SelectedByte++;
+        }
         drawLine(m_selectedLine);
         editMask = 0x10;
         break;
@@ -101,18 +117,19 @@ void CMemDumpWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
     int val = -1;
 
     if ((nChar >= '0') && (nChar <= '9'))
+    {
         val = nChar - '0';
+    }
     else if ((nChar >= 'A') && (nChar <= 'F'))
+    {
         val = nChar - 'A' + 10;
+    }
 
     if (val >= 0)
     {
         Word addr = m_selectedLine * 8 + SelectedByte;
         BYTE w = m_memoryBase->Read(addr, true);
-        if (editMask == 0x10)
-            w &= 0x0f;
-        else
-            w &= 0xf0;
+        w &= editMask == 0x10 ? 0x0f : 0xf0;
 
         w |= val * editMask;
         m_memoryBase->Write(addr, w);
@@ -174,7 +191,9 @@ void CMemDumpWnd::drawLine(LINENUMBER lnActualNum)
     }
 
     for (i = 0; i < 8; i++)
+    {
         b[i] = m_memoryBase->Read(addr + i, true);
+    }
     m_hexer.ByteArrayToHexArrayEx(b, 8, buffer);
     dc.TextOut(m_sideMargin * 3 + m_charWidth * 4, rc.top, buffer, 23);
 }
