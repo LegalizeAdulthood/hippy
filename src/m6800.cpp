@@ -21,6 +21,8 @@
 
 #include "disassembler.h"
 
+#include <afxmt.h>
+
 /*
  * returns true if the last operation changed
  * the value stored in a memory location.

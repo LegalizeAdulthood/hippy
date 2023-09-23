@@ -22,13 +22,14 @@
 
 #include "addrmng.h"
 #include "alu.h"
-//#include "disassembler.h"
 #include "hippy.h"
 #include "stackwnd.h"
+
 #include <afx.h>
 #include <afxwin.h>
 
 class CM6800;
+class CSemaphore;
 class CStackWnd;
 
 using FnType = void (CM6800::*)();

@@ -25,11 +25,12 @@
 #include "m6800.h"
 #include "resource.h"
 #include "xmlparser.h"
+
 #include <afx.h>
-#include <afxadv.h>
 #include <afxcmn.h>
 #include <afxdlgs.h>
 #include <afxext.h>
+#include <afxmt.h>
 #include <afxwin.h>
 
 /////////////////////////////////////////////////////

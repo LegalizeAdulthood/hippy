@@ -18,6 +18,8 @@
 //
 
 #include "addrmng.h"
+
+#include "device.h"
 #include "disassembler.h"
 #include "environment.h"
 

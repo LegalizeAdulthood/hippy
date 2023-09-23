@@ -17,24 +17,29 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include "XMLparser.h"
+#include "xmlparser.h"
+
+#include "device.h"
 
 char CDeviceFile::GetNextToken()
 {
     int     state = 0, k;
-    CString szBuffer = "";
+    CString szBuffer;
     char    c[3], ret;
 
-    while (xmlTag.szData.GetLength())
+    while (m_xmlTag.szData.GetLength())
+    {
         switch (state)
         {
         case 0:
         {
-            if (xmlTag.szData[0] == 'P')
-                state = 1;
-            else if (xmlTag.szData[0] != ' ')
+            if (m_xmlTag.szData[0] == 'P')
             {
-                ret = xmlTag.szData[0];
+                state = 1;
+            }
+            else if (m_xmlTag.szData[0] != ' ')
+            {
+                ret = m_xmlTag.szData[0];
                 switch (ret)
                 {
                 case '~':
@@ -53,32 +58,32 @@ char CDeviceFile::GetNextToken()
                     ret = (char) bitOR;
                     break;
                 }
-                xmlTag.szData.Delete(0);
+                m_xmlTag.szData.Delete(0);
                 return ret;
             }
-            xmlTag.szData.Delete(0);
+            m_xmlTag.szData.Delete(0);
         }
         break;
         case 1:
-            if (xmlTag.szData[0] == 'A')
-                state = 2;
-            else
+            if (m_xmlTag.szData[0] != 'A')
+            {
                 return 0;
-            xmlTag.szData.Delete(0);
+            }
+            state = 2;
+            m_xmlTag.szData.Delete(0);
             break;
         case 2:
-            if (xmlTag.szData[0] <= '9' && xmlTag.szData[0] >= '0')
-                c[0] = xmlTag.szData[0];
-            else
+            if (m_xmlTag.szData[0] > '9' || m_xmlTag.szData[0] < '0')
                 return 0;
-            xmlTag.szData.Delete(0);
+            c[0] = m_xmlTag.szData[0];
+            m_xmlTag.szData.Delete(0);
             state = 3;
             break;
         case 3:
-            if (xmlTag.szData[0] <= '9' && xmlTag.szData[0] >= '0')
+            if (m_xmlTag.szData[0] <= '9' && m_xmlTag.szData[0] >= '0')
             {
-                c[1] = xmlTag.szData[0];
-                xmlTag.szData.Delete(0);
+                c[1] = m_xmlTag.szData[0];
+                m_xmlTag.szData.Delete(0);
             }
             else
             {
@@ -89,6 +94,7 @@ char CDeviceFile::GetNextToken()
             ret = (0xF0 + (char) k);
             return ret;
         }
+    }
 
     return 0;
 }
@@ -97,7 +103,7 @@ char CDeviceFile::GetNextToken()
 //
 bool CDeviceFile::CompileData()
 {
-    // assume : xmlTag.szData is valid
+    // assume : m_xmlTag.szData is valid
     CString       szBuffer = "";
     unsigned char c;
     IMPLEMENT_STACK();
@@ -105,24 +111,33 @@ bool CDeviceFile::CompileData()
     while (c = GetNextToken())
     {
         if (c >= 0xf0)
-        { // operant
+        {
+            // operand
             szBuffer += c;
             if (indStack && stack[indStack - 1] == bitNOT)
+            {
                 szBuffer += POP();
+            }
         }
         else // operator
             if (c == ')')
             {
                 while (indStack && stack[indStack - 1] != leftPrnt)
+                {
                     szBuffer += POP();
+                }
                 POP(); // pop (
                 if (indStack && stack[indStack - 1] == bitNOT)
+                {
                     szBuffer += POP();
+                }
             }
             else if (c < 6)
             {
                 while (indStack && stack[indStack - 1] >= c && stack[indStack - 1] != leftPrnt)
+                {
                     szBuffer += POP();
+                }
                 PUSH(c);
             }
     }
@@ -131,23 +146,24 @@ bool CDeviceFile::CompileData()
     {
         szBuffer += POP();
     };
-    xmlTag.szData = szBuffer;
+    m_xmlTag.szData = szBuffer;
     return true;
 }
 
 // decrements file pointer by one
 void CDeviceFile::PutCharBack()
 {
-    fseek(file, ftell(file) - 1, SEEK_SET);
+    fseek(m_file, ftell(m_file) - 1, SEEK_SET);
 }
 
 // find the first occurence of a character in the file
 // file pointer positions right after the char.
 bool CDeviceFile::FindChar(char c)
 {
-    while (fgetc(file) != c && !feof(file))
-        ;
-    return !feof(file);
+    while (fgetc(m_file) != c && !feof(m_file))
+    {
+    }
+    return !feof(m_file);
 }
 
 // find the first occurence of the pattern in the file
@@ -157,19 +173,22 @@ bool CDeviceFile::FindPattern(LPSTR lpStr)
     char *ptr = lpStr;
     int   i;
     bool  found = true;
-    ;
 
     do
     {
         // find the first char
         if (!FindChar(lpStr[0]))
+        {
             return false;
+        }
         for (i = 1; (unsigned) i < strlen(lpStr); i++)
-            if (fgetc(file) != lpStr[i])
+        {
+            if (fgetc(m_file) != lpStr[i])
             {
                 break;
                 found = false;
             }
+        }
     } while (!found);
     return true;
 }
@@ -184,16 +203,17 @@ char CDeviceFile::GetString(CString &szString)
 
     while (c == ' ' || c == '\t')
     {
-        c = fgetc(file);
-        if (feof(file))
+        c = fgetc(m_file);
+        if (feof(m_file))
+        {
             return 0;
+        }
     }
     while (c != '\n' && c != ' ' && c != '\t' && c != '>' && c != '=')
     {
         szString += c;
-        c = fgetc(file);
+        c = fgetc(m_file);
     }
-    // PutCharBack();
     return c;
 }
 
@@ -206,13 +226,17 @@ bool CDeviceFile::GetField(LPCSTR lpcField, CString &szVal)
     while (szField != lpcField)
     {
         c = GetString(szField);
-        if (feof(file))
+        if (feof(m_file))
+        {
             return false;
+        }
     }
     if (c != '=')
     {
         if (!FindChar('='))
+        {
             return false;
+        }
     }
     GetString(szVal);
     szVal.TrimLeft("\"");
@@ -225,12 +249,18 @@ bool CDeviceFile::GetUntilChar(const char chr, CString &szStr)
 {
     szStr = "";
     char c;
-    while (!feof(file) && (c = fgetc(file)) != chr)
+    while (!feof(m_file) && (c = fgetc(m_file)) != chr)
+    {
         if (c != ' ' && c != '\t')
+        {
             szStr += c;
-    if (feof(file))
+        }
+    }
+    if (feof(m_file))
+    {
         return false;
-    // PutCharBack();
+    }
+
     return true;
 }
 
@@ -242,7 +272,9 @@ bool CDeviceFile::FindNextTag()
     // look for "<" sign & check if it belongs to a comment or not
 label1:
     if (!FindChar('<'))
-        return 0;
+    {
+        return false;
+    }
     GetString(str);
     if (str == "!--")
     {
@@ -251,71 +283,80 @@ label1:
         goto label1;
     }
 
-    xmlTag.close = false;
-    //
+    m_xmlTag.close = false;
+
     if (str == "HDF")
     {
-        xmlTag.type = ttHdf;
+        m_xmlTag.type = ttHdf;
         // look for version info
-        if (!GetField("version", str))
-            xmlTag.version = 0;
-        else
-            xmlTag.version = atof(str);
+        m_xmlTag.version = !GetField("version", str) ? 0 : atof(str);
     }
     else if (str == "DEVICE")
     {
-        xmlTag.type = ttDevice;
-        if (!GetField("name", xmlTag.szName))
+        m_xmlTag.type = ttDevice;
+        if (!GetField("name", m_xmlTag.szName))
+        {
             return false;
-        if (!GetField("chip", xmlTag.szChip))
+        }
+        if (!GetField("chip", m_xmlTag.szChip))
+        {
             return false;
+        }
     }
     else if (str == "WORD_SELECT")
     {
-        xmlTag.type = ttWordSelect;
+        m_xmlTag.type = ttWordSelect;
     }
     else if (str == "/WORD_SELECT")
     {
-        xmlTag.type = ttWordSelect;
-        xmlTag.close = true;
+        m_xmlTag.type = ttWordSelect;
+        m_xmlTag.close = true;
     }
     else if (str == "AI")
     {
-        xmlTag.type = ttAI;
+        m_xmlTag.type = ttAI;
         GetField("id", str);
-        xmlTag.id = atoi(str);
-        if (!GetUntilChar('<', xmlTag.szData))
+        m_xmlTag.id = atoi(str);
+        if (!GetUntilChar('<', m_xmlTag.szData))
+        {
             return false;
+        }
         GetUntilChar('>', str);
         if (str != "/AI")
+        {
             return false;
+        }
         CompileData();
     }
     else if (str == "CHIP_SELECT")
     {
-        xmlTag.type = ttChipSelect;
-        if (!GetUntilChar('<', xmlTag.szData))
+        m_xmlTag.type = ttChipSelect;
+        if (!GetUntilChar('<', m_xmlTag.szData))
+        {
             return false;
+        }
         GetUntilChar('>', str);
         if (str != "/CHIP_SELECT")
+        {
             return false;
+        }
         CompileData();
     }
     else if (str == "/DEVICE")
     {
-        xmlTag.type = ttDevice;
-        xmlTag.close = true;
+        m_xmlTag.type = ttDevice;
+        m_xmlTag.close = true;
     }
     else if (str == "/HDF")
     {
-        xmlTag.type = ttHdf;
-        xmlTag.close = true;
+        m_xmlTag.type = ttHdf;
+        m_xmlTag.close = true;
     }
 
     return true;
 }
 
-// evaluta the equation using the values in addr, return true or false
+// evaluate the equation using the values in addr, return true or false
 bool CDeviceFile::EvalEqn(Word addr, CString &eqn)
 {
     IMPLEMENT_STACK();
@@ -327,8 +368,11 @@ bool CDeviceFile::EvalEqn(Word addr, CString &eqn)
     {
         c = eqn[i];
         if ((c & 0xf0) == 0xf0) // operant
+        {
             PUSH((bool) ((addr & (1 << (c & 0x0f))) != 0));
+        }
         else
+        {
             switch (c)
             {
             case bitNOT:
@@ -356,6 +400,7 @@ bool CDeviceFile::EvalEqn(Word addr, CString &eqn)
                 PUSH(1);
                 break;
             }
+        }
     }
 
     return (POP() != 0);
@@ -370,16 +415,16 @@ int CDeviceFile::ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devAr
     int          num = 0;
     typedef CDevice *(*pvFunctv)();
     int i = -1;
-    file = fopen(szFileName, "r");
-    if (file)
+    m_file = fopen(szFileName, "r");
+    if (m_file)
     {
         while (FindNextTag())
         {
-            switch (xmlTag.type)
+            switch (m_xmlTag.type)
             {
             case ttDevice:
 
-                if (xmlTag.close)
+                if (m_xmlTag.close)
                 { // </DEVICE>
                     HMODULE  hmod = LoadLibrary(CString("../devices/" + szLibName));
                     pvFunctv func = (pvFunctv) GetProcAddress(hmod, "GetNewDevice");
@@ -391,15 +436,15 @@ int CDeviceFile::ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devAr
                 }
                 else
                 { // <DEVICE name="xxx" chip="###">
-                    szLibName = xmlTag.szChip + ".dll";
-                    szName = xmlTag.szName;
+                    szLibName = m_xmlTag.szChip + ".dll";
+                    szName = m_xmlTag.szName;
                 }
                 break;
             case ttChipSelect:
-                csEqn.Add(xmlTag.szData);
+                csEqn.Add(m_xmlTag.szData);
                 break;
             case ttAI:
-                addrEqns[num].Add(xmlTag.szData);
+                addrEqns[num].Add(m_xmlTag.szData);
                 break;
             }
         }
@@ -417,11 +462,13 @@ int CDeviceFile::ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devAr
                 // for each location look for selected chip
                 found = false;
                 for (i = 0; i < size; i++)
+                {
                     if (EvalEqn(w, csEqn[i]))
                     {
                         found = true;
                         break;
                     }
+                }
 
                 // for each selected chip decode this address
                 // according to its address equations
@@ -430,32 +477,48 @@ int CDeviceFile::ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devAr
                     dec = 0;
                     AddrResTbl[w].devIndex = i;
                     for (k = 0; k < addrEqns[i].GetSize(); k++)
+                    {
                         dec |= EvalEqn(w, addrEqns[i][k]) << k;
+                    }
                     AddrResTbl[w].decodedAddr = dec;
                 }
                 else
+                {
                     AddrResTbl[w].devIndex = 255; // 255 means no device
+                }
             }
 
-            /*	{	// DEBUGING CODE
-                            BYTE last = 255; BYTE cur;
-                            CString str;
+#if 0
+            { // DEBUGGING CODE
+                BYTE    last = 255;
+                BYTE    cur;
+                CString str;
 
-                            FILE * f =fopen("e:/dbg.txt", "w");
-                            for(int w=0;w<0x10000;w++){
-                                    if(w==0xc001){
-                                            cur = cur;
-                                    }
-                                    cur = AddrResTbl[w].devIndex;
-                                    if(cur==255) str = "MEMORY";
-                                    else devArr[cur]->GetDeviceName(str);
-                                    if(cur!=last){
-                                            fprintf(f, "[%08d] %s\n", w,str.GetBuffer(1));
-                                            last = cur;
-                                    }
-                            }
-                            fclose(f);
-                    }*/
+                FILE *f = fopen("e:/dbg.txt", "w");
+                for (int w = 0; w < 0x10000; w++)
+                {
+                    if (w == 0xc001)
+                    {
+                        cur = cur;
+                    }
+                    cur = AddrResTbl[w].devIndex;
+                    if (cur == 255)
+                    {
+                        str = "MEMORY";
+                    }
+                    else
+                    {
+                        devArr[cur]->GetDeviceName(str);
+                    }
+                    if (cur != last)
+                    {
+                        fprintf(f, "[%08d] %s\n", w, str.GetBuffer(1));
+                        last = cur;
+                    }
+                }
+                fclose(f);
+            }
+#endif
         }
     }
 

@@ -16,20 +16,18 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef XML_parser_H__
-#define XML_parser_H__
+#ifndef HIPPY_XML_PARSER_H
+#define HIPPY_XML_PARSER_H
 
-#include "device.h"
 #include "hippy.h"
-#include <afx.h>
+
 #include <afxtempl.h>
-#include <afxwin.h>
-#include <stdio.h>
-#include <string.h>
 
-typedef CArray<CDevice *, CDevice *&> CDeviceArray;
+class CDevice;
 
-typedef enum
+using CDeviceArray = CArray<CDevice *, CDevice *&>;
+
+enum XmlTagType
 {
     ttHdf,
     ttDevice,
@@ -39,15 +37,15 @@ typedef enum
     ttChipSelectCld,
     ttAI,
     ttCS
-} XmlTagType;
+};
 
-typedef struct AddrResEntry
+struct AddrResEntry
 {
     Word decodedAddr;
     BYTE devIndex;
-} AddrResEntry;
+};
 
-typedef struct XmlTag
+struct XmlTag
 {
     XmlTagType type;
     double     version;
@@ -56,20 +54,11 @@ typedef struct XmlTag
     CString    szName;
     CString    szChip;
     bool       close;
-} XmlTag, *PXmlTag;
+};
 
 class CDeviceFile
 {
-private:
-    FILE  *file;
-    bool   bOpened;
-    XmlTag xmlTag;
-    char   GetNextToken();
-
-    bool EvalEqn(Word addr, CString &eqn);
-
 public:
-    bool CheckCSEquation(CString eqn, Word wAddr);
     void PutCharBack();
     bool FindChar(char c);
     bool FindPattern(LPSTR lpStr);
@@ -79,6 +68,14 @@ public:
     bool FindNextTag();
     bool CompileData();
     int  ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl);
+
+private:
+    FILE  *m_file{};
+    bool   m_opened{};
+    XmlTag m_xmlTag{};
+
+    char GetNextToken();
+    bool EvalEqn(Word addr, CString &eqn);
 };
 
 #endif
