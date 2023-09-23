@@ -79,7 +79,7 @@ CString CEprom::GetRomFileName()
     buf[i + 1] = 0;
     CString str(buf);
 
-    str += *lpszDeviceName;
+    str += *m_deviceName;
     str += ".rom";
     return str;
 }
@@ -101,7 +101,7 @@ bool CEprom::LoadFile()
         // char msg[1024];
         CString msg;
         msg.Format("Rom image file not found :\n %s", GetRomFileName());
-        m_pParentWnd->MessageBox(msg, lpszDeviceName->GetBuffer(1));
+        m_parentWnd->MessageBox(msg, m_deviceName->GetBuffer(1));
         return false;
     }
     while (!feof(f))

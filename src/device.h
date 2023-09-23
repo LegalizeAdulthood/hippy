@@ -17,15 +17,17 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef _DEVICE_H__
-#define _DEVICE_H__
+#ifndef HIPPY_DEVICE_H
+#define HIPPY_DEVICE_H
 
 #include "hippy.h"
+
 #include <afxmt.h>
 #include <afxtempl.h>
 #include <afxwin.h>
 
-typedef CArray<CString, CString &> CStrArray;
+using CStrArray = CArray<CString, CString &>;
+
 enum TInterrupt
 {
     IRQ,
@@ -35,16 +37,29 @@ enum TInterrupt
 
 class CDevice
 {
-private:
-    CSemaphore *psem_irq;
-    CSemaphore *psem_nmi;
-    CSemaphore *psem_reset;
+public:
+    CDevice();
+    virtual ~CDevice();
+
+    int  Create(CWnd *parentWnd, CString szName);
+    void Interrupt(TInterrupt tint);
+    bool Read(Word addr, BYTE &val, bool debug);
+    bool Write(Word addr, BYTE val, bool debug);
+
+    void GetDeviceName(CString &str)
+    {
+        str = *m_deviceName;
+    }
+    void GetLibraryName(CString &str)
+    {
+        str = *m_libraryName;
+    }
 
 protected:
-    CWnd    *m_pParentWnd;
-    bool     bDbg;
-    CString *lpszDeviceName;
-    CString *lpszLibraryName;
+    CWnd    *m_parentWnd{};
+    bool     m_debug{};
+    CString *m_deviceName{};
+    CString *m_libraryName{};
 
     virtual void Reset()
     {
@@ -63,25 +78,12 @@ protected:
     {
     }
 
-public:
-    CDevice();
-    virtual ~CDevice();
-
-    int  Create(CWnd *parentWnd, CString szName);
-    void Interrupt(TInterrupt tint);
-    bool Read(Word addr, BYTE &val, bool bDbg);
-    bool Write(Word addr, BYTE val, bool bDbg);
-
-    void GetDeviceName(CString &str)
-    {
-        str = *lpszDeviceName;
-    }
-    void GetLibraryName(CString &str)
-    {
-        str = *lpszLibraryName;
-    }
+private:
+    CSemaphore *m_irq;
+    CSemaphore *m_nmi;
+    CSemaphore *m_reset;
 };
 
-typedef CDevice *(*pdevFunctv)();
+using pdevFunctv = CDevice *(*) ();
 
 #endif

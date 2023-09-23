@@ -413,7 +413,7 @@ void CIntel8279::OnWrite(Word addr, BYTE bVal)
 
 BYTE CIntel8279::OnRead(Word addr)
 {
-    if (bDbg)
+    if (m_debug)
         return 0;
     BYTE res = 0;
     if (addr == 0x00)
@@ -461,5 +461,5 @@ void CIntel8279::Reset()
 void CIntel8279::OnInitialize()
 {
     TRACE0("Generated KeyPad.\n");
-    pKeyPad = new CKeyPad(this, m_pParentWnd);
+    pKeyPad = new CKeyPad(this, m_parentWnd);
 }

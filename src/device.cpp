@@ -19,29 +19,29 @@
 
 #include "device.h"
 
-CDevice::CDevice()
+CDevice::CDevice() :
+    m_irq(new CSemaphore(0, 1000, INT_IRQ)),
+    m_nmi(new CSemaphore(0, 1000, INT_NMI)),
+    m_reset(new CSemaphore(0, 1000, INT_RST))
 {
-    psem_irq = new CSemaphore(0, 1000, INT_IRQ);
-    psem_nmi = new CSemaphore(0, 1000, INT_NMI);
-    psem_reset = new CSemaphore(0, 1000, INT_RST);
-    Reset();
+    CDevice::Reset();
 }
 
 CDevice::~CDevice()
 {
-    delete psem_irq;
-    delete psem_nmi;
-    delete psem_reset;
-    OnFinalize();
+    delete m_irq;
+    delete m_nmi;
+    delete m_reset;
+    CDevice::OnFinalize();
 }
 
 int CDevice::Create(CWnd *parentWnd, CString szName)
 {
     char buffer[1024];
-    m_pParentWnd = parentWnd;
-    lpszDeviceName = new CString(szName);
+    m_parentWnd = parentWnd;
+    m_deviceName = new CString(szName);
     GetModuleFileName(AfxGetInstanceHandle(), buffer, 1024);
-    lpszLibraryName = new CString(buffer);
+    m_libraryName = new CString(buffer);
     OnInitialize();
     return 0;
 }
@@ -51,13 +51,13 @@ void CDevice::Interrupt(TInterrupt tint)
     switch (tint)
     {
     case IRQ:
-        psem_irq->Unlock();
+        m_irq->Unlock();
         break;
     case NMI:
-        psem_nmi->Unlock();
+        m_nmi->Unlock();
         break;
     case RESET:
-        psem_reset->Unlock();
+        m_reset->Unlock();
         break;
     }
 }
@@ -65,18 +65,18 @@ void CDevice::Interrupt(TInterrupt tint)
 // reads the specifies address from the chip and returns the value in val.
 // if the chip is not selected with the address specified returns false.
 // in this case the val remains untouched.
-bool CDevice::Read(Word addr, BYTE &val, bool bDbg)
+bool CDevice::Read(Word addr, BYTE &val, bool debug)
 {
-    this->bDbg = bDbg;
+    m_debug = debug;
     val = OnRead(addr);
     return true;
 }
 
 // write the specifies address to the chip if the chip is not selected with
 // the address specified returns false.
-bool CDevice::Write(Word addr, BYTE val, bool bDbg)
+bool CDevice::Write(Word addr, BYTE val, bool debug)
 {
-    this->bDbg = bDbg;
+    m_debug = debug;
     OnWrite(addr, val);
     return true;
 }
