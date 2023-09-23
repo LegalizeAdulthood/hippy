@@ -16,43 +16,43 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef _ENVIRONMENT_H__
-#define _ENVIRONMENT_H__
+#ifndef HIPPY_ENVIRONMENT_H
+#define HIPPY_ENVIRONMENT_H
 
 #include <afxwin.h>
 
 class CEnvironment
 {
-private:
-    void   *m_pMainWnd;
-    void   *m_pDebugWnd;
-    CString devicefile;
-
 public:
     void SetMainWnd(void *pWnd)
     {
-        m_pMainWnd = pWnd;
+        m_mainWnd = pWnd;
     }
     void *GetMainWnd()
     {
-        return m_pMainWnd;
+        return m_mainWnd;
     }
     void SetDebugWnd(void *pDbg)
     {
-        m_pDebugWnd = pDbg;
+        m_debugWnd = pDbg;
     }
     void *GetDebugWnd()
     {
-        return m_pDebugWnd;
+        return m_debugWnd;
     }
     void SetDeviceFile(CString str)
     {
-        devicefile = str;
+        m_deviceFile = str;
     }
     CString GetDeviceFile()
     {
-        return devicefile;
+        return m_deviceFile;
     }
+
+private:
+    void   *m_mainWnd{};
+    void   *m_debugWnd{};
+    CString m_deviceFile;
 };
 
 #endif
