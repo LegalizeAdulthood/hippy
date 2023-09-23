@@ -48,20 +48,20 @@ public:
     DECLARE_MESSAGE_MAP()
 
 protected:
-    CAddressManager *m_memoryBase;
-    LINENUMBER       m_pageStart;
-    int              m_charWidth;
-    int              m_charHeight;
-    int              m_sideMargin;
-    LINENUMBER       m_numLines;
-    int              m_totNumLines;
-    int              m_lineWidth;
-    int              m_selectedLine;
+    CAddressManager *m_memoryBase{};
+    LINENUMBER       m_pageStart{};
+    int              m_charWidth{};
+    int              m_charHeight{};
+    int              m_sideMargin{};
+    LINENUMBER       m_numLines{};
+    int              m_totNumLines{};
+    int              m_lineWidth{};
+    int              m_selectedLine{0xEE};
     CBrush           m_selected;
     CBrush           m_active;
     CBrush           m_normal;
     CFont            m_font;
-    CFont           *m_defaultFont;
+    CFont           *m_defaultFont{};
 
     virtual void drawLine(LINENUMBER lnActualLine)
     {

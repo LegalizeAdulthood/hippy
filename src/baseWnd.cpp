@@ -377,7 +377,6 @@ CBaseWnd::CBaseWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName)
 
     m_defaultFont = dc.SelectObject(&m_font);
     dc.SetBkMode(TRANSPARENT);
-    m_selectedLine = 0xEE;
     UpdateMetrics();
 }
 
