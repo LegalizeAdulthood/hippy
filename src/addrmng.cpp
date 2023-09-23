@@ -95,7 +95,7 @@ bool CAddressManager::LoadFile(char *fname, CArray<Word, Word &> &adr_arr)
                 BYTE ck = GetNextByte(f);
                 if ((BYTE) ~checksum != ck)
                 {
-                    MessageBox(NULL, "CHECK SUM ERROR, S file seems to be badly formatted.", "ERROR",
+                    MessageBox(nullptr, "CHECK SUM ERROR, S file seems to be badly formatted.", "ERROR",
                                MB_OK | MB_ICONWARNING);
                     return false;
                 }

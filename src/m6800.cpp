@@ -1292,7 +1292,7 @@ void CM6800::initFunctions()
             m_functions[op] = &CM6800::tpa;
             break;
         default:
-            m_functions[op] = NULL;
+            m_functions[op] = nullptr;
         }
     }
 }
