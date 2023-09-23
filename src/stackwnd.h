@@ -52,7 +52,7 @@ class CStackWnd : public CBaseWnd
 {
 public:
     CStackWnd(CWnd *pParentWnd, CRect &rcPos);
-    ~CStackWnd() override;
+    ~CStackWnd() override = default;
 
     void SetContinuous(bool continuous)
     {
@@ -76,10 +76,10 @@ public:
     DECLARE_MESSAGE_MAP()
 
 private:
-    bool                   m_continuous;
+    bool                   m_continuous{};
     std::vector<StackInfo> m_codes;
-    Registers             *m_regs;
-    CAddressManager       *m_memory;
+    Registers             *m_regs{};
+    CAddressManager       *m_memory{};
 
     void drawLine(LINENUMBER lnActualLine) override;
     void paintBkgnd(LPCRECT lpcRect) override;

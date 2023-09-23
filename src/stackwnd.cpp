@@ -24,7 +24,6 @@
 // clang-format off
 BEGIN_MESSAGE_MAP(CStackWnd, CBaseWnd)
     ON_MESSAGE(WM_REDRAWALL, OnRedrawAll)
-    // ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 // clang-format on
 
@@ -35,18 +34,24 @@ bool CStackWnd::OnEraseBkgnd(CDC *pDC)
 
 LRESULT CStackWnd::OnRedrawAll(WPARAM wParam, LPARAM lParam)
 {
-    int i;
-    for (i = 0; i < m_numLines; i++)
+    for (int i = 0; i < m_numLines; i++)
+    {
         ClearLine(i);
-    for (i = 0; i < m_totNumLines; i++)
+    }
+    for (int i = 0; i < m_totNumLines; i++)
+    {
         drawLine(m_pageStart + i);
+    }
     return TRUE;
 }
 
 void CStackWnd::ClearLine(int line)
 {
     if (m_continuous)
+    {
         return;
+    }
+
     CClientDC dc(this);
     CRect     rc;
     int       x;
@@ -65,29 +70,38 @@ void CStackWnd::ClearLine(int line)
 void CStackWnd::ScrollDown(int nl)
 {
     if (m_continuous)
+    {
         return;
+    }
+
     CClientDC dc(this);
     CRect     rc;
     GetLineRect(0, &rc);
-    dc.BitBlt(0, m_sideMargin + m_charHeight * nl, rc.right, m_charHeight * (m_totNumLines - nl), (CDC *) &dc, 0, m_sideMargin,
-              SRCCOPY);
+    dc.BitBlt(0, m_sideMargin + m_charHeight * nl, rc.right, m_charHeight * (m_totNumLines - nl), (CDC *) &dc, 0,
+              m_sideMargin, SRCCOPY);
 }
 
 void CStackWnd::ScrollUp(int nl)
 {
     if (m_continuous)
+    {
         return;
+    }
+
     CClientDC dc(this);
     CRect     rc;
     GetLineRect(0, &rc);
-    dc.BitBlt(0, m_sideMargin, rc.right, m_charHeight * (m_totNumLines - nl), (CDC *) &dc, 0, m_sideMargin + m_charHeight * nl,
-              SRCCOPY);
+    dc.BitBlt(0, m_sideMargin, rc.right, m_charHeight * (m_totNumLines - nl), (CDC *) &dc, 0,
+              m_sideMargin + m_charHeight * nl, SRCCOPY);
 }
 
 void CStackWnd::drawLine(LINENUMBER lnActualLine)
 {
     if (m_continuous)
+    {
         return;
+    }
+
     CClientDC dc(this);
     CRect     rc;
     char      buffer[256];
@@ -148,7 +162,10 @@ void CStackWnd::UpdateScroll()
 void CStackWnd::paintBkgnd(LPCRECT lpcRect)
 {
     if (m_continuous)
+    {
         return;
+    }
+
     CClientDC dc(this);
     int       x;
 
@@ -184,13 +201,17 @@ void CStackWnd::Push(BYTE code, bool paint)
         ScrollDown(1);
         PushEx(_ACCA, m_regs->sp + 1);
         if (paint)
+        {
             drawLine(0);
+        }
         break;
     case 0x37: /*PSHB*/
         ScrollDown(1);
         PushEx(_ACCB, m_regs->sp + 1);
         if (paint)
+        {
             drawLine(0);
+        }
         break;
     case 0x8d:
     case 0xad:
@@ -228,7 +249,9 @@ void CStackWnd::Push(BYTE code, bool paint)
         ScrollDown(1);
         PushEx(_NONE, m_regs->sp + 1);
         if (paint)
+        {
             drawLine(0);
+        }
         break;
     default:
         return;
@@ -239,20 +262,25 @@ void CStackWnd::PopEx(int numPop)
 {
     m_totNumLines -= numPop;
     if (m_totNumLines < 0)
+    {
         m_totNumLines = 0;
+    }
     m_codes.resize(m_totNumLines);
 }
 
 void CStackWnd::Pop(BYTE code, bool paint)
 {
     if (m_totNumLines)
+    {
         switch (code)
         {
         case 0x32: /*PULA*/
         case 0x33: /*PULB*/
             ScrollUp(1);
             if (paint)
+            {
                 ClearLine(m_totNumLines - 1);
+            }
             PopEx(1);
             break;
         case 0x39: /*RTS*/
@@ -270,7 +298,9 @@ void CStackWnd::Pop(BYTE code, bool paint)
             for (int i = 0; i < 7; i++)
             {
                 if (paint)
+                {
                     ClearLine(m_totNumLines - 1);
+                }
                 PopEx(1);
             }
         }
@@ -279,7 +309,9 @@ void CStackWnd::Pop(BYTE code, bool paint)
             ScrollUp(1);
             PopEx(1);
             if (paint)
+            {
                 ClearLine(m_totNumLines - 1);
+            }
             break;
         case 0x02: // RESET
             m_totNumLines = 0;
@@ -289,15 +321,10 @@ void CStackWnd::Pop(BYTE code, bool paint)
         default:
             return;
         }
+    }
 }
 
 CStackWnd::CStackWnd(CWnd *pParentWnd, CRect &rcPos) :
     CBaseWnd(pParentWnd, rcPos, "Stack Window")
-{
-    m_totNumLines = 0;
-    m_pageStart = 0;
-}
-
-CStackWnd::~CStackWnd()
 {
 }
