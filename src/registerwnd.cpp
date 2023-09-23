@@ -490,7 +490,7 @@ void CRegisterWnd::OnKillFocus(CWnd *pNewWnd)
 
 // cosntructor:
 // register wnd class, create window and font
-CRegisterWnd::CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, PRegisters pRegs, LPCTSTR szWindowName)
+CRegisterWnd::CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPCTSTR szWindowName)
 {
     const char *p = AfxRegisterWndClass(CS_OWNDC | CS_SAVEBITS, LoadCursor(NULL, IDC_ARROW), NULL, 0);
     Create(p, szWindowName, WS_CHILD | WS_TABSTOP, rcPos, pParentWnd, 1);

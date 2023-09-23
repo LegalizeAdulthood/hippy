@@ -45,7 +45,7 @@ private:
     CFont      Font, *defFont;
     CBrush     brNormal, brSelected, brRecent;
     int        CharWidth, CharHeight, SideMargin;
-    PRegisters pRegs;       // points to actual processor registers
+    Registers *pRegs;       // points to actual processor registers
     Registers  prevRegs;    // previous register states
     Registers  prevRegsAct; // used as boolean type, true for each element if
                            // that element was modified in previous instruction.
@@ -60,7 +60,7 @@ private:
 
 public:
     // constructor & destructor
-    CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, PRegisters pRegs, LPCTSTR szWindowName = NULL);
+    CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPCTSTR szWindowName = NULL);
     ~CRegisterWnd();
 
     void            Update(bool drawAll = false);

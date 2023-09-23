@@ -150,7 +150,7 @@ public:
     {
         return &memory;
     }
-    PRegisters GetRegsPtr()
+    Registers *GetRegsPtr()
     {
         return &regs;
     }

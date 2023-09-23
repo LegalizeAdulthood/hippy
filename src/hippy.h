@@ -16,8 +16,8 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef _HIPPY_H__
-#define _HIPPY_H__
+#ifndef HIPPY_H
+#define HIPPY_H
 
 #define WM_UPDATEDBGWND WM_USER + 100
 #define WM_MEMLOCCHANGE WM_USER + 101
@@ -29,12 +29,12 @@
 #define INT_NMI "HIPPY_NMI_INT_SEM"
 #define INT_RST "HIPPY_RST_INT_SEM"
 
-typedef unsigned char  BYTE;
-typedef unsigned short ADDRESS;
-typedef unsigned short LINENUMBER;
-typedef unsigned short Word;
+using BYTE = unsigned char;
+using ADDRESS = unsigned short;
+using LINENUMBER = unsigned short;
+using Word = unsigned short;
 
-typedef union CCR
+union CCR
 {
     BYTE all;
     struct
@@ -47,9 +47,9 @@ typedef union CCR
         BYTE h : 1;
         BYTE rsv : 2;
     };
-} CCR;
+};
 
-typedef struct Registers
+struct Registers
 {
     BYTE    a;
     BYTE    b;
@@ -57,7 +57,7 @@ typedef struct Registers
     ADDRESS x;
     ADDRESS sp;
     CCR     ccr;
-} Registers, *PRegisters;
+};
 
 #define IMPLEMENT_STACK() \
     int  indStack = 0;    \
@@ -65,13 +65,13 @@ typedef struct Registers
 #define POP() stack[--indStack]
 #define PUSH(x) stack[indStack++] = (x)
 
-typedef enum
+enum Operator
 {
     bitOR = 1,
     bitXOR,
     bitAND,
     bitNOT,
     leftPrnt
-} Operator;
+};
 
 #endif
