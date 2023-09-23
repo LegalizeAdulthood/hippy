@@ -53,7 +53,7 @@ bool CDebugWnd::ExecuteNext()
     m_dasm->add_codePt(m_regs->pc);
     // DoStack(opcode);
 
-    m_collectedCycles += (InstDescTbl[opcode] & 0xf0) >> 4;
+    m_collectedCycles += (g_instDescTbl[opcode] & 0xf0) >> 4;
 
     if (m_collectedCycles >= 50000)
     {
@@ -174,7 +174,7 @@ void CDebugWnd::StepOver()
     if (opcode == 0x8d || opcode == 0xad || opcode == 0xbd)
     {
         m_stopMode = STOP_MEMLOC;
-        int instLen = InstDescTbl[opcode] & 0x0F;
+        int instLen = g_instDescTbl[opcode] & 0x0F;
         m_stopAt = m_regs->pc + instLen;
         BlockRun();
     }

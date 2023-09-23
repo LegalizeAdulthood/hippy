@@ -316,7 +316,7 @@ void CDisasmWnd::LoadProgram(Word wStart)
 
         while (codelength)
         {
-            b = InstDescTbl[m_memoryBase->Read(addrCur, true)] & 0x0F; // masking the cycle bits (num bytes left)
+            b = g_instDescTbl[m_memoryBase->Read(addrCur, true)] & 0x0F; // masking the cycle bits (num bytes left)
             if (b == 0)
             {          // no such instruction exists
                 b = 1; // then it's 1 byte long INVALID_INSTRUCTION

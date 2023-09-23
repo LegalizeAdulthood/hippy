@@ -59,8 +59,8 @@ void CM6800::Step()
 
     opcode = memory.Read(regs.pc);
 
-    AddressingMode addrMode = InstModes[opcode];
-    int            instLength = InstDescTbl[opcode] & 0x0F;
+    AddressingMode addrMode = g_instModes[opcode];
+    int            instLength = g_instDescTbl[opcode] & 0x0F;
     Word           param;
 
     bMemLocChanged = false;
@@ -680,7 +680,7 @@ void CM6800::cpx()
 {
     Word w;
 
-    if (InstModes[opcode] != amImm)
+    if (g_instModes[opcode] != amImm)
         w = (memory.Read(mar) << 8) + memory.Read(mar + 1);
     else
         w = mar;
@@ -712,7 +712,7 @@ void CM6800::ins()
 
 void CM6800::ldx()
 {
-    if (InstModes[opcode] != amImm)
+    if (g_instModes[opcode] != amImm)
         regs.x = (memory.Read(mar) << 8) + memory.Read(mar + 1);
     else
         regs.x = mar;
@@ -723,7 +723,7 @@ void CM6800::ldx()
 
 void CM6800::lds()
 {
-    if (InstModes[opcode] != amImm)
+    if (g_instModes[opcode] != amImm)
         regs.sp = (memory.Read(mar) << 8) + memory.Read(mar + 1);
     else
         regs.sp = mar;
