@@ -17,64 +17,44 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef _DEBUGWND_H__
-#define _DEBUGWND_H__
+#ifndef HIPPY_DEBUGWND_H
+#define HIPPY_DEBUGWND_H
 
-#include "dasmwnd.h"
-#include "disassembler.h"
 #include "hippy.h"
-#include "m6800.h"
-#include "memdump.h"
-#include "registerwnd.h"
-#include "stackwnd.h"
+
 #include <Winsock2.h>
 #include <afxwin.h>
 
-typedef enum
+class CAddressManager;
+class CDisasmWnd;
+class CEnvironment;
+class CM6800;
+class CMemDumpWnd;
+class CRegisterWnd;
+class CStackWnd;
+
+struct Registers;
+
+enum StopMode
 {
     NONSTOP,
     STOP_MEMLOC,
     STOP_OPCODE
-} StopMode;
+};
 
-typedef enum
+enum TimeMode
 {
     TM_ACTUAL,
     TM_BURST,
     TM_IGNORE
-} TimeMode;
+};
 
 class CDebugWnd : public CMDIChildWnd
 {
-    FILETIME         lastTimeRecorded;
-    int              collectedCycles;
-    int              threadPri;
-    CDisasmWnd      *pDasm;
-    CMemDumpWnd     *pMemDump;
-    CRegisterWnd    *pRegWnd;
-    CStackWnd       *pStackWnd;
-    Registers       *regs;
-    CM6800          *pm6800;
-    CEnvironment    *pEnv;
-    Word            *pwRetStack;
-    int              iRetStackSize;
-    CFont            Font;
-    TimeMode         timing;
-    CAddressManager *memory;
-    int              iLeftPercent;
-    int              iTopPercent;
-    Word             execMode;
-    Word             StopAt;
-    StopMode         stopMode;
-    bool             Running;
-
-    void DoReturnStack(BYTE opcode);
-    void DoStack(BYTE opcode);
-    void BlockRun();
-
 public:
     CDebugWnd(CEnvironment *pEnv);
-    ~CDebugWnd();
+    ~CDebugWnd() override;
+
     bool            ExecuteNext();
     void            Run();
     void            StepOver();
@@ -93,7 +73,35 @@ public:
     afx_msg void    OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
     afx_msg void    OnSize(UINT nType, int cx, int cy);
     afx_msg LRESULT OnUpdateDbgWnd(WPARAM wParam, LPARAM lParam);
+
     DECLARE_MESSAGE_MAP()
+
+private:
+    FILETIME         m_lastTimeRecorded{};
+    int              m_collectedCycles{};
+    int              m_threadPri{};
+    CDisasmWnd      *m_dasm{};
+    CMemDumpWnd     *m_memDump{};
+    CRegisterWnd    *m_regWnd{};
+    CStackWnd       *m_stackWnd{};
+    Registers       *m_regs{};
+    CM6800          *m_m6800{};
+    CEnvironment    *m_env{};
+    Word            *m_retStack{};
+    int              m_retStackSize{};
+    CFont            m_font;
+    TimeMode         m_timing{};
+    CAddressManager *m_memory{};
+    int              m_leftPercent{};
+    int              m_topPercent{};
+    Word             m_execMode{};
+    Word             m_stopAt{};
+    StopMode         m_stopMode{};
+    bool             m_running{};
+
+    void DoReturnStack(BYTE opcode);
+    void DoStack(BYTE opcode);
+    void BlockRun();
 };
 
 #endif
