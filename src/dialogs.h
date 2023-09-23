@@ -16,37 +16,38 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef _DIALOGS_H___
-#define _DIALOGS_H___
+#ifndef HIPPY_DIALOGS_H
+#define HIPPY_DIALOGS_H
 
 #include "hippy.h"
 #include "resource.h"
+
 #include <afxwin.h>
 
 class CInputBox : public CDialog
 {
-private:
-    CString strEntry;
-    CString strTitle;
-    CString strPrompt;
-
 public:
-    int ShowModal(CString *pstrPrompt = NULL, CString *pstrTitle = NULL);
+    int ShowModal(CString *pstrPrompt = nullptr, CString *pstrTitle = nullptr);
 
     void AsString(CString &str)
     {
-        str = strEntry;
+        str = m_entry;
     }
     Word AsWord();
-    void DoDataExchange(CDataExchange *pDX);
+    void DoDataExchange(CDataExchange *pDX) override;
+
+private:
+    CString m_entry;
+    CString m_title;
+    CString m_prompt;
 };
 
 class CSFileDialog : public CDialog
 {
-private:
-    CString strBegin;
-    CString strFile;
-    CString strEnd;
+public:
+    int  ShowModal();
+    void GetValues(Word &begin, Word &end, CString &str);
+    void DoDataExchange(CDataExchange *pDX) override;
 
 protected:
     enum MYIDD
@@ -54,9 +55,10 @@ protected:
         IDD = IDD_SRECORD
     };
 
-public:
-    int  ShowModal();
-    void GetValues(Word &wBegin, Word &wEnd, CString &str);
-    void DoDataExchange(CDataExchange *pDX);
+private:
+    CString m_begin;
+    CString m_file;
+    CString m_end;
 };
+
 #endif

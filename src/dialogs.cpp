@@ -16,6 +16,7 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
+
 #include "dialogs.h"
 
 Word StrToWord(CString &str)
@@ -31,11 +32,17 @@ Word StrToWord(CString &str)
         {
             ch = str[i];
             if (ch >= '0' && ch <= '9')
+            {
                 b = ch - '0';
+            }
             else if (ch >= 'A' && ch <= 'F')
+            {
                 b = ch - 'A' + 10;
+            }
             else
+            {
                 b = 0;
+            }
             w = b + w * 16;
         }
         return w;
@@ -48,31 +55,22 @@ Word StrToWord(CString &str)
 /////////////////////////////////////
 void CInputBox::DoDataExchange(CDataExchange *pDX)
 {
-    SendMessage(WM_SETTEXT, 0, (LPARAM) strTitle.GetBuffer(1));
-    DDX_Text(pDX, IDC_EDIT, strEntry);
-    DDX_Text(pDX, IDC_PROMPT, strPrompt);
-    // DDV_Text(pDX, IDD_INPUTBOX, strTitle);
+    SendMessage(WM_SETTEXT, 0, (LPARAM) m_title.GetBuffer(1));
+    DDX_Text(pDX, IDC_EDIT, m_entry);
+    DDX_Text(pDX, IDC_PROMPT, m_prompt);
 }
 
 int CInputBox::ShowModal(CString *pstrPrompt, CString *pstrTitle)
 {
     m_lpszTemplateName = MAKEINTRESOURCE(IDD_INPUTBOX);
-    if (pstrTitle)
-        strTitle = *pstrTitle;
-    else
-        strTitle = "User input";
-
-    if (pstrPrompt)
-        strPrompt = *pstrPrompt;
-    else
-        strPrompt = "Please enter a value";
-
+    m_title = pstrTitle ? *pstrTitle : "User input";
+    m_prompt = pstrPrompt ? *pstrPrompt : "Please enter a value";
     return DoModal();
 }
 
 Word CInputBox::AsWord()
 {
-    return StrToWord(strEntry);
+    return StrToWord(m_entry);
 }
 
 /////////////////////////////////////
@@ -81,16 +79,15 @@ Word CInputBox::AsWord()
 
 int CSFileDialog::ShowModal()
 {
-    int ret;
     m_lpszTemplateName = MAKEINTRESOURCE(CSFileDialog::IDD);
 
-    ret = DoModal();
+    int ret = DoModal();
     if (ret == IDOK)
     {
         CWinApp *app = AfxGetApp();
-        app->WriteProfileString("SRec", "SRecBeging", strBegin);
-        app->WriteProfileString("SRec", "SRecEnd", strEnd);
-        app->WriteProfileString("SRec", "SRecFile", strFile);
+        app->WriteProfileString("SRec", "SRecBeging", m_begin);
+        app->WriteProfileString("SRec", "SRecEnd", m_end);
+        app->WriteProfileString("SRec", "SRecFile", m_file);
     }
 
     return ret;
@@ -102,18 +99,18 @@ void CSFileDialog::DoDataExchange(CDataExchange *pDX)
 
     { // read latest write locations from registry
         CWinApp *app = AfxGetApp();
-        strBegin = app->GetProfileString("SRec", "SRecBeging", "$0000");
-        strEnd = app->GetProfileString("SRec", "SRecEnd", "$FFFF");
-        strFile = app->GetProfileString("SRec", "SRecFile", "Output.Hex");
+        m_begin = app->GetProfileString("SRec", "SRecBeging", "$0000");
+        m_end = app->GetProfileString("SRec", "SRecEnd", "$FFFF");
+        m_file = app->GetProfileString("SRec", "SRecFile", "Output.Hex");
     }
-    DDX_Text(pDX, IDC_EDITBADDR, strBegin);
-    DDX_Text(pDX, IDC_EDITEADDR, strEnd);
-    DDX_Text(pDX, IDC_EDITOUTPUT, strFile);
+    DDX_Text(pDX, IDC_EDITBADDR, m_begin);
+    DDX_Text(pDX, IDC_EDITEADDR, m_end);
+    DDX_Text(pDX, IDC_EDITOUTPUT, m_file);
 }
 
-void CSFileDialog::GetValues(Word &wBegin, Word &wEnd, CString &str)
+void CSFileDialog::GetValues(Word &begin, Word &end, CString &str)
 {
-    wBegin = StrToWord(strBegin);
-    wEnd = StrToWord(strEnd);
-    str = strFile;
+    begin = StrToWord(m_begin);
+    end = StrToWord(m_end);
+    str = m_file;
 }
