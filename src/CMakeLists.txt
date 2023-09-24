@@ -41,6 +41,8 @@ add_executable(hippy WIN32
     Hippy.rc
 )
 set_property(TARGET hippy PROPERTY VS_DPI_AWARE "OFF")
+add_custom_command(TARGET hippy POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/devices/device.xml" "${CMAKE_BINARY_DIR}/devices")
 
 add_subdirectory(keypad)
 add_subdirectory(asm)
