@@ -5,6 +5,13 @@ project(hippy)
 add_definitions(-D_AFXDLL -D_WIN32_WINNT=_WIN32_WINNT_WINXP)
 set(CMAKE_MFC_FLAG 2)
 
+add_library(device STATIC
+    device.h
+    device.cpp
+    hippy.h
+)
+target_include_directories(device PUBLIC .)
+
 add_executable(hippy WIN32
     addrmng.h
     alu.h
@@ -12,11 +19,9 @@ add_executable(hippy WIN32
     baseWnd.h
     dasmwnd.h
     debugwnd.h
-    device.h
     dialogs.h
     disassembler.h
     environment.h
-    hippy.h
     m6800.h
     memdump.h
     registerwnd.h
@@ -29,7 +34,6 @@ add_executable(hippy WIN32
     baseWnd.cpp
     dasmwnd.cpp
     debugwnd.cpp
-    device.cpp
     dialogs.cpp
     disassembler.cpp
     m6800.cpp
@@ -39,7 +43,11 @@ add_executable(hippy WIN32
     stackwnd.cpp
     xmlparser.cpp
     Hippy.rc
+    toolbar1.bmp
+    toolbar2.bmp
+    toolbar3.bmp
 )
+target_link_libraries(hippy PUBLIC device)
 set_property(TARGET hippy PROPERTY VS_DPI_AWARE "OFF")
 add_custom_command(TARGET hippy POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/devices/device.xml" "${CMAKE_BINARY_DIR}/devices")
