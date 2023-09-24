@@ -99,7 +99,7 @@ void CKeyPad::OnPaint()
     GetClientRect(&rc);
     dc.FillRect(rc, &m_board);
     DrawDisplay();
-    BmpDC.CreateCompatibleDC(NULL);
+    BmpDC.CreateCompatibleDC(nullptr);
     BmpDC.SelectObject(&m_bmp);
     dc.BitBlt(m_keyPadRect.left, m_keyPadRect.top, m_keyPadRect.Width(), m_keyPadRect.Height(), &BmpDC, 0, 0, SRCCOPY);
     BmpDC.DeleteDC();
@@ -206,7 +206,7 @@ void CKeyPad::RestoreKey(int row, int col)
     CDC       BmpDC;
 
     GetKeyRect(CPoint(row, col), rc);
-    BmpDC.CreateCompatibleDC(NULL);
+    BmpDC.CreateCompatibleDC(nullptr);
     BmpDC.SelectObject(&m_bmp);
     dc.BitBlt(m_keyPadRect.left + rc.left, m_keyPadRect.top + rc.top, key_size + 3, key_size + 3, &BmpDC, rc.left,
               rc.top, SRCCOPY);
@@ -309,11 +309,11 @@ CKeyPad::CKeyPad(CDevice *pdevParent, CWnd *parent) :
     int y = 200;
     int x = 200;
 
-    Create(NULL, "KeyPad", WS_SYSMENU | WS_VISIBLE,
-           CRect(x, y, x + m_displayRect.right + 20, y + m_keyPadRect.bottom + disp_spacing + 35), m_parent, NULL,
-           WS_EX_TOOLWINDOW);
+    CFrameWnd::Create(nullptr, "KeyPad", WS_SYSMENU | WS_VISIBLE,
+                      CRect(x, y, x + m_displayRect.right + 20, y + m_keyPadRect.bottom + disp_spacing + 35), m_parent,
+                      nullptr, WS_EX_TOOLWINDOW);
 
-    HANDLE hBmp = LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDB_BMP_KEYPAD), IMAGE_BITMAP, 0, 0,
+    HANDLE hBmp = LoadImage(GetModuleHandleA("keypad.dll"), MAKEINTRESOURCE(IDB_BMP_KEYPAD), IMAGE_BITMAP, 0, 0,
                             LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
     m_bmp.Attach((HBITMAP) hBmp);
 
