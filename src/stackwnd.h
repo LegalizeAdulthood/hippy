@@ -67,9 +67,9 @@ public:
         m_memory = memory;
     }
 
-    void            CheckStack(BYTE code, bool paint = true);
+    void            CheckStack(BYTE code, bool paint);
     void            ScrollUp(int nl);
-    void            ScrollDown(int nl = 1);
+    void            ScrollDown(int nl);
     afx_msg bool    OnEraseBkgnd(CDC *pDC);
     afx_msg LRESULT OnRedrawAll(WPARAM wParam, LPARAM lParam);
 
