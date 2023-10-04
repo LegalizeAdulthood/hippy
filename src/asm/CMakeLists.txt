@@ -2,17 +2,26 @@ find_package(BISON)
 find_package(FLEX)
 
 if(NOT (BISON_FOUND AND FLEX_FOUND))
-    message(WARNING "Bison and flex required to build the assember; skipping")
-    return()
+    message(WARNING "Bison and flex required to generate the assembler lexer and parser; using pregenerated sources")
+    set(grammarSources
+        generated/asm.lex.cpp
+        generated/asm.yacc.hpp
+        generated/asm.yacc.cpp
+    )
+else()
+    flex_target(asm asm.l ${CMAKE_CURRENT_BINARY_DIR}/asm.lex.cpp)
+    bison_target(asm asm.y ${CMAKE_CURRENT_BINARY_DIR}/asm.yacc.cpp)
+    set(grammarSources
+        ${CMAKE_CURRENT_BINARY_DIR}/asm.lex.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/asm.yacc.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/asm.yacc.cpp
+    )
 endif()
 
-flex_target(asm asm.l ${CMAKE_CURRENT_BINARY_DIR}/asm.lex.cpp)
-bison_target(asm asm.y ${CMAKE_CURRENT_BINARY_DIR}/asm.yacc.cpp)
 add_executable(asm
     asm.l
     asm.y
-    ${CMAKE_CURRENT_BINARY_DIR}/asm.lex.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/asm.yacc.cpp
+    ${grammarSources}
     sym_table.h
     sym_table.cpp
     tables.h
