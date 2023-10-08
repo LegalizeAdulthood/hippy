@@ -351,8 +351,8 @@ void CBaseWnd::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar)
 
 CBaseWnd::CBaseWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName)
 {
-    const char *p = AfxRegisterWndClass(CS_OWNDC | CS_SAVEBITS, LoadCursor(nullptr, IDC_ARROW), nullptr, nullptr);
-    Create(p, "Base Window", WS_CHILD | WS_TABSTOP | WS_VSCROLL, rcPos, pParentWnd, 0);
+    LPCTSTR p = AfxRegisterWndClass(CS_OWNDC | CS_SAVEBITS, LoadCursor(nullptr, IDC_ARROW), nullptr, nullptr);
+    CWnd::Create(p, _T("Base Window"), WS_CHILD | WS_TABSTOP | WS_VSCROLL, rcPos, pParentWnd, 0);
 
     m_font.CreateFont(12,                       // nHeight
                     0,                        // nWidth

@@ -295,7 +295,7 @@ void CDebugWnd::OnDestroy()
 {
     WINDOWPLACEMENT wp;
     GetWindowPlacement(&wp);
-    AfxGetApp()->WriteProfileBinary("Smart IDE", "WP DebugWnd", (LPBYTE) &wp, sizeof(wp));
+    AfxGetApp()->WriteProfileBinary(_T("Smart IDE"), _T("WP DebugWnd"), (LPBYTE) &wp, sizeof(wp));
 }
 
 void CDebugWnd::OnShowWindow(BOOL bShow, UINT nStatus)
@@ -307,7 +307,7 @@ void CDebugWnd::OnShowWindow(BOOL bShow, UINT nStatus)
         WINDOWPLACEMENT *lwp;
         UINT             nl;
 
-        if (AfxGetApp()->GetProfileBinary("Smart IDE", "WP DebugWnd", (LPBYTE *) &lwp, &nl))
+        if (AfxGetApp()->GetProfileBinary(_T("Smart IDE"), _T("WP DebugWnd"), (LPBYTE *) &lwp, &nl))
         {
             SetWindowPlacement(lwp);
             delete[] lwp;
@@ -330,8 +330,8 @@ CDebugWnd::CDebugWnd(CEnvironment *pEnv)
     m_regWnd = nullptr;
     this->m_env = pEnv;
 
-    Create(nullptr, "CPU Window", WS_TABSTOP | WS_CHILD | WS_OVERLAPPEDWINDOW, CRect(100, 100, 820, 740),
-           (CMDIFrameWnd *) pEnv->GetMainWnd());
+    CMDIChildWnd::Create(nullptr, _T("CPU Window"), WS_TABSTOP | WS_CHILD | WS_OVERLAPPEDWINDOW,
+                         CRect(100, 100, 820, 740), (CMDIFrameWnd *) pEnv->GetMainWnd());
     ShowWindow(SW_SHOW);
 
     m_stackWnd = new CStackWnd(this, CRect(360, 300, 700, 580));

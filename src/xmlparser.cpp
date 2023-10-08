@@ -239,8 +239,8 @@ bool CDeviceFile::GetField(LPCSTR lpcField, CString &szVal)
         }
     }
     GetString(szVal);
-    szVal.TrimLeft("\"");
-    szVal.TrimRight("\"");
+    szVal.TrimLeft(_T("\""));
+    szVal.TrimRight(_T("\""));
     return true;
 }
 
@@ -289,7 +289,7 @@ label1:
     {
         m_xmlTag.type = ttHdf;
         // look for version info
-        m_xmlTag.version = !GetField("version", str) ? 0 : atof(str);
+        m_xmlTag.version = !GetField("version", str) ? 0 : atof(CT2A(str));
     }
     else if (str == "DEVICE")
     {
@@ -316,7 +316,7 @@ label1:
     {
         m_xmlTag.type = ttAI;
         GetField("id", str);
-        m_xmlTag.id = atoi(str);
+        m_xmlTag.id = atoi(CT2A(str));
         if (!GetUntilChar('<', m_xmlTag.szData))
         {
             return false;
@@ -415,7 +415,7 @@ int CDeviceFile::ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devAr
     int          num = 0;
     typedef CDevice *(*pvFunctv)();
     int i = -1;
-    m_file = fopen(szFileName, "r");
+    m_file = fopen(CT2A(szFileName), "r");
     if (m_file)
     {
         while (FindNextTag())

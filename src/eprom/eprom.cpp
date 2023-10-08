@@ -68,10 +68,10 @@ BYTE GetNextByte(FILE *f)
 
 CString CEprom::GetRomFileName()
 {
-    char buf[256];
+    TCHAR buf[256];
     GetModuleFileName(g_theApp.m_hInstance, buf, 256);
 
-    int i = strlen(buf);
+    int i = _tcslen(buf);
     while (buf[i] != '\\')
     {
         i--;
@@ -80,7 +80,7 @@ CString CEprom::GetRomFileName()
     CString str(buf);
 
     str += *m_deviceName;
-    str += ".rom";
+    str += _T(".rom");
     return str;
 }
 
@@ -95,12 +95,12 @@ bool CEprom::LoadFile()
     BYTE checksum;
     Word last_addr = 0xffff;
 
-    FILE *f = fopen(GetRomFileName(), "r");
+
+    FILE *f = fopen(CT2A (GetRomFileName()), "r");
     if (!f)
     {
-        // char msg[1024];
         CString msg;
-        msg.Format("Rom image file not found :\n %s", GetRomFileName());
+        msg.Format(_T("Rom image file not found:\n%s"), GetRomFileName());
         m_parentWnd->MessageBox(msg, m_deviceName->GetBuffer(1));
         return false;
     }

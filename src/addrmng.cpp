@@ -40,12 +40,12 @@ BYTE GetNextByte(FILE *f)
 
 ///////////////////////////////////////////////
 
-bool CAddressManager::LoadFile(char *fname, CArray<Word, Word &> &adr_arr)
+bool CAddressManager::LoadFile(CString fname, CArray<Word, Word &> &adr_arr)
 {
     int   hi{};
     Word  last_addr = 0xffff;
     int   dbg = 0;
-    FILE *f = fopen(fname, "r");
+    FILE *f = fopen(CT2A(fname), "r");
     if (!f)
     {
         return false;
@@ -95,7 +95,7 @@ bool CAddressManager::LoadFile(char *fname, CArray<Word, Word &> &adr_arr)
                 BYTE ck = GetNextByte(f);
                 if ((BYTE) ~checksum != ck)
                 {
-                    MessageBox(nullptr, "CHECK SUM ERROR, S file seems to be badly formatted.", "ERROR",
+                    MessageBox(nullptr, _T("CHECK SUM ERROR, S file seems to be badly formatted."), _T("ERROR"),
                                MB_OK | MB_ICONWARNING);
                     return false;
                 }
@@ -147,9 +147,9 @@ int CAddressManager::SaveSFile(CString str, Word wBegin, Word wEnd)
         buffer[3 + i] = cksum;
         hex.ByteArrayToHexArray(buffer, 4 + i, buf_out + 2);
         strcat(buf_out, "\n");
-        file.WriteString(buf_out);
+        file.WriteString(CA2T(buf_out));
     }
-    file.WriteString("S9030000FC\n");
+    file.WriteString(_T("S9030000FC\n"));
     file.Close();
     return 0;
 }

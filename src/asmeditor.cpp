@@ -63,12 +63,12 @@ void CBuildEdit::OnLButtonDblClk(UINT nFlags, CPoint point)
     // receive the contents of the line, if no problems yet
     if (line >= 0)
     {
-        char buffer[1024];
+        TCHAR buffer[1024];
         GetLine(line, buffer, sizeof(buffer));
         // printf("Line %d : Error: %s\n", line, msg);
         // strip off the line number
         int d = -1;
-        sscanf(buffer, "error: line %d: ", &d);
+        _tcscanf(buffer, _T("error: line %d: "), &d);
         if (d >= 0)
         {
             // send jump message to parent
@@ -96,9 +96,9 @@ LRESULT CAsmEditorWnd::OnJumpToLine(WPARAM wParam, LPARAM lParam)
 
     if ((nBegin = m_editor.LineIndex(wParam - 1)) != -1)
     {
-        char buffer[1024];
+        TCHAR buffer[1024];
         m_editor.GetLine(wParam - 1, buffer, 1024);
-        nEnd = strlen(buffer) + nBegin;
+        nEnd = _tcslen(buffer) + nBegin;
         m_editor.SetSel(nBegin, nEnd);
         m_editor.SetFocus();
         m_editor.LineScroll((wParam - 1) - m_editor.GetFirstVisibleLine());
@@ -135,7 +135,7 @@ void CAsmEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
     {
     case VK_RETURN:
     {
-        ReplaceSel("\t\t", false);
+        ReplaceSel(_T("\t\t"), false);
     }
     break;
     case ':':
@@ -152,11 +152,11 @@ void CAsmEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
             break;
         }
 
-        ReplaceSel("", false);
+        ReplaceSel(_T(""), false);
         curs -= 2;
         cure -= 2;
         SetSel(cure, cure);
-        ReplaceSel("\t\t", false);
+        ReplaceSel(_T("\t\t"), false);
         SetSel(curs + 1, cure + 1);
     }
     break;
@@ -194,12 +194,11 @@ int CAsmEditorWnd::SaveFile()
     CStdioFile     file;
     CFileException fe;
     char           ln[3] = {0x0d, 0x0a, 0};
-    char           buffer[2048];
+    TCHAR          buffer[2048];
     if (!file.Open(m_fileName, CFile::modeWrite | CFile::typeText | CFile::modeCreate, &fe))
     {
-        buffer[1000];
         fe.GetErrorMessage(buffer, sizeof(buffer));
-        MessageBox(buffer, "File open error");
+        MessageBox(buffer, _T("File open error"));
         return 0;
     }
 
@@ -275,7 +274,7 @@ bool CAsmEditorWnd::OpenFile()
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                       nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
                       (LPTSTR) &lpMsgBuf, 0, nullptr);
-        MessageBox((LPCSTR) lpMsgBuf);
+        MessageBox((LPCTSTR) lpMsgBuf);
         LocalFree(lpMsgBuf);
         return false;
     }
@@ -283,10 +282,10 @@ bool CAsmEditorWnd::OpenFile()
 
 CString CAsmEditorWnd::GetHexFileName()
 {
-    char buffer[1024];
-    strcpy(buffer, m_fileName.GetBuffer(1));
+    TCHAR buffer[1024];
+    _tcscpy(buffer, m_fileName.GetBuffer(1));
 
-    char *p = strrchr(buffer, '.');
+    TCHAR *p = _tcsrchr(buffer, '.');
     if (p)
     {
         p[1] = 'h';
@@ -296,16 +295,16 @@ CString CAsmEditorWnd::GetHexFileName()
     }
     else
     {
-        strcat(buffer, ".hex");
+        _tcscat(buffer, _T(".hex"));
     }
-    return CString(buffer);
+    return {buffer};
 }
 
 // assemble the source file, generate source.HEX file within the same
 // directory.
 int CAsmEditorWnd::CompileCode()
 {
-    char buffer[0x50000];
+    TCHAR buffer[0x50000];
 
     STARTUPINFO         si;
     PROCESS_INFORMATION pi;
@@ -319,7 +318,7 @@ int CAsmEditorWnd::CompileCode()
 
     if (!CreatePipe(&rd, &wr, &sa, 0))
     {
-        TRACE0(_T("Stdout pipe creation failed\n"));
+        TRACE0("Stdout pipe creation failed\n");
         return 0;
     }
 
@@ -332,7 +331,7 @@ int CAsmEditorWnd::CompileCode()
     si.wShowWindow = SW_HIDE;
     si.hStdInput = nullptr;
     si.cb = sizeof(si);
-    sprintf(buffer, "%s %s", "assembler.exe", m_fileName.GetBuffer(1));
+    _tcprintf(buffer, _T("%s %s"), _T("assembler.exe"), m_fileName.GetBuffer(1));
     CreateProcess(nullptr, buffer, nullptr, nullptr, true, CREATE_NEW_CONSOLE /*creation flags*/, nullptr /*envirn*/,
                   nullptr /*cur dir*/, &si, &pi);
 
@@ -378,9 +377,9 @@ int CAsmEditorWnd::CompileCode()
 // lpcFileName : the filename of the file to be edited in this editor
 // bNewFile    : if true then the editor will not open the file (its a new file)
 //				 otherwise it will attempt to open the file.
-CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCSTR lpcFileName)
+CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName)
 {
-    Create(nullptr, "Editor", WS_VISIBLE | WS_CHILD | WS_OVERLAPPEDWINDOW, rectDefault, pParent);
+    CMDIChildWnd::Create(nullptr, _T("Editor"), WS_VISIBLE | WS_CHILD | WS_OVERLAPPEDWINDOW, rectDefault, pParent);
     m_editor.Create(WS_CHILD | ES_MULTILINE | WS_VSCROLL, rectDefault, this, 101);
     m_buildWnd.Create(WS_CHILD | WS_VISIBLE | ES_MULTILINE | WS_VSCROLL | WS_TABSTOP | WS_BORDER, rectDefault, this,
                       102);
@@ -393,7 +392,7 @@ CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCSTR lpcFileName)
         char buffer[100];
         s_fileNumber++;
         sprintf(buffer, "%03d", s_fileNumber);
-        m_fileName = CString("NewFile") + CString(buffer) + CString(".asm");
+        m_fileName = CString(_T("NewFile")) + CString(buffer) + CString(_T(".asm"));
     }
 
     CRect rc;

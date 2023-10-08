@@ -143,8 +143,8 @@ void CMainFrame::SendThroughCom(int PortNo, CString fname)
     CString             bat, batb;
 
     // port = "COM" + PortNo;
-    bat.Format("send%d.bat %s", PortNo, fname);
-    batb.Format("bsend%d.bat %s", PortNo, fname);
+    bat.Format(_T("send%d.bat %s"), PortNo, fname);
+    batb.Format(_T("bsend%d.bat %s"), PortNo, fname);
 
     GetStartupInfo(&si);
     si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
@@ -165,7 +165,7 @@ void CMainFrame::SendThroughCom(int PortNo, CString fname)
 
 void CMainFrame::OnLoadSFile()
 {
-    CFileDialog fd(true, ".asm", nullptr, OFN_FILEMUSTEXIST);
+    CFileDialog fd(true, _T(".asm"), nullptr, OFN_FILEMUSTEXIST);
     if (fd.DoModal() == IDOK)
     {
         m_debugWnd->LoadSFile(fd.GetFileName());
@@ -363,7 +363,7 @@ void CMainFrame::OnFileSaveAsClick()
     {
         CString str;
         pAsm->GetFileName(str);
-        CFileDialog fd(false, ".asm", str.GetBuffer(1), OFN_OVERWRITEPROMPT);
+        CFileDialog fd(false, _T(".asm"), str.GetBuffer(1), OFN_OVERWRITEPROMPT);
         if (fd.DoModal() == IDOK)
         {
             mapp.AddToRecentFileList(fd.GetPathName());
@@ -378,7 +378,7 @@ void CMainFrame::OnFileSaveAsClick()
 
 void CMainFrame::OnFileOpenClick()
 {
-    CFileDialog fd(true, ".asm", nullptr, OFN_FILEMUSTEXIST);
+    CFileDialog fd(true, _T(".asm"), nullptr, OFN_FILEMUSTEXIST);
     if (fd.DoModal() == IDOK)
     {
         CAsmEditorWnd *pAsm;
@@ -411,8 +411,7 @@ void CMainFrame::OnFileCloseClick()
 
 void CMainFrame::OnFileNewClick()
 {
-    CAsmEditorWnd *pAsm;
-    pAsm = new CAsmEditorWnd(this, "");
+    CAsmEditorWnd *pAsm = new CAsmEditorWnd(this, _T(""));
 }
 
 void CMainFrame::OnFileExitClick()
@@ -434,8 +433,8 @@ void CMainFrame::OnDestroy()
 {
     WINDOWPLACEMENT wp;
     GetWindowPlacement(&wp);
-    AfxGetApp()->WriteProfileBinary("Smart IDE", "WP MainFrame", (LPBYTE) &wp, sizeof(wp));
-    SaveBarState("ToolBarState");
+    AfxGetApp()->WriteProfileBinary(_T("Smart IDE"), _T("WP MainFrame"), (LPBYTE) &wp, sizeof(wp));
+    SaveBarState(_T("ToolBarState"));
 }
 
 void CMainFrame::OnShowWindow(BOOL bShow, UINT nStatus)
@@ -446,7 +445,7 @@ void CMainFrame::OnShowWindow(BOOL bShow, UINT nStatus)
     {
         WINDOWPLACEMENT *lwp;
         UINT             nl;
-        if (AfxGetApp()->GetProfileBinary("Smart IDE", "WP MainFrame", (LPBYTE *) &lwp, &nl))
+        if (AfxGetApp()->GetProfileBinary(_T("Smart IDE"), _T("WP MainFrame"), (LPBYTE *) &lwp, &nl))
         {
             SetWindowPlacement(lwp);
             delete[] lwp;
@@ -461,9 +460,9 @@ void CMainFrame::CreateMRUMenu()
 
 void CMainFrame::GetExecutablePath(CString &str)
 {
-    char buffer[256];
+    TCHAR buffer[256];
     GetModuleFileName(GetModuleHandle(nullptr), buffer, 256);
-    buffer[strlen(buffer) - 9] = 0;
+    buffer[_tcslen(buffer) - 9] = 0;
     str = buffer;
 }
 
@@ -486,23 +485,23 @@ CAsmEditorWnd *CMainFrame::GetCurrentEditor()
 
 CString CMainFrame::GetDeviceFile()
 {
-    char  buf[256];
-    char *p;
+    TCHAR buf[256];
+    TCHAR *p;
     GetModuleFileName(mapp.m_hInstance, buf, 256);
 
-    p = strrchr(buf, '\\');
+    p = _tcsrchr(buf, _T('\\'));
     *p = 0;
-    p = strrchr(buf, '\\');
+    p = _tcsrchr(buf, _T('\\'));
     *p = 0;
     CString str(buf);
-    str += "\\devices\\device.xml";
+    str += _T("\\devices\\device.xml");
     return str;
 }
 
 CMainFrame::CMainFrame()
 {
-    Create(nullptr, "Hippy - Motorola 6800 Studio", WS_OVERLAPPEDWINDOW, CRect(100, 100, 800, 800), GetDesktopWindow(),
-           MAKEINTRESOURCE(IDR_MENU1));
+    CFrameWnd::Create(nullptr, _T("Hippy - Motorola 6800 Studio"), WS_OVERLAPPEDWINDOW, CRect(100, 100, 800, 800),
+                      GetDesktopWindow(), MAKEINTRESOURCE(IDR_MENU1));
 
     CString deviceFile;
 
@@ -541,7 +540,7 @@ CMainFrame::CMainFrame()
     DockControlBar(&m_toolbar);
     DockControlBar(&m_intToolbar);
     LoadAccelTable(MAKEINTRESOURCE(IDR_ACCELERATOR1));
-    LoadBarState("ToolBarState");
+    LoadBarState(_T("ToolBarState"));
     UpdateWindow();
     ShowWindow(SW_SHOW);
 

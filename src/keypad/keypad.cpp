@@ -309,11 +309,11 @@ CKeyPad::CKeyPad(CDevice *pdevParent, CWnd *parent) :
     int y = 200;
     int x = 200;
 
-    CFrameWnd::Create(nullptr, "KeyPad", WS_SYSMENU | WS_VISIBLE,
+    CFrameWnd::Create(nullptr, _T("KeyPad"), WS_SYSMENU | WS_VISIBLE,
                       CRect(x, y, x + m_displayRect.right + 20, y + m_keyPadRect.bottom + disp_spacing + 35), m_parent,
                       nullptr, WS_EX_TOOLWINDOW);
 
-    HANDLE hBmp = LoadImage(GetModuleHandleA("keypad.dll"), MAKEINTRESOURCE(IDB_BMP_KEYPAD), IMAGE_BITMAP, 0, 0,
+    HANDLE hBmp = LoadImage(GetModuleHandle(_T("keypad.dll")), MAKEINTRESOURCE(IDB_BMP_KEYPAD), IMAGE_BITMAP, 0, 0,
                             LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
     m_bmp.Attach((HBITMAP) hBmp);
 

@@ -48,7 +48,7 @@ class CAsmEditorWnd : public CMDIChildWnd
 {
 public:
     CAsmEditorWnd() = default;
-    CAsmEditorWnd(CMDIFrameWnd *pParent, LPCSTR lpcFileName);
+    CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName);
     ~CAsmEditorWnd() override;
 
     DECLARE_DYNAMIC(CAsmEditorWnd)

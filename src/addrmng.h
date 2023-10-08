@@ -33,7 +33,7 @@ public:
     ~CAddressManager() = default;
 
     void Create(CEnvironment *pEnv);
-    bool LoadFile(char *fname, CArray<Word, Word &> &adr_arr);
+    bool LoadFile(CString fname, CArray<Word, Word &> &adr_arr);
     int  SaveSFile(CString str, Word wBegin, Word wEnd);
 
     Word GetLastWrite() const

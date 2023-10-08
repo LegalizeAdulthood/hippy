@@ -39,7 +39,7 @@ CDevice::~CDevice()
 
 int CDevice::Create(CWnd *parentWnd, CString szName)
 {
-    char buffer[1024];
+    TCHAR buffer[1024];
     m_parentWnd = parentWnd;
     m_deviceName = new CString(szName);
     GetModuleFileName(AfxGetInstanceHandle(), buffer, 1024);

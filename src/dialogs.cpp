@@ -63,8 +63,8 @@ void CInputBox::DoDataExchange(CDataExchange *pDX)
 int CInputBox::ShowModal(CString *pstrPrompt, CString *pstrTitle)
 {
     m_lpszTemplateName = MAKEINTRESOURCE(IDD_INPUTBOX);
-    m_title = pstrTitle ? *pstrTitle : "User input";
-    m_prompt = pstrPrompt ? *pstrPrompt : "Please enter a value";
+    m_title = pstrTitle ? *pstrTitle : _T("User input");
+    m_prompt = pstrPrompt ? *pstrPrompt : _T("Please enter a value");
     return DoModal();
 }
 
@@ -85,9 +85,9 @@ int CSFileDialog::ShowModal()
     if (ret == IDOK)
     {
         CWinApp *app = AfxGetApp();
-        app->WriteProfileString("SRec", "SRecBeging", m_begin);
-        app->WriteProfileString("SRec", "SRecEnd", m_end);
-        app->WriteProfileString("SRec", "SRecFile", m_file);
+        app->WriteProfileString(_T("SRec"), _T("SRecBeging"), m_begin);
+        app->WriteProfileString(_T("SRec"), _T("SRecEnd"), m_end);
+        app->WriteProfileString(_T("SRec"), _T("SRecFile"), m_file);
     }
 
     return ret;
@@ -99,9 +99,9 @@ void CSFileDialog::DoDataExchange(CDataExchange *pDX)
 
     { // read latest write locations from registry
         CWinApp *app = AfxGetApp();
-        m_begin = app->GetProfileString("SRec", "SRecBeging", "$0000");
-        m_end = app->GetProfileString("SRec", "SRecEnd", "$FFFF");
-        m_file = app->GetProfileString("SRec", "SRecFile", "Output.Hex");
+        m_begin = app->GetProfileString(_T("SRec"), _T("SRecBeging"), _T("$0000"));
+        m_end = app->GetProfileString(_T("SRec"), _T("SRecEnd"), _T("$FFFF"));
+        m_file = app->GetProfileString(_T("SRec"), _T("SRecFile"), _T("Output.Hex"));
     }
     DDX_Text(pDX, IDC_EDITBADDR, m_begin);
     DDX_Text(pDX, IDC_EDITEADDR, m_end);

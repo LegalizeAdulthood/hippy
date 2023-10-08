@@ -25,9 +25,9 @@
 #define WM_HIDEBUILDWND WM_USER + 103
 #define WM_REDRAWALL WM_USER + 104
 
-#define INT_IRQ "HIPPY_IRQ_INT_SEM"
-#define INT_NMI "HIPPY_NMI_INT_SEM"
-#define INT_RST "HIPPY_RST_INT_SEM"
+#define INT_IRQ _T("HIPPY_IRQ_INT_SEM")
+#define INT_NMI _T("HIPPY_NMI_INT_SEM")
+#define INT_RST _T("HIPPY_RST_INT_SEM")
 
 using BYTE = unsigned char;
 using ADDRESS = unsigned short;

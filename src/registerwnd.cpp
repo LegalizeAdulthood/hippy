@@ -71,13 +71,13 @@ void CRegisterWnd::drawRegister(bool bActive, LPCRECT lprc, RegEnum reReg, int r
     if (regsize == 1)
     { // condition code bit
         itoa(regval, buffer, 2);
-        dc.TextOut(lprc->left, lprc->top, buffer, 1);
+        dc.TextOut(lprc->left, lprc->top, CA2T(buffer), 1);
     }
     else if (regsize == 2)
     {
         BYTE b = (BYTE) regval;
         HexDumper::ByteToHex(b, buffer);
-        dc.TextOut(lprc->left, lprc->top, buffer, 2);
+        dc.TextOut(lprc->left, lprc->top, CA2T(buffer), 2);
     }
     else
     {
@@ -86,7 +86,7 @@ void CRegisterWnd::drawRegister(bool bActive, LPCRECT lprc, RegEnum reReg, int r
         b[0] = ((BYTE *) &ad)[1];
         b[1] = ((BYTE *) &ad)[0];
         HexDumper::ByteArrayToHexArray(b, 2, buffer);
-        dc.TextOut(lprc->left, lprc->top, buffer, 4);
+        dc.TextOut(lprc->left, lprc->top, CA2T(buffer), 4);
     }
 }
 
@@ -163,7 +163,7 @@ void CRegisterWnd::Update(bool drawAll)
     }
     rc.OffsetRect(pt);
     dc.SetTextColor(RGB(0, 0, 0));
-    dc.TextOut(rc.left, rc.top, "H I N Z V C", 11);
+    dc.TextOut(rc.left, rc.top, _T("H I N Z V C"), 11);
     rc.OffsetRect(pt);
     rc.right = rc.left + m_charWidth;
     if (regValChanged.ccr.h || drawAll || m_prevRegsAct.ccr.h)
@@ -252,21 +252,21 @@ void CRegisterWnd::OnPaint()
     // write the table header (register, value) and Reg names
     y = m_sideMargin;
     dc.SetTextColor(RGB(0, 0, 0));
-    dc.TextOut(m_sideMargin, y, "Register", 8);
-    dc.TextOut(x + 2 * m_sideMargin, y, "Value", 5);
+    dc.TextOut(m_sideMargin, y, _T("Register"), 8);
+    dc.TextOut(x + 2 * m_sideMargin, y, _T("Value"), 5);
     y += 2 * m_sideMargin + m_charHeight;
     dc.SetTextColor(RGB(100, 100, 100));
-    dc.TextOut(m_sideMargin, y, "Accumulator A", 13);
+    dc.TextOut(m_sideMargin, y, _T("Accumulator A"), 13);
     y += 2 * m_sideMargin + m_charHeight;
-    dc.TextOut(m_sideMargin, y, "Accumulator B", 13);
+    dc.TextOut(m_sideMargin, y, _T("Accumulator B"), 13);
     y += 2 * m_sideMargin + m_charHeight;
-    dc.TextOut(m_sideMargin, y, "Program Counter", 15);
+    dc.TextOut(m_sideMargin, y, _T("Program Counter"), 15);
     y += 2 * m_sideMargin + m_charHeight;
-    dc.TextOut(m_sideMargin, y, "Index Reg.", 10);
+    dc.TextOut(m_sideMargin, y, _T("Index Reg."), 10);
     y += 2 * m_sideMargin + m_charHeight;
-    dc.TextOut(m_sideMargin, y, "Stack Pointer", 13);
+    dc.TextOut(m_sideMargin, y, _T("Stack Pointer"), 13);
     y += 2 * m_sideMargin + m_charHeight;
-    dc.TextOut(m_sideMargin, y, "Cond. Code Reg.", 15);
+    dc.TextOut(m_sideMargin, y, _T("Cond. Code Reg."), 15);
 
     dc.SelectObject(oldp);
     newp.DeleteObject();
@@ -500,7 +500,7 @@ void CRegisterWnd::OnKillFocus(CWnd *pNewWnd)
 // register wnd class, create window and font
 CRegisterWnd::CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPCTSTR szWindowName)
 {
-    const char *p = AfxRegisterWndClass(CS_OWNDC | CS_SAVEBITS, LoadCursor(nullptr, IDC_ARROW), nullptr, nullptr);
+    LPCTSTR p = AfxRegisterWndClass(CS_OWNDC | CS_SAVEBITS, LoadCursor(nullptr, IDC_ARROW), nullptr, nullptr);
     CWnd::Create(p, szWindowName, WS_CHILD | WS_TABSTOP, rcPos, pParentWnd, 1);
 
     m_regs = pRegs;

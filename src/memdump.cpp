@@ -183,7 +183,7 @@ void CMemDumpWnd::drawLine(LINENUMBER lnActualNum)
     c[1] = ((BYTE *) &addr)[0];
 
     HexDumper::ByteArrayToHexArray(c, 2, buffer);
-    dc.TextOut(m_sideMargin, rc.top, buffer, 4);
+    dc.TextOut(m_sideMargin, rc.top, CA2T(buffer), 4);
 
     if (m_selectedLine == lnActualNum && SelectedByte > -1 && GetFocus() == this)
     {
@@ -198,7 +198,7 @@ void CMemDumpWnd::drawLine(LINENUMBER lnActualNum)
         b[i] = m_memoryBase->Read(addr + i, true);
     }
     HexDumper::ByteArrayToHexArrayEx(b, 8, buffer);
-    dc.TextOut(m_sideMargin * 3 + m_charWidth * 4, rc.top, buffer, 23);
+    dc.TextOut(m_sideMargin * 3 + m_charWidth * 4, rc.top, CA2T(buffer), 23);
 }
 
 // paint the background
