@@ -6,6 +6,8 @@ include(CTest)
 
 find_package(wxwidgets CONFIG REQUIRED)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 add_definitions(-D_AFXDLL -D_WIN32_WINNT=_WIN32_WINNT_WINXP)
 set(CMAKE_MFC_FLAG 2)
 
@@ -14,6 +16,7 @@ add_library(device STATIC
     device.cpp
     hippy.h
 )
+set_target_properties(device PROPERTIES FOLDER "Devices")
 target_include_directories(device PUBLIC .)
 target_link_libraries(device PUBLIC wx::base)
 

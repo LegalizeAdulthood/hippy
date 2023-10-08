@@ -10,6 +10,7 @@ add_library(keypad SHARED
     keypad.rc
     keypad.bmp
 )
+set_target_properties(keypad PROPERTIES FOLDER "Devices")
 target_compile_definitions(keypad PRIVATE _USRDLL)
 target_link_libraries(keypad PUBLIC device)
 add_custom_command(TARGET keypad POST_BUILD

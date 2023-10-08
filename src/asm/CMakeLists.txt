@@ -32,5 +32,6 @@ add_executable(asm
     stack.h
     y.tab.hpp
 )
+set_target_properties(asm PROPERTIES FOLDER "Tools")
 target_compile_definitions(asm PUBLIC $<$<CONFIG:DEBUG>:YYDEBUG>)
 target_include_directories(asm PUBLIC .)
