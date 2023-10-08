@@ -22,9 +22,10 @@
 
 #include "hippy.h"
 
-#include <afxmt.h>
 #include <afxtempl.h>
 #include <afxwin.h>
+
+class CSemaphore;
 
 using CStrArray = CArray<CString, CString &>;
 
