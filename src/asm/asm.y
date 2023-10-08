@@ -502,7 +502,7 @@ void do_inher(unsigned char opcode)
 
 int get_numbytes(unsigned char opcode)
 {
-    return (InstDescTbl[instCodes[opcode].icImmed] & 0x0f);
+    return (s_instDescTbl[instCodes[opcode].icImmed] & 0x0f);
 }
 
 void do_immediate(unsigned char opcode, unsigned short sval)
