@@ -322,8 +322,6 @@ void CDebugWnd::SetThreadPriority(int priority)
 
 CDebugWnd::CDebugWnd(CEnvironment *pEnv)
 {
-    CCR ccr;
-    ccr.all = 0xD0;
     CString str;
     m_dasm = nullptr;
     m_memDump = nullptr;
