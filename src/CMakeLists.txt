@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 
 project(hippy)
 
+include(CTest)
+
 find_package(wxwidgets CONFIG REQUIRED)
 
 add_definitions(-D_AFXDLL -D_WIN32_WINNT=_WIN32_WINNT_WINXP)
@@ -59,3 +61,6 @@ add_custom_command(TARGET hippy POST_BUILD
 add_subdirectory(keypad)
 add_subdirectory(asm)
 add_subdirectory(eprom)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
