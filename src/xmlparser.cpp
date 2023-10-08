@@ -410,7 +410,7 @@ int CDeviceFile::ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devAr
 {
     CString      szName;
     CStringArray csEqn;
-    CStrArray    addrEqns[255];
+    CStringArray addrEqns[255];
     CString      szLibName;
     int          num = 0;
     typedef CDevice *(*pvFunctv)();

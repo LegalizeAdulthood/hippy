@@ -186,7 +186,7 @@ BYTE CAddressManager::Read(Word wIndex, bool bDbg)
 
 void CAddressManager::Create(CEnvironment *pEnv)
 {
-    CStrArray sa;
+    CStringArray sa;
     memset(m_memory, 0, sizeof(m_memory));
     this->m_env = pEnv;
     // read the device file

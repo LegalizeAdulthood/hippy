@@ -22,12 +22,9 @@
 
 #include "hippy.h"
 
-#include <afxtempl.h>
 #include <afxwin.h>
 
 class CSemaphore;
-
-using CStrArray = CArray<CString, CString &>;
 
 enum TInterrupt
 {
