@@ -23,6 +23,8 @@
 
 #include <afxmt.h>
 
+#include <wx/wx.h>
+
 /*
  * returns true if the last operation changed
  * the value stored in a memory location.

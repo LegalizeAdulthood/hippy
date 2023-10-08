@@ -21,6 +21,8 @@
 
 #include <afxmt.h>
 
+#include <wx/wx.h>
+
 CDevice::CDevice() :
     m_irq(new CSemaphore(0, 1000, INT_IRQ)),
     m_nmi(new CSemaphore(0, 1000, INT_NMI)),

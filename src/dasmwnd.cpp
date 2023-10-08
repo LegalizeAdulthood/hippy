@@ -23,6 +23,8 @@
 #include "dialogs.h"
 #include "resource.h"
 
+#include <wx/wx.h>
+
 // clang-format off
 BEGIN_MESSAGE_MAP(CDisasmWnd, CBaseWnd)
     ON_WM_KEYDOWN()
@@ -80,7 +82,11 @@ void CDisasmWnd::OnRButtonUp(UINT nFlags, CPoint point)
 {
     CMenu  popup;
     CMenu *sub;
-    popup.LoadMenu(IDR_DASM_POPUP);
+#ifdef UNICODE
+    popup.LoadMenuW(IDR_DASM_POPUP);
+#else
+    popup.LoadMenuA(IDR_DASM_POPUP);
+#endif
     sub = popup.GetSubMenu(0);
     CRect rc;
     GetWindowRect(&rc);

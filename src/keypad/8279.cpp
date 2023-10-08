@@ -24,11 +24,7 @@
 #include "8279.h"
 #include "keypad.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include <wx/wx.h>
 
 extern "C" __declspec(dllexport) CDevice *GetNewDevice();
 __declspec(dllexport) CDevice *GetNewDevice()

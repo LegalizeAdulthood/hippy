@@ -19,6 +19,8 @@
 
 #include "baseWnd.h"
 
+#include <wx/wx.h>
+
 // clang-format off
 BEGIN_MESSAGE_MAP(CBaseWnd, CWnd)
     ON_WM_KEYDOWN()
@@ -354,20 +356,25 @@ CBaseWnd::CBaseWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName)
     LPCTSTR p = AfxRegisterWndClass(CS_OWNDC | CS_SAVEBITS, LoadCursor(nullptr, IDC_ARROW), nullptr, nullptr);
     CWnd::Create(p, _T("Base Window"), WS_CHILD | WS_TABSTOP | WS_VSCROLL, rcPos, pParentWnd, 0);
 
-    m_font.CreateFont(12,                       // nHeight
-                    0,                        // nWidth
-                    0,                        // nEscapement
-                    0,                        // nOrientation
-                    FW_NORMAL,                // nWeight
-                    FALSE,                    // bItalic
-                    FALSE,                    // bUnderline
-                    0,                        // cStrikeOut
-                    ANSI_CHARSET,             // nCharSet
-                    OUT_DEFAULT_PRECIS,       // nOutPrecision
-                    CLIP_DEFAULT_PRECIS,      // nClipPrecision
-                    DEFAULT_QUALITY,          // nQuality
-                    DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
-                    _T("FixedSys"));          // lpszFacename
+#ifdef UNICODE
+    m_font.CreateFontW
+#else
+    m_font.createFontA
+#endif
+        (12,                       // nHeight
+         0,                        // nWidth
+         0,                        // nEscapement
+         0,                        // nOrientation
+         FW_NORMAL,                // nWeight
+         FALSE,                    // bItalic
+         FALSE,                    // bUnderline
+         0,                        // cStrikeOut
+         ANSI_CHARSET,             // nCharSet
+         OUT_DEFAULT_PRECIS,       // nOutPrecision
+         CLIP_DEFAULT_PRECIS,      // nClipPrecision
+         DEFAULT_QUALITY,          // nQuality
+         DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
+         _T("FixedSys"));          // lpszFacename
 
     this->SetFont(&m_font, false);
     CClientDC dc(this);

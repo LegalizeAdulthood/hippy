@@ -20,6 +20,8 @@
 #include "asmeditor.h"
 #include "hippy.h"
 
+#include <wx/wx.h>
+
 static int s_fileNumber = 0;
 
 // clang-format off
@@ -396,20 +398,25 @@ CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName)
     }
 
     CRect rc;
-    m_font.CreateFont(12,                       // nHeight
-                      0,                        // nWidth
-                      0,                        // nEscapement
-                      0,                        // nOrientation
-                      FW_NORMAL,                // nWeight
-                      FALSE,                    // bItalic
-                      FALSE,                    // bUnderline
-                      0,                        // cStrikeOut
-                      ANSI_CHARSET,             // nCharSet
-                      OUT_DEFAULT_PRECIS,       // nOutPrecision
-                      CLIP_DEFAULT_PRECIS,      // nClipPrecision
-                      DEFAULT_QUALITY,          // nQuality
-                      DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
-                      _T("FixedSys"));          // lpszFacename
+#ifdef UNICODE
+    m_font.CreateFontW
+#else
+    m_font.CreateFontA
+#endif
+        (12,                       // nHeight
+         0,                        // nWidth
+         0,                        // nEscapement
+         0,                        // nOrientation
+         FW_NORMAL,                // nWeight
+         FALSE,                    // bItalic
+         FALSE,                    // bUnderline
+         0,                        // cStrikeOut
+         ANSI_CHARSET,             // nCharSet
+         OUT_DEFAULT_PRECIS,       // nOutPrecision
+         CLIP_DEFAULT_PRECIS,      // nClipPrecision
+         DEFAULT_QUALITY,          // nQuality
+         DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
+         _T("FixedSys"));          // lpszFacename
     m_editor.SetFont(&m_font, false);
 
     GetClientRect(&rc);

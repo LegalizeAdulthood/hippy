@@ -21,6 +21,8 @@
 #include "addrmng.h"
 #include "disassembler.h"
 
+#include <wx/wx.h>
+
 // clang-format off
 BEGIN_MESSAGE_MAP(CStackWnd, CBaseWnd)
     ON_MESSAGE(WM_REDRAWALL, OnRedrawAll)

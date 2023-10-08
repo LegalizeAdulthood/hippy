@@ -26,6 +26,8 @@
 #include "memdump.h"
 #include "registerwnd.h"
 
+#include <wx/wx.h>
+
 // clang-format off
 BEGIN_MESSAGE_MAP(CDebugWnd, CMDIChildWnd)
     ON_WM_KEYDOWN()

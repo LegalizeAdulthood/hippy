@@ -20,6 +20,8 @@
 
 #include "disassembler.h"
 
+#include <wx/wx.h>
+
 // clang-format off
 BEGIN_MESSAGE_MAP(CRegisterWnd, CWnd)
     ON_WM_DESTROY()
@@ -516,20 +518,25 @@ CRegisterWnd::CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPC
 
     m_regs = pRegs;
 
-    m_font.CreateFont(12,                       // nHeight
-                    0,                        // nWidth
-                    0,                        // nEscapement
-                    0,                        // nOrientation
-                    FW_NORMAL,                // nWeight
-                    FALSE,                    // bItalic
-                    FALSE,                    // bUnderline
-                    0,                        // cStrikeOut
-                    ANSI_CHARSET,             // nCharSet
-                    OUT_DEFAULT_PRECIS,       // nOutPrecision
-                    CLIP_DEFAULT_PRECIS,      // nClipPrecision
-                    DEFAULT_QUALITY,          // nQuality
-                    DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
-                    _T("FixedSys"));          // lpszFacename
+#ifdef UNICODE
+    m_font.CreateFontW
+#else
+    m_font.CreateFontA
+#endif
+        (12,                       // nHeight
+         0,                        // nWidth
+         0,                        // nEscapement
+         0,                        // nOrientation
+         FW_NORMAL,                // nWeight
+         FALSE,                    // bItalic
+         FALSE,                    // bUnderline
+         0,                        // cStrikeOut
+         ANSI_CHARSET,             // nCharSet
+         OUT_DEFAULT_PRECIS,       // nOutPrecision
+         CLIP_DEFAULT_PRECIS,      // nClipPrecision
+         DEFAULT_QUALITY,          // nQuality
+         DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
+         _T("FixedSys"));          // lpszFacename
 
     SetFont(&m_font, false);
     CClientDC dc(this);

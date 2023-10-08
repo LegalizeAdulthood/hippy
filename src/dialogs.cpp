@@ -19,6 +19,8 @@
 
 #include "dialogs.h"
 
+#include <wx/wx.h>
+
 Word StrToWord(CString &str)
 {
     if (str[0] == '$')

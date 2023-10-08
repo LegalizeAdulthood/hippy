@@ -32,6 +32,8 @@
 #include <afxmt.h>
 #include <afxwin.h>
 
+#include <wx/wx.h>
+
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -502,6 +504,7 @@ CString CMainFrame::GetDeviceFile()
 
 CMainFrame::CMainFrame()
 {
+    //_CrtSetBreakAlloc(2601);
     CFrameWnd::Create(nullptr, _T("Hippy - Motorola 6800 Studio"), WS_OVERLAPPEDWINDOW, CRect(100, 100, 800, 800),
                       GetDesktopWindow(), MAKEINTRESOURCE(IDR_MENU1));
 
