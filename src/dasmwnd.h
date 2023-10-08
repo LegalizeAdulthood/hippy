@@ -25,12 +25,13 @@
 
 #include <afxwin.h>
 
-typedef struct Listnode
+struct Listnode
 {
-    struct Listnode *prev;
-    struct Listnode *next;
-    Word             loc;
-} Listnode, *PListnode;
+    Listnode *prev;
+    Listnode *next;
+    Word      loc;
+};
+using PListnode = Listnode *;
 
 class LinkedList
 {
