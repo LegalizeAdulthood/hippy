@@ -865,9 +865,10 @@ CM6800::CM6800(CStackWnd *psw)
 // destructor
 CM6800::~CM6800()
 {
-    delete m_irq;
-    delete m_nmi;
     delete m_reset;
+    delete m_nmi;
+    delete m_irq;
+    delete m_alu;
 }
 
 void CM6800::initFunctions()
