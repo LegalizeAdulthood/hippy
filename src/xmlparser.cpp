@@ -430,7 +430,7 @@ int CDeviceFile::ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devAr
                     pvFunctv func = (pvFunctv) GetProcAddress(hmod, "GetNewDevice");
                     CDevice *pDev;
                     pDev = func();
-                    pDev->Create(parent, szName);
+                    pDev->Create(parent, szName, szLibName);
                     devArr.Add(pDev);
                     num++;
                 }

@@ -39,7 +39,7 @@ public:
     CDevice();
     virtual ~CDevice();
 
-    int  Create(CWnd *parentWnd, CString szName);
+    int  Create(CWnd *parentWnd, CString szName, CString libName);
     void Interrupt(TInterrupt tint);
     bool Read(Word addr, BYTE &val, bool debug);
     bool Write(Word addr, BYTE val, bool debug);

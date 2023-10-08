@@ -37,13 +37,11 @@ CDevice::~CDevice()
     CDevice::OnFinalize();
 }
 
-int CDevice::Create(CWnd *parentWnd, CString szName)
+int CDevice::Create(CWnd *parentWnd, CString szName, CString libName)
 {
-    TCHAR buffer[1024];
     m_parentWnd = parentWnd;
     m_deviceName = new CString(szName);
-    GetModuleFileName(AfxGetInstanceHandle(), buffer, 1024);
-    m_libraryName = new CString(buffer);
+    m_libraryName = new CString(libName);
     OnInitialize();
     return 0;
 }
