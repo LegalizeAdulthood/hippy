@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 
 project(hippy)
 
+find_package(wxwidgets CONFIG REQUIRED)
+
 add_definitions(-D_AFXDLL -D_WIN32_WINNT=_WIN32_WINNT_WINXP)
 set(CMAKE_MFC_FLAG 2)
 
@@ -11,6 +13,7 @@ add_library(device STATIC
     hippy.h
 )
 target_include_directories(device PUBLIC .)
+target_link_libraries(device PUBLIC wx::base)
 
 add_executable(hippy WIN32
     addrmng.h
