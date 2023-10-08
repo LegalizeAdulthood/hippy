@@ -156,7 +156,7 @@ void CDeviceFile::PutCharBack()
     fseek(m_file, ftell(m_file) - 1, SEEK_SET);
 }
 
-// find the first occurence of a character in the file
+// find the first occurrence of a character in the file
 // file pointer positions right after the char.
 bool CDeviceFile::FindChar(char c)
 {
