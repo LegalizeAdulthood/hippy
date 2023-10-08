@@ -21,23 +21,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Download bison
-        if: matrix.os == 'windows-latest'
-        shell: powershell
-        env:
-          BISON_ZIP_URL: http://user.xmission.com/~legalize/github/bison-2.4.1.zip
-          BISON_ZIP_PATH: ${{github.workspace}}/../bison-2.4.1.zip
-          BISON_PATH: ${{github.workspace}}/../bison
-        run: |
-          Invoke-WebRequest -Uri ${{env.BISON_ZIP_URL}} -OutFile "${{env.BISON_ZIP_PATH}}"
-          mkdir ${{env.BISON_PATH}}
-          cd ${{env.BISON_PATH}}
-          7z x -y ${{env.BISON_ZIP_PATH}}
-          Add-Content $env:GITHUB_PATH "${{env.BISON_PATH}}/bin"
       - name: CMake version
         run: cmake --version
       - name: CMake configure ${{env.BUILD_TYPE}}
-        run: cmake -DCMAKE_BUILD_TYPE:STRING=${{env.BUILD_TYPE}} -S ${{env.SOURCE_PATH}} -B ${{env.BUILD_PATH}}
+        run: cmake -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${{env.SOURCE_PATH}}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE:STRING=${{env.BUILD_TYPE}} -S ${{env.SOURCE_PATH}} -B ${{env.BUILD_PATH}}
       - name: CMake build ${{env.BUILD_TYPE}}
         run: cmake --build ${{env.BUILD_PATH}} --config ${{env.BUILD_TYPE}}
       - name: CTest ${{env.BUILD_TYPE}}

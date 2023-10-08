@@ -58,6 +58,7 @@ add_executable(hippy WIN32
     toolbar2.bmp
     toolbar3.bmp
     vcpkg.json
+    ../.github/workflows/build.yaml
 )
 target_link_libraries(hippy PUBLIC device)
 set_property(TARGET hippy PROPERTY VS_DPI_AWARE "OFF")
