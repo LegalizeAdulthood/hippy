@@ -57,7 +57,6 @@ public:
     afx_msg void OnGo();
     afx_msg void OnPause();
     afx_msg void OnInsBkPt();
-    afx_msg int  OnWindowMenu();
     afx_msg void OnSendCom1();
     afx_msg void OnSendCom2();
     afx_msg void OnRunToCursor();
