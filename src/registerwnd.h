@@ -44,9 +44,10 @@ class CRegisterWnd : public CWnd
 public:
     // constructor & destructor
     CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPCTSTR szWindowName = nullptr);
-    ~CRegisterWnd() override;
+    ~CRegisterWnd() override = default;
 
     void            Update(bool drawAll = false);
+    afx_msg void    OnDestroy();
     afx_msg LRESULT OnRedrawAll(WPARAM wParam, LPARAM lParam);
     afx_msg void    OnLButtonDown(UINT nFlags, CPoint point);
     afx_msg void    OnSetFocus(CWnd *pOldWnd);

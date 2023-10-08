@@ -22,6 +22,7 @@
 
 // clang-format off
 BEGIN_MESSAGE_MAP(CRegisterWnd, CWnd)
+    ON_WM_DESTROY()
     ON_WM_PAINT()
     ON_WM_LBUTTONDOWN()
     ON_WM_SETFOCUS()
@@ -204,6 +205,16 @@ void CRegisterWnd::Update(bool drawAll)
         m_prevRegs = *m_regs;
         m_prevRegsAct = regValChanged;
     }
+}
+
+void CRegisterWnd::OnDestroy()
+{
+    CClientDC dc(this);
+    dc.SelectObject(m_defaultFont);
+    m_font.DeleteObject();
+    m_normal.DeleteObject();
+    m_recent.DeleteObject();
+    m_selected.DeleteObject();
 }
 
 // paint event handler
@@ -528,14 +539,4 @@ CRegisterWnd::CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPC
     m_defaultFont = dc.SelectObject(&m_font);
     dc.SetBkMode(TRANSPARENT);
     UpdateMetrics();
-}
-
-CRegisterWnd::~CRegisterWnd()
-{
-    CClientDC dc(this);
-    dc.SelectObject(m_defaultFont);
-    m_font.DeleteObject();
-    m_normal.DeleteObject();
-    m_recent.DeleteObject();
-    m_selected.DeleteObject();
 }

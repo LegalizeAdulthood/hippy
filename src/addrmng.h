@@ -29,8 +29,8 @@ class CEnvironment;
 class CAddressManager
 {
 public:
-    CAddressManager() = default;
-    ~CAddressManager() = default;
+    CAddressManager() {}
+    ~CAddressManager();
 
     void Create(CEnvironment *pEnv);
     bool LoadFile(CString fname, CArray<Word, Word &> &adr_arr);

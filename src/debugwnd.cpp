@@ -296,6 +296,13 @@ void CDebugWnd::OnDestroy()
     WINDOWPLACEMENT wp;
     GetWindowPlacement(&wp);
     AfxGetApp()->WriteProfileBinary(_T("Smart IDE"), _T("WP DebugWnd"), (LPBYTE) &wp, sizeof(wp));
+
+    delete m_dasm;
+    delete m_memDump;
+    delete m_regWnd;
+    delete m_m6800;
+    delete m_stackWnd;
+    CMDIChildWnd::DestroyWindow();
 }
 
 void CDebugWnd::OnShowWindow(BOOL bShow, UINT nStatus)
@@ -372,11 +379,4 @@ CDebugWnd::CDebugWnd(CEnvironment *pEnv)
 
     m_collectedCycles = 0;
     m_lastTimeRecorded.dwLowDateTime = 0;
-}
-
-CDebugWnd::~CDebugWnd()
-{
-    delete m_dasm;
-    delete m_stackWnd;
-    CMDIChildWnd::DestroyWindow();
 }

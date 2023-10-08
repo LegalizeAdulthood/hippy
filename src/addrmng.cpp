@@ -40,6 +40,15 @@ BYTE GetNextByte(FILE *f)
 
 ///////////////////////////////////////////////
 
+CAddressManager::~CAddressManager()
+{
+    for (CDevice *device : m_devices)
+    {
+        delete device;
+    }
+    m_devices.clear();
+}
+
 bool CAddressManager::LoadFile(CString fname, CArray<Word, Word &> &adr_arr)
 {
     int   hi{};

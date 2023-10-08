@@ -434,6 +434,9 @@ void CMainFrame::OnDestroy()
     GetWindowPlacement(&wp);
     AfxGetApp()->WriteProfileBinary(_T("Smart IDE"), _T("WP MainFrame"), (LPBYTE) &wp, sizeof(wp));
     SaveBarState(_T("ToolBarState"));
+    delete m_reset;
+    delete m_nmi;
+    delete m_irq;
 }
 
 void CMainFrame::OnShowWindow(BOOL bShow, UINT nStatus)

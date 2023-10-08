@@ -431,7 +431,7 @@ int CDeviceFile::ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devAr
                     CDevice *pDev;
                     pDev = func();
                     pDev->Create(parent, szName, szLibName);
-                    devArr.Add(pDev);
+                    devArr.push_back(pDev);
                     num++;
                 }
                 else
@@ -452,7 +452,7 @@ int CDeviceFile::ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devAr
         // build up the address resolution table
         {
             int  w;
-            int  size = devArr.GetSize();
+            int  size = static_cast<int>(devArr.size());
             bool found;
             int  k;
             Word dec;

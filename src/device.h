@@ -39,25 +39,25 @@ public:
     CDevice();
     virtual ~CDevice();
 
-    int  Create(CWnd *parentWnd, CString szName, CString libName);
+    int  Create(CWnd *parentWnd, const CString &szName, const CString &libName);
     void Interrupt(TInterrupt tint);
     bool Read(Word addr, BYTE &val, bool debug);
     bool Write(Word addr, BYTE val, bool debug);
 
     void GetDeviceName(CString &str)
     {
-        str = *m_deviceName;
+        str = m_deviceName;
     }
     void GetLibraryName(CString &str)
     {
-        str = *m_libraryName;
+        str = m_libraryName;
     }
 
 protected:
-    CWnd    *m_parentWnd{};
-    bool     m_debug{};
-    CString *m_deviceName{};
-    CString *m_libraryName{};
+    CWnd   *m_parentWnd{};
+    bool    m_debug{};
+    CString m_deviceName{};
+    CString m_libraryName{};
 
     virtual void Reset()
     {

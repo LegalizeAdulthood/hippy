@@ -23,9 +23,11 @@
 
 #include <afxtempl.h>
 
+#include <vector>
+
 class CDevice;
 
-using CDeviceArray = CArray<CDevice *, CDevice *&>;
+using CDeviceArray = std::vector<CDevice *>;
 
 enum XmlTagType
 {

@@ -53,7 +53,7 @@ class CDebugWnd : public CMDIChildWnd
 {
 public:
     CDebugWnd(CEnvironment *pEnv);
-    ~CDebugWnd() override;
+    ~CDebugWnd() override = default;
 
     bool            ExecuteNext();
     void            Run();
