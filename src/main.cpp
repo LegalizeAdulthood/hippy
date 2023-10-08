@@ -41,7 +41,7 @@ class CMainFrame : public CMDIFrameWnd
 public:
     CMainFrame();
     afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
-    afx_msg int  OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext);
+    afx_msg int  OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext) override;
     afx_msg void OnDestroy();
     afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
     afx_msg void OnFileOpenClick();
