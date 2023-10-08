@@ -15,10 +15,13 @@ add_library(device STATIC
     device.h
     device.cpp
     hippy.h
+    devices/device.xml
 )
 set_target_properties(device PROPERTIES FOLDER "Devices")
 target_include_directories(device PUBLIC .)
 target_link_libraries(device PUBLIC wx::base)
+add_custom_command(TARGET device POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/devices/device.xml" "${CMAKE_BINARY_DIR}/devices")
 
 add_executable(hippy WIN32
     addrmng.h
@@ -58,8 +61,6 @@ add_executable(hippy WIN32
 )
 target_link_libraries(hippy PUBLIC device)
 set_property(TARGET hippy PROPERTY VS_DPI_AWARE "OFF")
-add_custom_command(TARGET hippy POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/devices/device.xml" "${CMAKE_BINARY_DIR}/devices")
 
 add_subdirectory(keypad)
 add_subdirectory(asm)
