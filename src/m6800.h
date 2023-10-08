@@ -59,7 +59,7 @@ public:
 private:
     int             m_runMode{};
     CAddressManager m_memory;
-    Registers       m_regs;
+    Registers       m_regs{};
     ALU            *m_alu;
     Word            m_mar{}; // memory address register
     BYTE            m_mdr{}; // memory data register
