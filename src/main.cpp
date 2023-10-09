@@ -127,7 +127,7 @@ class CMainApp : public CWinApp
 public:
     int InitInstance() override
     {
-        SetRegistryKey(_T("Hippy 6800"));
+        SetRegistryKey(wxT("Hippy 6800"));
         LoadStdProfileSettings(10);
 
         m_pMainWnd = new CMainFrame();
@@ -145,8 +145,8 @@ void CMainFrame::SendThroughCom(int PortNo, const wxString &fileName)
     CString             batb;
 
     // port = "COM" + PortNo;
-    bat.Format(_T("send%d.bat %s"), PortNo, LPCTSTR(fileName));
-    batb.Format(_T("bsend%d.bat %s"), PortNo, LPCTSTR(fileName));
+    bat.Format(wxT("send%d.bat %s"), PortNo, LPCTSTR(fileName));
+    batb.Format(wxT("bsend%d.bat %s"), PortNo, LPCTSTR(fileName));
 
     GetStartupInfo(&si);
     si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
@@ -167,7 +167,7 @@ void CMainFrame::SendThroughCom(int PortNo, const wxString &fileName)
 
 void CMainFrame::OnLoadSFile()
 {
-    CFileDialog fd(true, _T(".asm"), nullptr, OFN_FILEMUSTEXIST);
+    CFileDialog fd(true, wxT(".asm"), nullptr, OFN_FILEMUSTEXIST);
     if (fd.DoModal() == IDOK)
     {
         m_debugWnd->LoadSFile(wxString(LPCTSTR(fd.GetFileName())));
@@ -185,11 +185,11 @@ void CMainFrame::OnWriteSFile()
         fd.GetValues(wBegin, wEnd, value);
         value.MakeUpper();
         int port = 0;
-        if (value == _T("COM1"))
+        if (value == wxT("COM1"))
         {
             port = 1;
         }
-        else if (value == _T("COM2"))
+        else if (value == wxT("COM2"))
         {
             port = 2;
         }
@@ -198,7 +198,7 @@ void CMainFrame::OnWriteSFile()
         {
             wxString fname;
             GetExecutablePath(fname);
-            fname += _T("1921abbxx231.hex");
+            fname += wxT("1921abbxx231.hex");
             m_debugWnd->WriteSFile(fname, wBegin, wEnd);
             SendThroughCom(port, fname);
         }
@@ -364,7 +364,7 @@ void CMainFrame::OnFileSaveAsClick()
     {
         wxString str;
         pAsm->GetFileName(str);
-        CFileDialog fd(false, _T(".asm"), str, OFN_OVERWRITEPROMPT);
+        CFileDialog fd(false, wxT(".asm"), str, OFN_OVERWRITEPROMPT);
         if (fd.DoModal() == IDOK)
         {
             mapp.AddToRecentFileList(fd.GetPathName());
@@ -379,7 +379,7 @@ void CMainFrame::OnFileSaveAsClick()
 
 void CMainFrame::OnFileOpenClick()
 {
-    CFileDialog fd(true, _T(".asm"), nullptr, OFN_FILEMUSTEXIST);
+    CFileDialog fd(true, wxT(".asm"), nullptr, OFN_FILEMUSTEXIST);
     if (fd.DoModal() == IDOK)
     {
         CAsmEditorWnd *pAsm = new CAsmEditorWnd(this, fd.GetPathName());
@@ -411,7 +411,7 @@ void CMainFrame::OnFileCloseClick()
 
 void CMainFrame::OnFileNewClick()
 {
-    CAsmEditorWnd *pAsm = new CAsmEditorWnd(this, _T(""));
+    CAsmEditorWnd *pAsm = new CAsmEditorWnd(this, wxT(""));
 }
 
 void CMainFrame::OnFileExitClick()
@@ -433,8 +433,8 @@ void CMainFrame::OnDestroy()
 {
     WINDOWPLACEMENT wp;
     GetWindowPlacement(&wp);
-    AfxGetApp()->WriteProfileBinary(_T("Smart IDE"), _T("WP MainFrame"), (LPBYTE) &wp, sizeof(wp));
-    SaveBarState(_T("ToolBarState"));
+    AfxGetApp()->WriteProfileBinary(wxT("Smart IDE"), wxT("WP MainFrame"), (LPBYTE) &wp, sizeof(wp));
+    SaveBarState(wxT("ToolBarState"));
     delete m_reset;
     delete m_nmi;
     delete m_irq;
@@ -448,7 +448,7 @@ void CMainFrame::OnShowWindow(BOOL bShow, UINT nStatus)
     {
         WINDOWPLACEMENT *lwp;
         UINT             nl;
-        if (AfxGetApp()->GetProfileBinary(_T("Smart IDE"), _T("WP MainFrame"), (LPBYTE *) &lwp, &nl))
+        if (AfxGetApp()->GetProfileBinary(wxT("Smart IDE"), wxT("WP MainFrame"), (LPBYTE *) &lwp, &nl))
         {
             SetWindowPlacement(lwp);
             delete[] lwp;
@@ -492,18 +492,18 @@ wxString CMainFrame::GetDeviceFile() const
     TCHAR *p;
     GetModuleFileName(nullptr, buf, 256);
 
-    p = _tcsrchr(buf, _T('\\'));
+    p = _tcsrchr(buf, wxT('\\'));
     *p = 0;
-    p = _tcsrchr(buf, _T('\\'));
+    p = _tcsrchr(buf, wxT('\\'));
     *p = 0;
     wxString str(buf);
-    str += _T("\\devices\\device.xml");
+    str += wxT("\\devices\\device.xml");
     return str;
 }
 
 CMainFrame::CMainFrame()
 {
-    CFrameWnd::Create(nullptr, _T("Hippy - Motorola 6800 Studio"), WS_OVERLAPPEDWINDOW, CRect(100, 100, 800, 800),
+    CFrameWnd::Create(nullptr, wxT("Hippy - Motorola 6800 Studio"), WS_OVERLAPPEDWINDOW, CRect(100, 100, 800, 800),
                       GetDesktopWindow(), MAKEINTRESOURCE(IDR_MENU1));
 
     m_env.SetMainWnd(this);
@@ -538,7 +538,7 @@ CMainFrame::CMainFrame()
     DockControlBar(&m_toolbar);
     DockControlBar(&m_intToolbar);
     LoadAccelTable(MAKEINTRESOURCE(IDR_ACCELERATOR1));
-    LoadBarState(_T("ToolBarState"));
+    LoadBarState(wxT("ToolBarState"));
     UpdateWindow();
     ShowWindow(SW_SHOW);
 

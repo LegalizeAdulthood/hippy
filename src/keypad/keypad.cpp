@@ -309,7 +309,7 @@ CKeyPad::CKeyPad(CDevice *pdevParent, CWnd *parent) :
     int y = 200;
     int x = 200;
 
-    CFrameWnd::Create(nullptr, _T("KeyPad"), WS_SYSMENU | WS_VISIBLE,
+    CFrameWnd::Create(nullptr, wxT("KeyPad"), WS_SYSMENU | WS_VISIBLE,
                       CRect(x, y, x + m_displayRect.right + 20, y + m_keyPadRect.bottom + disp_spacing + 35), m_parent,
                       nullptr, WS_EX_TOOLWINDOW);
 

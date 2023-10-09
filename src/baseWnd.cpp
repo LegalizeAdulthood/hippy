@@ -352,7 +352,7 @@ void CBaseWnd::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar)
 CBaseWnd::CBaseWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName)
 {
     LPCTSTR p = AfxRegisterWndClass(CS_OWNDC | CS_SAVEBITS, LoadCursor(nullptr, IDC_ARROW), nullptr, nullptr);
-    CWnd::Create(p, _T("Base Window"), WS_CHILD | WS_TABSTOP | WS_VSCROLL, rcPos, pParentWnd, 0);
+    CWnd::Create(p, wxT("Base Window"), WS_CHILD | WS_TABSTOP | WS_VSCROLL, rcPos, pParentWnd, 0);
 
 #ifdef UNICODE
     m_font.CreateFontW
@@ -372,7 +372,7 @@ CBaseWnd::CBaseWnd(CWnd *pParentWnd, CRect &rcPos, LPCTSTR szWindowName)
          CLIP_DEFAULT_PRECIS,      // nClipPrecision
          DEFAULT_QUALITY,          // nQuality
          DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
-         _T("FixedSys"));          // lpszFacename
+         wxT("FixedSys"));          // lpszFacename
 
     this->SetFont(&m_font, false);
     CClientDC dc(this);

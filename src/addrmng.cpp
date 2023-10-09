@@ -104,7 +104,7 @@ bool CAddressManager::LoadFile(const wxString &fname, std::vector<Word> &adr_arr
                 BYTE ck = GetNextByte(f);
                 if ((BYTE) ~checksum != ck)
                 {
-                    MessageBox(nullptr, _T("CHECK SUM ERROR, S file seems to be badly formatted."), _T("ERROR"),
+                    MessageBox(nullptr, wxT("CHECK SUM ERROR, S file seems to be badly formatted."), wxT("ERROR"),
                                MB_OK | MB_ICONWARNING);
                     return false;
                 }
@@ -157,7 +157,7 @@ int CAddressManager::SaveSFile(const wxString &fileName, Word wBegin, Word wEnd)
         strcat(buf_out, "\n");
         file.WriteString(CA2T(buf_out));
     }
-    file.WriteString(_T("S9030000FC\n"));
+    file.WriteString(wxT("S9030000FC\n"));
     file.Close();
     return 0;
 }

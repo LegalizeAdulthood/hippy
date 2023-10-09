@@ -74,7 +74,7 @@ wxString CEprom::GetRomFileName()
     wxString str(buf);
 
     str += m_deviceName;
-    str += _T(".rom");
+    str += wxT(".rom");
     return str;
 }
 
@@ -93,7 +93,7 @@ bool CEprom::LoadFile()
     FILE *f = fopen(CT2A (GetRomFileName()), "r");
     if (!f)
     {
-        wxString msg = wxString::Format(_T("Rom image file not found:\n%s"), GetRomFileName().c_str());
+        wxString msg = wxString::Format(wxT("Rom image file not found:\n%s"), GetRomFileName().c_str());
         m_parentWnd->MessageBox(msg, m_deviceName);
         return false;
     }

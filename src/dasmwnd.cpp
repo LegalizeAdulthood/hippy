@@ -52,7 +52,7 @@ int CDisasmWnd::add_codePt(Word w)
 void CDisasmWnd::OnDasmHere()
 {
     CInputBox      ib;
-    const wxString prompt(_T("Enter address to disassemble from:"));
+    const wxString prompt(wxT("Enter address to disassemble from:"));
     if (ib.ShowModal(&prompt) == IDOK)
     {
         Word w = ib.AsWord();

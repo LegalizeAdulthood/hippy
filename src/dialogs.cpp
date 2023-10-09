@@ -67,8 +67,8 @@ void CInputBox::DoDataExchange(CDataExchange *pDX)
 int CInputBox::ShowModal(const wxString *prompt, const wxString *title)
 {
     m_lpszTemplateName = MAKEINTRESOURCE(IDD_INPUTBOX);
-    m_title = title ? *title : _T("User input");
-    m_prompt = prompt ? *prompt : _T("Please enter a value");
+    m_title = title ? *title : wxT("User input");
+    m_prompt = prompt ? *prompt : wxT("Please enter a value");
     return DoModal();
 }
 
@@ -89,9 +89,9 @@ int CSFileDialog::ShowModal()
     if (ret == IDOK)
     {
         CWinApp *app = AfxGetApp();
-        app->WriteProfileString(_T("SRec"), _T("SRecBeging"), m_begin);
-        app->WriteProfileString(_T("SRec"), _T("SRecEnd"), m_end);
-        app->WriteProfileString(_T("SRec"), _T("SRecFile"), m_file);
+        app->WriteProfileString(wxT("SRec"), wxT("SRecBeging"), m_begin);
+        app->WriteProfileString(wxT("SRec"), wxT("SRecEnd"), m_end);
+        app->WriteProfileString(wxT("SRec"), wxT("SRecFile"), m_file);
     }
 
     return ret;
@@ -103,9 +103,9 @@ void CSFileDialog::DoDataExchange(CDataExchange *pDX)
 
     { // read latest write locations from registry
         CWinApp *app = AfxGetApp();
-        m_begin = wxString(LPCTSTR(app->GetProfileString(_T("SRec"), _T("SRecBeging"), _T("$0000"))));
-        m_end = wxString(LPCTSTR(app->GetProfileString(_T("SRec"), _T("SRecEnd"), _T("$FFFF"))));
-        m_file = wxString(LPCTSTR(app->GetProfileString(_T("SRec"), _T("SRecFile"), _T("Output.Hex"))));
+        m_begin = wxString(LPCTSTR(app->GetProfileString(wxT("SRec"), wxT("SRecBeging"), wxT("$0000"))));
+        m_end = wxString(LPCTSTR(app->GetProfileString(wxT("SRec"), wxT("SRecEnd"), wxT("$FFFF"))));
+        m_file = wxString(LPCTSTR(app->GetProfileString(wxT("SRec"), wxT("SRecFile"), wxT("Output.Hex"))));
     }
     CString begin = LPCTSTR(m_begin);
     DDX_Text(pDX, IDC_EDITBADDR, begin);

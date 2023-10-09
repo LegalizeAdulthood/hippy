@@ -164,7 +164,7 @@ void CRegisterWnd::Update(bool drawAll)
     }
     rc.OffsetRect(pt);
     dc.SetTextColor(RGB(0, 0, 0));
-    dc.TextOut(rc.left, rc.top, _T("H I N Z V C"), 11);
+    dc.TextOut(rc.left, rc.top, wxT("H I N Z V C"), 11);
     rc.OffsetRect(pt);
     rc.right = rc.left + m_charWidth;
     if (regValChanged.ccr.h || drawAll || m_prevRegsAct.ccr.h)
@@ -263,21 +263,21 @@ void CRegisterWnd::OnPaint()
     // write the table header (register, value) and Reg names
     y = m_sideMargin;
     dc.SetTextColor(RGB(0, 0, 0));
-    dc.TextOut(m_sideMargin, y, _T("Register"), 8);
-    dc.TextOut(x + 2 * m_sideMargin, y, _T("Value"), 5);
+    dc.TextOut(m_sideMargin, y, wxT("Register"), 8);
+    dc.TextOut(x + 2 * m_sideMargin, y, wxT("Value"), 5);
     y += 2 * m_sideMargin + m_charHeight;
     dc.SetTextColor(RGB(100, 100, 100));
-    dc.TextOut(m_sideMargin, y, _T("Accumulator A"), 13);
+    dc.TextOut(m_sideMargin, y, wxT("Accumulator A"), 13);
     y += 2 * m_sideMargin + m_charHeight;
-    dc.TextOut(m_sideMargin, y, _T("Accumulator B"), 13);
+    dc.TextOut(m_sideMargin, y, wxT("Accumulator B"), 13);
     y += 2 * m_sideMargin + m_charHeight;
-    dc.TextOut(m_sideMargin, y, _T("Program Counter"), 15);
+    dc.TextOut(m_sideMargin, y, wxT("Program Counter"), 15);
     y += 2 * m_sideMargin + m_charHeight;
-    dc.TextOut(m_sideMargin, y, _T("Index Reg."), 10);
+    dc.TextOut(m_sideMargin, y, wxT("Index Reg."), 10);
     y += 2 * m_sideMargin + m_charHeight;
-    dc.TextOut(m_sideMargin, y, _T("Stack Pointer"), 13);
+    dc.TextOut(m_sideMargin, y, wxT("Stack Pointer"), 13);
     y += 2 * m_sideMargin + m_charHeight;
-    dc.TextOut(m_sideMargin, y, _T("Cond. Code Reg."), 15);
+    dc.TextOut(m_sideMargin, y, wxT("Cond. Code Reg."), 15);
 
     dc.SelectObject(oldp);
     newp.DeleteObject();
@@ -534,7 +534,7 @@ CRegisterWnd::CRegisterWnd(CWnd *pParentWnd, CRect &rcPos, Registers *pRegs, LPC
          CLIP_DEFAULT_PRECIS,      // nClipPrecision
          DEFAULT_QUALITY,          // nQuality
          DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
-         _T("FixedSys"));          // lpszFacename
+         wxT("FixedSys"));          // lpszFacename
 
     SetFont(&m_font, false);
     CClientDC dc(this);

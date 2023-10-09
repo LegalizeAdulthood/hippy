@@ -69,7 +69,7 @@ void CBuildEdit::OnLButtonDblClk(UINT nFlags, CPoint point)
         // printf("Line %d : Error: %s\n", line, msg);
         // strip off the line number
         int d = -1;
-        _tcscanf(buffer, _T("error: line %d: "), &d);
+        _tcscanf(buffer, wxT("error: line %d: "), &d);
         if (d >= 0)
         {
             // send jump message to parent
@@ -136,7 +136,7 @@ void CAsmEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
     {
     case VK_RETURN:
     {
-        ReplaceSel(_T("\t\t"), false);
+        ReplaceSel(wxT("\t\t"), false);
     }
     break;
     case ':':
@@ -147,17 +147,17 @@ void CAsmEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
         long end = start + 2;
         SetSel(start, end);
         CString str = GetSelText();
-        if (str[0] != _T(' ') && str[0] != _T('\t'))
+        if (str[0] != wxT(' ') && str[0] != wxT('\t'))
         {
             SetSel(curs, cure);
             break;
         }
 
-        ReplaceSel(_T(""), false);
+        ReplaceSel(wxT(""), false);
         curs -= 2;
         cure -= 2;
         SetSel(cure, cure);
-        ReplaceSel(_T("\t\t"), false);
+        ReplaceSel(wxT("\t\t"), false);
         SetSel(curs + 1, cure + 1);
     }
     break;
@@ -199,7 +199,7 @@ int CAsmEditorWnd::SaveFile()
     if (!file.Open(m_fileName, CFile::modeWrite | CFile::typeText | CFile::modeCreate, &fe))
     {
         fe.GetErrorMessage(buffer, sizeof(buffer));
-        MessageBox(buffer, _T("File open error"));
+        MessageBox(buffer, wxT("File open error"));
         return 0;
     }
 
@@ -271,7 +271,7 @@ bool CAsmEditorWnd::OpenFile()
     CString szBuffer;
     while (file.ReadString(str))
     {
-        szBuffer += str + _T('\13');
+        szBuffer += str + wxT('\13');
     }
     m_editor.SendMessage(WM_SETTEXT, 0, (LPARAM) szBuffer.GetBuffer(1));
     file.Close();
@@ -293,7 +293,7 @@ wxString CAsmEditorWnd::GetHexFileName() const
     }
     else
     {
-        _tcscat(buffer, _T(".hex"));
+        _tcscat(buffer, wxT(".hex"));
     }
     return {buffer};
 }
@@ -329,7 +329,7 @@ int CAsmEditorWnd::CompileCode()
     si.wShowWindow = SW_HIDE;
     si.hStdInput = nullptr;
     si.cb = sizeof(si);
-    _tcprintf(buffer, _T("%s %s"), _T("assembler.exe"), LPCTSTR(m_fileName));
+    _tcprintf(buffer, wxT("%s %s"), wxT("assembler.exe"), LPCTSTR(m_fileName));
     CreateProcess(nullptr, buffer, nullptr, nullptr, true, CREATE_NEW_CONSOLE /*creation flags*/, nullptr /*envirn*/,
                   nullptr /*cur dir*/, &si, &pi);
 
@@ -355,7 +355,7 @@ int CAsmEditorWnd::CompileCode()
     }
     else
     {
-        TRACE(_T("CREATING NEW PROCESS FAILED : GetLatError -->  0x%8.8X\n"), ::GetLastError());
+        TRACE(wxT("CREATING NEW PROCESS FAILED : GetLatError -->  0x%8.8X\n"), ::GetLastError());
 
         LPVOID lpMsgBuf;
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -377,7 +377,7 @@ int CAsmEditorWnd::CompileCode()
 //				 otherwise it will attempt to open the file.
 CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName)
 {
-    CMDIChildWnd::Create(nullptr, _T("Editor"), WS_VISIBLE | WS_CHILD | WS_OVERLAPPEDWINDOW, rectDefault, pParent);
+    CMDIChildWnd::Create(nullptr, wxT("Editor"), WS_VISIBLE | WS_CHILD | WS_OVERLAPPEDWINDOW, rectDefault, pParent);
     m_editor.Create(WS_CHILD | ES_MULTILINE | WS_VSCROLL, rectDefault, this, 101);
     m_buildWnd.Create(WS_CHILD | WS_VISIBLE | ES_MULTILINE | WS_VSCROLL | WS_TABSTOP | WS_BORDER, rectDefault, this,
                       102);
@@ -389,8 +389,8 @@ CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName)
     {
         TCHAR buffer[100];
         s_fileNumber++;
-        _stprintf(buffer, _T("%03d"), s_fileNumber);
-        m_fileName = wxString(_T("NewFile")) + wxString(buffer) + wxString(_T(".asm"));
+        _stprintf(buffer, wxT("%03d"), s_fileNumber);
+        m_fileName = wxString(wxT("NewFile")) + wxString(buffer) + wxString(wxT(".asm"));
     }
 
     CRect rc;
@@ -412,7 +412,7 @@ CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName)
          CLIP_DEFAULT_PRECIS,      // nClipPrecision
          DEFAULT_QUALITY,          // nQuality
          DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
-         _T("FixedSys"));          // lpszFacename
+         wxT("FixedSys"));          // lpszFacename
     m_editor.SetFont(&m_font, false);
 
     GetClientRect(&rc);

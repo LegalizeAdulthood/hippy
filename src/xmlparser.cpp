@@ -86,11 +86,11 @@ char CDeviceFile::GetNextToken()
         {
         case 0:
         {
-            if (m_xmlTag.data[0] == _T('P'))
+            if (m_xmlTag.data[0] == wxT('P'))
             {
                 state = 1;
             }
-            else if (m_xmlTag.data[0] != _T(' '))
+            else if (m_xmlTag.data[0] != wxT(' '))
             {
                 char ret = static_cast<char>(m_xmlTag.data[0]);
                 switch (ret)
@@ -119,7 +119,7 @@ char CDeviceFile::GetNextToken()
         break;
 
         case 1:
-            if (m_xmlTag.data[0] != _T('A'))
+            if (m_xmlTag.data[0] != wxT('A'))
             {
                 return 0;
             }
@@ -127,14 +127,14 @@ char CDeviceFile::GetNextToken()
             m_xmlTag.data.erase(0, 1);
             break;
         case 2:
-            if (m_xmlTag.data[0] > _T('9') || m_xmlTag.data[0] < _T('0'))
+            if (m_xmlTag.data[0] > wxT('9') || m_xmlTag.data[0] < wxT('0'))
                 return 0;
             c[0] = static_cast<char>(m_xmlTag.data[0]);
             m_xmlTag.data.erase(0, 1);
             state = 3;
             break;
         case 3:
-            if (m_xmlTag.data[0] <= _T('9') && m_xmlTag.data[0] >= _T('0'))
+            if (m_xmlTag.data[0] <= wxT('9') && m_xmlTag.data[0] >= wxT('0'))
             {
                 c[1] = static_cast<char>(m_xmlTag.data[0]);
                 m_xmlTag.data.erase(0, 1);
@@ -276,7 +276,7 @@ char CDeviceFile::GetString(wxString &value)
 // if > is found before the field then return false
 bool CDeviceFile::GetField(LPCSTR lpcField, wxString &value)
 {
-    wxString szField(_T("11"));
+    wxString szField(wxT("11"));
     char    c;
     while (szField != lpcField)
     {
@@ -294,8 +294,8 @@ bool CDeviceFile::GetField(LPCSTR lpcField, wxString &value)
         }
     }
     GetString(value);
-    const size_t begin = value.find_first_not_of(_T('"'));
-    const size_t end = value.find_last_not_of(_T('"'));
+    const size_t begin = value.find_first_not_of(wxT('"'));
+    const size_t end = value.find_last_not_of(wxT('"'));
     value = value.SubString(begin, end);
     return true;
 }
@@ -327,7 +327,7 @@ label1:
         return false;
     }
     GetString(str);
-    if (str == _T("!--"))
+    if (str == wxT("!--"))
     {
         if (!FindPattern("-->"))
             return false;
@@ -336,13 +336,13 @@ label1:
 
     m_xmlTag.close = false;
 
-    if (str == _T("HDF"))
+    if (str == wxT("HDF"))
     {
         m_xmlTag.type = ttHdf;
         // look for version info
         m_xmlTag.version = !GetField("version", str) ? 0 : atof(CT2A(str));
     }
-    else if (str == _T("DEVICE"))
+    else if (str == wxT("DEVICE"))
     {
         m_xmlTag.type = ttDevice;
         if (!GetField("name", m_xmlTag.name))
@@ -354,16 +354,16 @@ label1:
             return false;
         }
     }
-    else if (str == _T("WORD_SELECT"))
+    else if (str == wxT("WORD_SELECT"))
     {
         m_xmlTag.type = ttWordSelect;
     }
-    else if (str == _T("/WORD_SELECT"))
+    else if (str == wxT("/WORD_SELECT"))
     {
         m_xmlTag.type = ttWordSelect;
         m_xmlTag.close = true;
     }
-    else if (str == _T("AI"))
+    else if (str == wxT("AI"))
     {
         m_xmlTag.type = ttAI;
         GetField("id", str);
@@ -373,13 +373,13 @@ label1:
             return false;
         }
         GetUntilChar('>', str);
-        if (str != _T("/AI"))
+        if (str != wxT("/AI"))
         {
             return false;
         }
         CompileData();
     }
-    else if (str == _T("CHIP_SELECT"))
+    else if (str == wxT("CHIP_SELECT"))
     {
         m_xmlTag.type = ttChipSelect;
         if (!GetUntilChar('<', m_xmlTag.data))
@@ -387,18 +387,18 @@ label1:
             return false;
         }
         GetUntilChar('>', str);
-        if (str != _T("/CHIP_SELECT"))
+        if (str != wxT("/CHIP_SELECT"))
         {
             return false;
         }
         CompileData();
     }
-    else if (str == _T("/DEVICE"))
+    else if (str == wxT("/DEVICE"))
     {
         m_xmlTag.type = ttDevice;
         m_xmlTag.close = true;
     }
-    else if (str == _T("/HDF"))
+    else if (str == wxT("/HDF"))
     {
         m_xmlTag.type = ttHdf;
         m_xmlTag.close = true;
@@ -480,7 +480,7 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
             case ttDevice:
                 if (m_xmlTag.close)
                 { // </DEVICE>
-                    HMODULE    hmod = LoadLibrary(LPCTSTR(_T("../devices/") + libName));
+                    HMODULE    hmod = LoadLibrary(LPCTSTR(wxT("../devices/") + libName));
                     pdevFunctv func = pdevFunctv(GetProcAddress(hmod, "GetNewDevice"));
                     CDevice   *pDev = func();
                     pDev->Create(parent, name, libName);
@@ -489,7 +489,7 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
                 }
                 else
                 { // <DEVICE name="xxx" chip="###">
-                    libName = m_xmlTag.chip + _T(".dll");
+                    libName = m_xmlTag.chip + wxT(".dll");
                     name = m_xmlTag.name;
                 }
                 break;
@@ -552,7 +552,7 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
             cur = AddrResTbl[w].devIndex;
             if (cur == 255)
             {
-                str = _T("Memory");
+                str = wxT("Memory");
             }
             else
             {
@@ -560,7 +560,7 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
             }
             if (cur != last)
             {
-                _ftprintf(f, _T("[%04x] %s\n"), w, LPCTSTR(str));
+                _ftprintf(f, wxT("[%04x] %s\n"), w, LPCTSTR(str));
                 last = cur;
             }
         }

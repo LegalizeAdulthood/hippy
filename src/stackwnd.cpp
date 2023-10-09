@@ -325,6 +325,6 @@ void CStackWnd::Pop(BYTE code, bool paint)
 }
 
 CStackWnd::CStackWnd(CWnd *pParentWnd, CRect &rcPos) :
-    CBaseWnd(pParentWnd, rcPos, _T("Stack Window"))
+    CBaseWnd(pParentWnd, rcPos, wxT("Stack Window"))
 {
 }
