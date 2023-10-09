@@ -461,15 +461,18 @@ bool CDeviceFile::EvalEqn(Word addr, CString &eqn)
 
 int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl)
 {
-    wxString      name;
+    m_file = fopen(CT2A(fileName), "r");
+    if (!m_file)
+    {
+        return 0;
+    }
+
     CStringArray csEqn;
     CStringArray addrEqns[255];
-    wxString      libName;
-    int          num = 0;
-    int i = -1;
-    m_file = fopen(CT2A(fileName), "r");
-    if (m_file)
     {
+        int      num = 0;
+        wxString name;
+        wxString libName;
         while (FindNextTag())
         {
             switch (m_xmlTag.type)
@@ -498,45 +501,47 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
                 break;
             }
         }
+    }
 
-        // build up the address resolution table
+    // build up the address resolution table
+    {
+        int  i;
+        int  w;
+        int  size = static_cast<int>(devArr.size());
+        bool found;
+        int  k;
+        Word dec;
+
+        for (w = 0x0000; w < 0x10000; w++)
         {
-            int  w;
-            int  size = static_cast<int>(devArr.size());
-            bool found;
-            int  k;
-            Word dec;
-
-            for (w = 0x0000; w < 0x10000; w++)
+            // for each location look for selected chip
+            found = false;
+            for (i = 0; i < size; i++)
             {
-                // for each location look for selected chip
-                found = false;
-                for (i = 0; i < size; i++)
+                if (EvalEqn(w, csEqn[i]))
                 {
-                    if (EvalEqn(w, csEqn[i]))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                // for each selected chip decode this address
-                // according to its address equations
-                if (found)
-                {
-                    dec = 0;
-                    AddrResTbl[w].devIndex = i;
-                    for (k = 0; k < addrEqns[i].GetSize(); k++)
-                    {
-                        dec |= EvalEqn(w, addrEqns[i][k]) << k;
-                    }
-                    AddrResTbl[w].decodedAddr = dec;
-                }
-                else
-                {
-                    AddrResTbl[w].devIndex = 255; // 255 means no device
+                    found = true;
+                    break;
                 }
             }
+
+            // for each selected chip decode this address
+            // according to its address equations
+            if (found)
+            {
+                dec = 0;
+                AddrResTbl[w].devIndex = i;
+                for (k = 0; k < addrEqns[i].GetSize(); k++)
+                {
+                    dec |= EvalEqn(w, addrEqns[i][k]) << k;
+                }
+                AddrResTbl[w].decodedAddr = dec;
+            }
+            else
+            {
+                AddrResTbl[w].devIndex = 255; // 255 means no device
+            }
+        }
 
 #if 0
             { // DEBUGGING CODE
@@ -569,9 +574,9 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
                 fclose(f);
             }
 #endif
-        }
     }
 
+    fclose(m_file);
     return 1;
 }
 
