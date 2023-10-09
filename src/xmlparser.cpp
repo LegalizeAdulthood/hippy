@@ -466,7 +466,6 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
     CStringArray addrEqns[255];
     wxString      libName;
     int          num = 0;
-    typedef CDevice *(*pvFunctv)();
     int i = -1;
     m_file = fopen(CT2A(fileName), "r");
     if (m_file)
@@ -478,9 +477,9 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
             case ttDevice:
                 if (m_xmlTag.close)
                 { // </DEVICE>
-                    HMODULE  hmod = LoadLibrary(LPCTSTR(_T("../devices/") + libName));
-                    pvFunctv func = (pvFunctv) GetProcAddress(hmod, "GetNewDevice");
-                    CDevice *pDev = func();
+                    HMODULE    hmod = LoadLibrary(LPCTSTR(_T("../devices/") + libName));
+                    pdevFunctv func = pdevFunctv(GetProcAddress(hmod, "GetNewDevice"));
+                    CDevice   *pDev = func();
                     pDev->Create(parent, name, libName);
                     devArr.push_back(pDev);
                     num++;
