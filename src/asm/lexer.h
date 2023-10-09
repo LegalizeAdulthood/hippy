@@ -16,18 +16,10 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef _LEXER_H__
-#define _LEXER_H__
-
-#include "tables.h"
-#include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#ifndef HIPPY_LEXER_H
+#define HIPPY_LEXER_H
 
 #define NUM_INST 107
-
-void ErrorMsg(LPCSTR msg, int line = -1);
 
 /*
  * assebler directives listing

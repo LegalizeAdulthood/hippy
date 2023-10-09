@@ -24,8 +24,6 @@ add_executable(asm
     ${grammarSources}
     sym_table.h
     sym_table.cpp
-    tables.h
-    tables.cpp
     codes.h
     lexer.h
     phase2.h
