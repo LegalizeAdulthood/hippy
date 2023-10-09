@@ -21,11 +21,14 @@
 
 #include "device.h"
 
-#define IMPLEMENT_STACK() \
-    int  indStack = 0;    \
-    char stack[30]
-#define POP() stack[--indStack]
-#define PUSH(x) stack[indStack++] = (x)
+#include <vector>
+
+inline char stack_pop(std::vector<char> &stack)
+{
+    const char result = stack.back();
+    stack.pop_back();
+    return result;
+}
 
 enum XmlTagType
 {
@@ -53,7 +56,7 @@ struct XmlTag
 class CDeviceFile
 {
 public:
-    int  ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl);
+    int ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl);
 
 private:
     FILE  *m_file{};
@@ -157,9 +160,9 @@ char CDeviceFile::GetNextToken()
 bool CDeviceFile::CompileData()
 {
     // assume : m_xmlTag.data is valid
-    CString       szBuffer;
-    unsigned char c;
-    IMPLEMENT_STACK();
+    CString           szBuffer;
+    unsigned char     c;
+    std::vector<char> stack;
 
     while (c = GetNextToken())
     {
@@ -167,37 +170,37 @@ bool CDeviceFile::CompileData()
         {
             // operand
             szBuffer += c;
-            if (indStack && stack[indStack - 1] == bitNOT)
+            if (!stack.empty() && stack.back() == bitNOT)
             {
-                szBuffer += POP();
+                szBuffer += stack_pop(stack);
             }
         }
         else // operator
             if (c == ')')
             {
-                while (indStack && stack[indStack - 1] != leftPrnt)
+                while (!stack.empty() && stack.back() != leftPrnt)
                 {
-                    szBuffer += POP();
+                    szBuffer += stack_pop(stack);
                 }
-                POP(); // pop (
-                if (indStack && stack[indStack - 1] == bitNOT)
+                stack_pop(stack); // pop (
+                if (!stack.empty() && stack.back() == bitNOT)
                 {
-                    szBuffer += POP();
+                    szBuffer += stack_pop(stack);
                 }
             }
             else if (c < 6)
             {
-                while (indStack && stack[indStack - 1] >= c && stack[indStack - 1] != leftPrnt)
+                while (!stack.empty() && stack.back() >= c && stack.back() != leftPrnt)
                 {
-                    szBuffer += POP();
+                    szBuffer += stack_pop(stack);
                 }
-                PUSH(c);
+                stack.push_back(static_cast<char>(c));
             }
     }
 
-    while (indStack)
+    while (!stack.empty())
     {
-        szBuffer += POP();
+        szBuffer += stack_pop(stack);
     };
     m_xmlTag.data = szBuffer;
     return true;
@@ -412,51 +415,51 @@ label1:
 // evaluate the equation using the values in addr, return true or false
 bool CDeviceFile::EvalEqn(Word addr, CString &eqn)
 {
-    IMPLEMENT_STACK();
-    int  i, size = eqn.GetLength();
-    bool b1, b2;
-    char c;
+    std::vector<char> stack;
+    int               i, size = eqn.GetLength();
+    bool              b1, b2;
+    char              c;
 
     for (i = 0; i < size; i++)
     {
         c = eqn[i];
-        if ((c & 0xf0) == 0xf0) // operant
+        if ((c & 0xf0) == 0xf0) // operand
         {
-            PUSH((bool) ((addr & (1 << (c & 0x0f))) != 0));
+            stack.push_back((addr & 1 << (c & 0x0f)) != 0);
         }
         else
         {
             switch (c)
             {
             case bitNOT:
-                PUSH(!(POP()));
+                stack.push_back(!stack_pop(stack));
                 break;
             case bitAND:
-                b1 = POP() != 0;
-                b2 = POP() != 0;
-                PUSH(b1 && b2);
+                b1 = stack_pop(stack) != 0;
+                b2 = stack_pop(stack) != 0;
+                stack.push_back(b1 && b2);
                 break;
             case bitOR:
-                b1 = POP() != 0;
-                b2 = POP() != 0;
-                PUSH(b1 || b2);
+                b1 = stack_pop(stack) != 0;
+                b2 = stack_pop(stack) != 0;
+                stack.push_back(b1 || b2);
                 break;
             case bitXOR:
-                b1 = POP() != 0;
-                b2 = POP() != 0;
-                PUSH(b1 ^ b2);
+                b1 = stack_pop(stack) != 0;
+                b2 = stack_pop(stack) != 0;
+                stack.push_back(b1 ^ b2);
                 break;
             case 'L':
-                PUSH(0);
+                stack.push_back(0);
                 break;
             case 'H':
-                PUSH(1);
+                stack.push_back(1);
                 break;
             }
         }
     }
 
-    return (POP() != 0);
+    return stack_pop(stack) != 0;
 }
 
 int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl)
