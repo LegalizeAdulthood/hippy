@@ -47,9 +47,9 @@ struct XmlTag
     XmlTagType type;
     double     version;
     int        id;
-    CString    data;
-    CString    name;
-    CString    chip;
+    wxString   data;
+    wxString   name;
+    wxString   chip;
     bool       close;
 };
 
@@ -66,22 +66,21 @@ private:
     void PutCharBack();
     bool FindChar(char c);
     bool FindPattern(LPSTR lpStr);
-    char GetString(CString &szString);
-    bool GetField(LPCSTR lpcField, CString &szVal);
-    bool GetUntilChar(char chr, CString &szStr);
+    char GetString(wxString &value);
+    bool GetField(LPCSTR lpcField, wxString &value);
+    bool GetUntilChar(char chr, wxString &value);
     bool FindNextTag();
     bool CompileData();
     char GetNextToken();
-    bool EvalEqn(Word addr, const CString &eqn);
+    bool EvalEqn(Word addr, const wxString &eqn);
 };
 
 char CDeviceFile::GetNextToken()
 {
-    int     state{};
-    CString szBuffer;
-    char    c[3]{};
+    int      state{};
+    char     c[3]{};
 
-    while (m_xmlTag.data.GetLength())
+    while (m_xmlTag.data.Length())
     {
         switch (state)
         {
@@ -112,10 +111,10 @@ char CDeviceFile::GetNextToken()
                     ret = (char) bitOR;
                     break;
                 }
-                m_xmlTag.data.Delete(0);
+                m_xmlTag.data.erase(0, 1);
                 return ret;
             }
-            m_xmlTag.data.Delete(0);
+            m_xmlTag.data.erase(0, 1);
         }
         break;
 
@@ -125,20 +124,20 @@ char CDeviceFile::GetNextToken()
                 return 0;
             }
             state = 2;
-            m_xmlTag.data.Delete(0);
+            m_xmlTag.data.erase(0, 1);
             break;
         case 2:
             if (m_xmlTag.data[0] > _T('9') || m_xmlTag.data[0] < _T('0'))
                 return 0;
             c[0] = static_cast<char>(m_xmlTag.data[0]);
-            m_xmlTag.data.Delete(0);
+            m_xmlTag.data.erase(0, 1);
             state = 3;
             break;
         case 3:
             if (m_xmlTag.data[0] <= _T('9') && m_xmlTag.data[0] >= _T('0'))
             {
                 c[1] = static_cast<char>(m_xmlTag.data[0]);
-                m_xmlTag.data.Delete(0);
+                m_xmlTag.data.erase(0, 1);
             }
             else
             {
@@ -160,7 +159,7 @@ char CDeviceFile::GetNextToken()
 bool CDeviceFile::CompileData()
 {
     // assume : m_xmlTag.data is valid
-    CString           szBuffer;
+    wxString          buffer;
     unsigned char     c;
     std::vector<char> stack;
 
@@ -169,10 +168,10 @@ bool CDeviceFile::CompileData()
         if (c >= 0xf0)
         {
             // operand
-            szBuffer += c;
+            buffer += c;
             if (!stack.empty() && stack.back() == bitNOT)
             {
-                szBuffer += stack_pop(stack);
+                buffer += stack_pop(stack);
             }
         }
         else // operator
@@ -180,19 +179,19 @@ bool CDeviceFile::CompileData()
             {
                 while (!stack.empty() && stack.back() != leftPrnt)
                 {
-                    szBuffer += stack_pop(stack);
+                    buffer += stack_pop(stack);
                 }
                 stack_pop(stack); // pop (
                 if (!stack.empty() && stack.back() == bitNOT)
                 {
-                    szBuffer += stack_pop(stack);
+                    buffer += stack_pop(stack);
                 }
             }
             else if (c < 6)
             {
                 while (!stack.empty() && stack.back() >= c && stack.back() != leftPrnt)
                 {
-                    szBuffer += stack_pop(stack);
+                    buffer += stack_pop(stack);
                 }
                 stack.push_back(static_cast<char>(c));
             }
@@ -200,9 +199,9 @@ bool CDeviceFile::CompileData()
 
     while (!stack.empty())
     {
-        szBuffer += stack_pop(stack);
-    };
-    m_xmlTag.data = szBuffer;
+        buffer += stack_pop(stack);
+    }
+    m_xmlTag.data = buffer;
     return true;
 }
 
@@ -251,11 +250,11 @@ bool CDeviceFile::FindPattern(LPSTR lpStr)
 
 // returns the first string encountered. looks for spaces and tabs
 // check the eof string. return the character causing return.
-char CDeviceFile::GetString(CString &szString)
+char CDeviceFile::GetString(wxString &value)
 {
     char c = ' ';
 
-    szString = _T("");
+    value.Clear();
 
     while (c == ' ' || c == '\t')
     {
@@ -267,7 +266,7 @@ char CDeviceFile::GetString(CString &szString)
     }
     while (c != '\n' && c != ' ' && c != '\t' && c != '>' && c != '=')
     {
-        szString += c;
+        value += c;
         c = fgetc(m_file);
     }
     return c;
@@ -275,9 +274,9 @@ char CDeviceFile::GetString(CString &szString)
 
 // assuming that we are in a tag, find the value of the given field.
 // if > is found before the field then return false
-bool CDeviceFile::GetField(LPCSTR lpcField, CString &szVal)
+bool CDeviceFile::GetField(LPCSTR lpcField, wxString &value)
 {
-    CString szField("11");
+    wxString szField(_T("11"));
     char    c;
     while (szField != lpcField)
     {
@@ -294,37 +293,33 @@ bool CDeviceFile::GetField(LPCSTR lpcField, CString &szVal)
             return false;
         }
     }
-    GetString(szVal);
-    szVal.TrimLeft(_T("\""));
-    szVal.TrimRight(_T("\""));
+    GetString(value);
+    const size_t begin = value.find_first_not_of(_T('"'));
+    const size_t end = value.find_last_not_of(_T('"'));
+    value = value.SubString(begin, end);
     return true;
 }
 
 // returns all of the characters ntil the first appereance of the char.
-bool CDeviceFile::GetUntilChar(const char chr, CString &szStr)
+bool CDeviceFile::GetUntilChar(const char chr, wxString &value)
 {
-    szStr = _T("");
+    value.Clear();
     char c;
     while (!feof(m_file) && (c = fgetc(m_file)) != chr)
     {
         if (c != ' ' && c != '\t')
         {
-            szStr += c;
+            value += c;
         }
     }
-    if (feof(m_file))
-    {
-        return false;
-    }
-
-    return true;
+    return feof(m_file) == 0 ? true : false;
 }
 
 // skip characters, blanklines and find a meaningfull tag,
 // also skip comment.
 bool CDeviceFile::FindNextTag()
 {
-    CString str;
+    wxString str;
     // look for "<" sign & check if it belongs to a comment or not
 label1:
     if (!FindChar('<'))
@@ -413,10 +408,10 @@ label1:
 }
 
 // evaluate the equation using the values in addr, return true or false
-bool CDeviceFile::EvalEqn(Word addr, const CString &eqn)
+bool CDeviceFile::EvalEqn(Word addr, const wxString &eqn)
 {
     std::vector<char> stack;
-    int const         size = eqn.GetLength();
+    int const         size = eqn.Length();
     bool              b1;
     bool              b2;
 
@@ -472,8 +467,8 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
         return 0;
     }
 
-    std::vector<CString> csEqn;
-    std::vector<CString> addrEqns[255];
+    std::vector<wxString> csEqn;
+    std::vector<wxString> addrEqns[255];
     {
         int      num = 0;
         wxString name;
@@ -532,7 +527,7 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
                 Word dec = 0;
                 AddrResTbl[w].devIndex = i;
                 int k = 0;
-                for (const CString &eqn : addrEqns[i])
+                for (const wxString &eqn : addrEqns[i])
                 {
                     dec |= EvalEqn(w, eqn) << k;
                 }
