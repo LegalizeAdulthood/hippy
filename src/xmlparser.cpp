@@ -65,7 +65,7 @@ private:
     bool FindPattern(LPSTR lpStr);
     char GetString(CString &szString);
     bool GetField(LPCSTR lpcField, CString &szVal);
-    bool GetUntilChar(const char chr, CString &szStr);
+    bool GetUntilChar(char chr, CString &szStr);
     bool FindNextTag();
     bool CompileData();
     char GetNextToken();
@@ -74,9 +74,9 @@ private:
 
 char CDeviceFile::GetNextToken()
 {
-    int     state = 0, k;
+    int     state{};
     CString szBuffer;
-    char    c[3], ret;
+    char    c[3]{};
 
     while (m_xmlTag.data.GetLength())
     {
@@ -84,13 +84,13 @@ char CDeviceFile::GetNextToken()
         {
         case 0:
         {
-            if (m_xmlTag.data[0] == 'P')
+            if (m_xmlTag.data[0] == _T('P'))
             {
                 state = 1;
             }
-            else if (m_xmlTag.data[0] != ' ')
+            else if (m_xmlTag.data[0] != _T(' '))
             {
-                ret = m_xmlTag.data[0];
+                char ret = static_cast<char>(m_xmlTag.data[0]);
                 switch (ret)
                 {
                 case '~':
@@ -115,8 +115,9 @@ char CDeviceFile::GetNextToken()
             m_xmlTag.data.Delete(0);
         }
         break;
+
         case 1:
-            if (m_xmlTag.data[0] != 'A')
+            if (m_xmlTag.data[0] != _T('A'))
             {
                 return 0;
             }
@@ -124,16 +125,16 @@ char CDeviceFile::GetNextToken()
             m_xmlTag.data.Delete(0);
             break;
         case 2:
-            if (m_xmlTag.data[0] > '9' || m_xmlTag.data[0] < '0')
+            if (m_xmlTag.data[0] > _T('9') || m_xmlTag.data[0] < _T('0'))
                 return 0;
-            c[0] = m_xmlTag.data[0];
+            c[0] = static_cast<char>(m_xmlTag.data[0]);
             m_xmlTag.data.Delete(0);
             state = 3;
             break;
         case 3:
-            if (m_xmlTag.data[0] <= '9' && m_xmlTag.data[0] >= '0')
+            if (m_xmlTag.data[0] <= _T('9') && m_xmlTag.data[0] >= _T('0'))
             {
-                c[1] = m_xmlTag.data[0];
+                c[1] = static_cast<char>(m_xmlTag.data[0]);
                 m_xmlTag.data.Delete(0);
             }
             else
@@ -141,9 +142,10 @@ char CDeviceFile::GetNextToken()
                 c[1] = c[0];
                 c[0] = '0';
             }
-            k = atoi(c);
-            ret = (0xF0 + (char) k);
-            return ret;
+            {
+                const int k = atoi(c);
+                return (0xF0 + (char) k);
+            }
         }
     }
 
@@ -250,7 +252,7 @@ char CDeviceFile::GetString(CString &szString)
 {
     char c = ' ';
 
-    szString = "";
+    szString = _T("");
 
     while (c == ' ' || c == '\t')
     {
@@ -298,7 +300,7 @@ bool CDeviceFile::GetField(LPCSTR lpcField, CString &szVal)
 // returns all of the characters ntil the first appereance of the char.
 bool CDeviceFile::GetUntilChar(const char chr, CString &szStr)
 {
-    szStr = "";
+    szStr = _T("");
     char c;
     while (!feof(m_file) && (c = fgetc(m_file)) != chr)
     {
@@ -327,7 +329,7 @@ label1:
         return false;
     }
     GetString(str);
-    if (str == "!--")
+    if (str == _T("!--"))
     {
         if (!FindPattern("-->"))
             return false;
@@ -336,13 +338,13 @@ label1:
 
     m_xmlTag.close = false;
 
-    if (str == "HDF")
+    if (str == _T("HDF"))
     {
         m_xmlTag.type = ttHdf;
         // look for version info
         m_xmlTag.version = !GetField("version", str) ? 0 : atof(CT2A(str));
     }
-    else if (str == "DEVICE")
+    else if (str == _T("DEVICE"))
     {
         m_xmlTag.type = ttDevice;
         if (!GetField("name", m_xmlTag.name))
@@ -354,16 +356,16 @@ label1:
             return false;
         }
     }
-    else if (str == "WORD_SELECT")
+    else if (str == _T("WORD_SELECT"))
     {
         m_xmlTag.type = ttWordSelect;
     }
-    else if (str == "/WORD_SELECT")
+    else if (str == _T("/WORD_SELECT"))
     {
         m_xmlTag.type = ttWordSelect;
         m_xmlTag.close = true;
     }
-    else if (str == "AI")
+    else if (str == _T("AI"))
     {
         m_xmlTag.type = ttAI;
         GetField("id", str);
@@ -373,13 +375,13 @@ label1:
             return false;
         }
         GetUntilChar('>', str);
-        if (str != "/AI")
+        if (str != _T("/AI"))
         {
             return false;
         }
         CompileData();
     }
-    else if (str == "CHIP_SELECT")
+    else if (str == _T("CHIP_SELECT"))
     {
         m_xmlTag.type = ttChipSelect;
         if (!GetUntilChar('<', m_xmlTag.data))
@@ -387,18 +389,18 @@ label1:
             return false;
         }
         GetUntilChar('>', str);
-        if (str != "/CHIP_SELECT")
+        if (str != _T("/CHIP_SELECT"))
         {
             return false;
         }
         CompileData();
     }
-    else if (str == "/DEVICE")
+    else if (str == _T("/DEVICE"))
     {
         m_xmlTag.type = ttDevice;
         m_xmlTag.close = true;
     }
-    else if (str == "/HDF")
+    else if (str == _T("/HDF"))
     {
         m_xmlTag.type = ttHdf;
         m_xmlTag.close = true;
@@ -476,17 +478,16 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
             case ttDevice:
                 if (m_xmlTag.close)
                 { // </DEVICE>
-                    CDevice *pDev;
                     HMODULE  hmod = LoadLibrary(LPCTSTR(_T("../devices/") + libName));
                     pvFunctv func = (pvFunctv) GetProcAddress(hmod, "GetNewDevice");
-                    pDev = func();
+                    CDevice *pDev = func();
                     pDev->Create(parent, name, libName);
                     devArr.push_back(pDev);
                     num++;
                 }
                 else
                 { // <DEVICE name="xxx" chip="###">
-                    libName = m_xmlTag.chip + ".dll";
+                    libName = m_xmlTag.chip + _T(".dll");
                     name = m_xmlTag.name;
                 }
                 break;
@@ -542,7 +543,7 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
             { // DEBUGGING CODE
                 BYTE    last = 255;
                 BYTE    cur;
-                CString str;
+                wxString str;
 
                 FILE *f = fopen("e:/dbg.txt", "w");
                 for (int w = 0; w < 0x10000; w++)
@@ -554,7 +555,7 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
                     cur = AddrResTbl[w].devIndex;
                     if (cur == 255)
                     {
-                        str = "MEMORY";
+                        str = _T("MEMORY");
                     }
                     else
                     {
@@ -562,7 +563,7 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
                     }
                     if (cur != last)
                     {
-                        fprintf(f, "[%08d] %s\n", w, str.GetBuffer(1));
+                        _ftprintf(f, _T("[%08d] %s\n"), w, LPCTSTR(str.c_str()));
                         last = cur;
                     }
                 }
