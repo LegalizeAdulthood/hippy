@@ -21,8 +21,6 @@
 
 #include "hippy.h"
 
-#include <afx.h>
-
 #include <wx/wx.h>
 
 #include <vector>
