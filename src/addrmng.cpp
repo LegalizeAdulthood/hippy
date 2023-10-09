@@ -198,5 +198,5 @@ void CAddressManager::Create(CEnvironment *pEnv)
     memset(m_memory, 0, sizeof(m_memory));
     this->m_env = pEnv;
     // read the device file
-    m_xp.ParseFile(pEnv->GetMainWnd(), pEnv->GetDeviceFile(), m_devices, m_AddrResTbl);
+    ParseFile(pEnv->GetMainWnd(), pEnv->GetDeviceFile(), m_devices, m_AddrResTbl);
 }

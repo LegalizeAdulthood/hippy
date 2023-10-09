@@ -52,7 +52,6 @@ public:
 private:
     AddrResEntry  m_AddrResTbl[0x10000]{};
     CEnvironment *m_env{};
-    CDeviceFile   m_xp;
     CDeviceArray  m_devices;
     BYTE          m_memory[0x10000]{};
     Word          m_wLastWrite{};

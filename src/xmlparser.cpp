@@ -27,25 +27,70 @@
 #define POP() stack[--indStack]
 #define PUSH(x) stack[indStack++] = (x)
 
+enum XmlTagType
+{
+    ttHdf,
+    ttDevice,
+    ttWordSelect,
+    ttChipSelect,
+    ttWordSelectCld,
+    ttChipSelectCld,
+    ttAI,
+    ttCS
+};
+
+struct XmlTag
+{
+    XmlTagType type;
+    double     version;
+    int        id;
+    CString    data;
+    CString    name;
+    CString    chip;
+    bool       close;
+};
+
+class CDeviceFile
+{
+public:
+    int  ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl);
+
+private:
+    FILE  *m_file{};
+    bool   m_opened{};
+    XmlTag m_xmlTag{};
+
+    void PutCharBack();
+    bool FindChar(char c);
+    bool FindPattern(LPSTR lpStr);
+    char GetString(CString &szString);
+    bool GetField(LPCSTR lpcField, CString &szVal);
+    bool GetUntilChar(const char chr, CString &szStr);
+    bool FindNextTag();
+    bool CompileData();
+    char GetNextToken();
+    bool EvalEqn(Word addr, CString &eqn);
+};
+
 char CDeviceFile::GetNextToken()
 {
     int     state = 0, k;
     CString szBuffer;
     char    c[3], ret;
 
-    while (m_xmlTag.szData.GetLength())
+    while (m_xmlTag.data.GetLength())
     {
         switch (state)
         {
         case 0:
         {
-            if (m_xmlTag.szData[0] == 'P')
+            if (m_xmlTag.data[0] == 'P')
             {
                 state = 1;
             }
-            else if (m_xmlTag.szData[0] != ' ')
+            else if (m_xmlTag.data[0] != ' ')
             {
-                ret = m_xmlTag.szData[0];
+                ret = m_xmlTag.data[0];
                 switch (ret)
                 {
                 case '~':
@@ -64,32 +109,32 @@ char CDeviceFile::GetNextToken()
                     ret = (char) bitOR;
                     break;
                 }
-                m_xmlTag.szData.Delete(0);
+                m_xmlTag.data.Delete(0);
                 return ret;
             }
-            m_xmlTag.szData.Delete(0);
+            m_xmlTag.data.Delete(0);
         }
         break;
         case 1:
-            if (m_xmlTag.szData[0] != 'A')
+            if (m_xmlTag.data[0] != 'A')
             {
                 return 0;
             }
             state = 2;
-            m_xmlTag.szData.Delete(0);
+            m_xmlTag.data.Delete(0);
             break;
         case 2:
-            if (m_xmlTag.szData[0] > '9' || m_xmlTag.szData[0] < '0')
+            if (m_xmlTag.data[0] > '9' || m_xmlTag.data[0] < '0')
                 return 0;
-            c[0] = m_xmlTag.szData[0];
-            m_xmlTag.szData.Delete(0);
+            c[0] = m_xmlTag.data[0];
+            m_xmlTag.data.Delete(0);
             state = 3;
             break;
         case 3:
-            if (m_xmlTag.szData[0] <= '9' && m_xmlTag.szData[0] >= '0')
+            if (m_xmlTag.data[0] <= '9' && m_xmlTag.data[0] >= '0')
             {
-                c[1] = m_xmlTag.szData[0];
-                m_xmlTag.szData.Delete(0);
+                c[1] = m_xmlTag.data[0];
+                m_xmlTag.data.Delete(0);
             }
             else
             {
@@ -109,7 +154,7 @@ char CDeviceFile::GetNextToken()
 //
 bool CDeviceFile::CompileData()
 {
-    // assume : m_xmlTag.szData is valid
+    // assume : m_xmlTag.data is valid
     CString       szBuffer;
     unsigned char c;
     IMPLEMENT_STACK();
@@ -152,7 +197,7 @@ bool CDeviceFile::CompileData()
     {
         szBuffer += POP();
     };
-    m_xmlTag.szData = szBuffer;
+    m_xmlTag.data = szBuffer;
     return true;
 }
 
@@ -300,11 +345,11 @@ label1:
     else if (str == "DEVICE")
     {
         m_xmlTag.type = ttDevice;
-        if (!GetField("name", m_xmlTag.szName))
+        if (!GetField("name", m_xmlTag.name))
         {
             return false;
         }
-        if (!GetField("chip", m_xmlTag.szChip))
+        if (!GetField("chip", m_xmlTag.chip))
         {
             return false;
         }
@@ -323,7 +368,7 @@ label1:
         m_xmlTag.type = ttAI;
         GetField("id", str);
         m_xmlTag.id = atoi(CT2A(str));
-        if (!GetUntilChar('<', m_xmlTag.szData))
+        if (!GetUntilChar('<', m_xmlTag.data))
         {
             return false;
         }
@@ -337,7 +382,7 @@ label1:
     else if (str == "CHIP_SELECT")
     {
         m_xmlTag.type = ttChipSelect;
-        if (!GetUntilChar('<', m_xmlTag.szData))
+        if (!GetUntilChar('<', m_xmlTag.data))
         {
             return false;
         }
@@ -429,12 +474,11 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
             switch (m_xmlTag.type)
             {
             case ttDevice:
-
                 if (m_xmlTag.close)
                 { // </DEVICE>
+                    CDevice *pDev;
                     HMODULE  hmod = LoadLibrary(LPCTSTR(_T("../devices/") + libName));
                     pvFunctv func = (pvFunctv) GetProcAddress(hmod, "GetNewDevice");
-                    CDevice *pDev;
                     pDev = func();
                     pDev->Create(parent, name, libName);
                     devArr.push_back(pDev);
@@ -442,15 +486,15 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
                 }
                 else
                 { // <DEVICE name="xxx" chip="###">
-                    libName = m_xmlTag.szChip + ".dll";
-                    name = m_xmlTag.szName;
+                    libName = m_xmlTag.chip + ".dll";
+                    name = m_xmlTag.name;
                 }
                 break;
             case ttChipSelect:
-                csEqn.Add(m_xmlTag.szData);
+                csEqn.Add(m_xmlTag.data);
                 break;
             case ttAI:
-                addrEqns[num].Add(m_xmlTag.szData);
+                addrEqns[num].Add(m_xmlTag.data);
                 break;
             }
         }
@@ -529,4 +573,9 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
     }
 
     return 1;
+}
+
+int ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl)
+{
+    return CDeviceFile().ParseFile(parent, fileName, devArr, AddrResTbl);
 }

@@ -33,55 +33,12 @@ class CDevice;
 
 using CDeviceArray = std::vector<CDevice *>;
 
-enum XmlTagType
-{
-    ttHdf,
-    ttDevice,
-    ttWordSelect,
-    ttChipSelect,
-    ttWordSelectCld,
-    ttChipSelectCld,
-    ttAI,
-    ttCS
-};
-
 struct AddrResEntry
 {
     Word decodedAddr;
     BYTE devIndex;
 };
 
-struct XmlTag
-{
-    XmlTagType type;
-    double     version;
-    int        id;
-    CString    szData;
-    CString    szName;
-    CString    szChip;
-    bool       close;
-};
-
-class CDeviceFile
-{
-public:
-    void PutCharBack();
-    bool FindChar(char c);
-    bool FindPattern(LPSTR lpStr);
-    char GetString(CString &szString);
-    bool GetField(LPCSTR lpcField, CString &szVal);
-    bool GetUntilChar(const char chr, CString &szStr);
-    bool FindNextTag();
-    bool CompileData();
-    int  ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl);
-
-private:
-    FILE  *m_file{};
-    bool   m_opened{};
-    XmlTag m_xmlTag{};
-
-    char GetNextToken();
-    bool EvalEqn(Word addr, CString &eqn);
-};
+int ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl);
 
 #endif
