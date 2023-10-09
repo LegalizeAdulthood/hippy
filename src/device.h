@@ -46,11 +46,11 @@ public:
     bool Read(Word addr, BYTE &val, bool debug);
     bool Write(Word addr, BYTE val, bool debug);
 
-    void GetDeviceName(wxString &value)
+    void GetDeviceName(wxString &value) const
     {
         value = m_deviceName;
     }
-    void GetLibraryName(wxString &value)
+    void GetLibraryName(wxString &value) const
     {
         value = m_libraryName;
     }
