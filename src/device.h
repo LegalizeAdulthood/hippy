@@ -46,13 +46,13 @@ public:
     bool Read(Word addr, BYTE &val, bool debug);
     bool Write(Word addr, BYTE val, bool debug);
 
-    void GetDeviceName(CString &str)
+    void GetDeviceName(wxString &value)
     {
-        str = LPCTSTR(m_deviceName);
+        value = m_deviceName;
     }
-    void GetLibraryName(CString &str)
+    void GetLibraryName(wxString &value)
     {
-        str = LPCTSTR(m_libraryName);
+        value = m_libraryName;
     }
 
 protected:
