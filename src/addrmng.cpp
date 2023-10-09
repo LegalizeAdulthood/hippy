@@ -104,8 +104,8 @@ bool CAddressManager::LoadFile(const wxString &fname, std::vector<Word> &adr_arr
                 BYTE ck = GetNextByte(f);
                 if ((BYTE) ~checksum != ck)
                 {
-                    MessageBox(nullptr, wxT("CHECK SUM ERROR, S file seems to be badly formatted."), wxT("ERROR"),
-                               MB_OK | MB_ICONWARNING);
+                    wxMessageBox(wxT("CHECK SUM ERROR, S file seems to be badly formatted."), wxT("ERROR"),
+                                 wxOK | wxICON_WARNING);
                     return false;
                 }
                 fgetc(f); // newline

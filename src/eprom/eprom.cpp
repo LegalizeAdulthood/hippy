@@ -26,6 +26,8 @@
 #include <device.h>
 #include <hippy.h>
 
+#include <wx/msgdlg.h>
+
 class CEprom : public CDevice
 {
 public:
@@ -137,7 +139,7 @@ bool CEprom::LoadFile()
 #if 0
                 if ((BYTE) ~checksum != ck)
                 {
-                    MessageBox(nullptr, "CHECK SUM ERROR", "ERROR", MB_OK | MB_ICONWARNING);
+                    wxMessageBox(wxT("CHECK SUM ERROR"), wxT("ERROR"), wxOK | wxICON_WARNING);
                     return false;
                 }
 #endif

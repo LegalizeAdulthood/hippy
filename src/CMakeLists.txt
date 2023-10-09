@@ -60,7 +60,7 @@ add_executable(hippy WIN32
     vcpkg.json
     ../.github/workflows/build.yaml
 )
-target_link_libraries(hippy PUBLIC device)
+target_link_libraries(hippy PUBLIC device wx::core)
 set_property(TARGET hippy PROPERTY VS_DPI_AWARE "OFF")
 
 add_subdirectory(keypad)
