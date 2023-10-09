@@ -117,9 +117,9 @@ bool CAsmEditorWnd::IsNewFile() const
     return m_newFile;
 }
 
-void CAsmEditorWnd::GetFileName(CString &str)
+void CAsmEditorWnd::GetFileName(wxString &fileName)
 {
-    str = m_fileName;
+    fileName = m_fileName;
 }
 
 bool CAsmEditorWnd::OnEraseBkgnd(CDC *pDC)
@@ -226,7 +226,7 @@ int CAsmEditorWnd::SaveFile()
 // returns -1, then we have to call Save As
 int CAsmEditorWnd::Save()
 {
-    if (m_fileName == "")
+    if (m_fileName.IsEmpty())
     {
         return false;
     }
@@ -234,7 +234,7 @@ int CAsmEditorWnd::Save()
     return true;
 }
 
-int CAsmEditorWnd::SaveAs(CString fileName)
+int CAsmEditorWnd::SaveAs(const wxString &fileName)
 {
     m_fileName = fileName;
     return SaveFile();
@@ -259,7 +259,7 @@ bool CAsmEditorWnd::OpenFile()
     CString    str;
     CString    szBuffer;
 
-    if (file.Open(m_fileName.GetBuffer(1), CFile::modeRead | CFile::typeText))
+    if (file.Open(m_fileName, CFile::modeRead | CFile::typeText))
     {
         while (file.ReadString(str))
         {
@@ -281,10 +281,10 @@ bool CAsmEditorWnd::OpenFile()
     }
 }
 
-CString CAsmEditorWnd::GetHexFileName()
+wxString CAsmEditorWnd::GetHexFileName() const
 {
     TCHAR buffer[1024];
-    _tcscpy(buffer, m_fileName.GetBuffer(1));
+    _tcscpy(buffer, m_fileName);
 
     TCHAR *p = _tcsrchr(buffer, '.');
     if (p)
@@ -332,7 +332,7 @@ int CAsmEditorWnd::CompileCode()
     si.wShowWindow = SW_HIDE;
     si.hStdInput = nullptr;
     si.cb = sizeof(si);
-    _tcprintf(buffer, _T("%s %s"), _T("assembler.exe"), m_fileName.GetBuffer(1));
+    _tcprintf(buffer, _T("%s %s"), _T("assembler.exe"), LPCTSTR(m_fileName));
     CreateProcess(nullptr, buffer, nullptr, nullptr, true, CREATE_NEW_CONSOLE /*creation flags*/, nullptr /*envirn*/,
                   nullptr /*cur dir*/, &si, &pi);
 
@@ -390,10 +390,10 @@ CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName)
     m_newFile = m_fileName.IsEmpty();
     if (m_newFile)
     {
-        char buffer[100];
+        TCHAR buffer[100];
         s_fileNumber++;
-        sprintf(buffer, "%03d", s_fileNumber);
-        m_fileName = CString(_T("NewFile")) + CString(buffer) + CString(_T(".asm"));
+        _stprintf(buffer, _T("%03d"), s_fileNumber);
+        m_fileName = wxString(_T("NewFile")) + wxString(buffer) + wxString(_T(".asm"));
     }
 
     CRect rc;

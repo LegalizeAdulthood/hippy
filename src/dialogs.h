@@ -29,26 +29,22 @@
 class CInputBox : public CDialog
 {
 public:
-    int ShowModal(CString *pstrPrompt = nullptr, CString *pstrTitle = nullptr);
+    int ShowModal(const wxString *prompt = nullptr, const wxString *title = nullptr);
 
-    void AsString(CString &str)
-    {
-        str = m_entry;
-    }
     Word AsWord();
     void DoDataExchange(CDataExchange *pDX) override;
 
 private:
-    CString m_entry;
-    CString m_title;
-    CString m_prompt;
+    wxString m_entry;
+    wxString m_title;
+    wxString m_prompt;
 };
 
 class CSFileDialog : public CDialog
 {
 public:
     int  ShowModal();
-    void GetValues(Word &begin, Word &end, CString &str);
+    void GetValues(Word &begin, Word &end, wxString &values);
     void DoDataExchange(CDataExchange *pDX) override;
 
 protected:
@@ -58,9 +54,9 @@ protected:
     };
 
 private:
-    CString m_begin;
-    CString m_file;
-    CString m_end;
+    wxString m_begin;
+    wxString m_file;
+    wxString m_end;
 };
 
 #endif

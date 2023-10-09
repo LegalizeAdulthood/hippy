@@ -37,10 +37,10 @@ CDevice::~CDevice()
     CDevice::OnFinalize();
 }
 
-int CDevice::Create(CWnd *parentWnd, const CString &szName, const CString &libName)
+int CDevice::Create(CWnd *parentWnd, const wxString &name, const wxString &libName)
 {
     m_parentWnd = parentWnd;
-    m_deviceName = szName;
+    m_deviceName = name;
     m_libraryName = libName;
     OnInitialize();
     return 0;

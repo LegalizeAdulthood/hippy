@@ -22,8 +22,6 @@
 #include "hippy.h"
 #include "xmlparser.h"
 
-#include <afx.h>
-
 #include <wx/wx.h>
 
 #include <vector>
@@ -37,8 +35,8 @@ public:
     ~CAddressManager();
 
     void Create(CEnvironment *pEnv);
-    bool LoadFile(CString fname, std::vector<Word> &adr_arr);
-    int  SaveSFile(CString str, Word wBegin, Word wEnd);
+    bool LoadFile(const wxString &fname, std::vector<Word> &adr_arr);
+    int  SaveSFile(const wxString &fileName, Word wBegin, Word wEnd);
 
     Word GetLastWrite() const
     {

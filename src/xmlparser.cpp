@@ -406,16 +406,16 @@ bool CDeviceFile::EvalEqn(Word addr, CString &eqn)
     return (POP() != 0);
 }
 
-int CDeviceFile::ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl)
+int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl)
 {
-    CString      szName;
+    wxString      name;
     CStringArray csEqn;
     CStringArray addrEqns[255];
-    CString      szLibName;
+    wxString      libName;
     int          num = 0;
     typedef CDevice *(*pvFunctv)();
     int i = -1;
-    m_file = fopen(CT2A(szFileName), "r");
+    m_file = fopen(CT2A(fileName), "r");
     if (m_file)
     {
         while (FindNextTag())
@@ -426,18 +426,18 @@ int CDeviceFile::ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devAr
 
                 if (m_xmlTag.close)
                 { // </DEVICE>
-                    HMODULE  hmod = LoadLibrary(CString("../devices/" + szLibName));
+                    HMODULE  hmod = LoadLibrary(LPCTSTR(_T("../devices/") + libName));
                     pvFunctv func = (pvFunctv) GetProcAddress(hmod, "GetNewDevice");
                     CDevice *pDev;
                     pDev = func();
-                    pDev->Create(parent, szName, szLibName);
+                    pDev->Create(parent, name, libName);
                     devArr.push_back(pDev);
                     num++;
                 }
                 else
                 { // <DEVICE name="xxx" chip="###">
-                    szLibName = m_xmlTag.szChip + ".dll";
-                    szName = m_xmlTag.szName;
+                    libName = m_xmlTag.szChip + ".dll";
+                    name = m_xmlTag.szName;
                 }
                 break;
             case ttChipSelect:

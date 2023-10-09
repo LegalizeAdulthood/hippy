@@ -19,40 +19,33 @@
 #ifndef HIPPY_ENVIRONMENT_H
 #define HIPPY_ENVIRONMENT_H
 
-#include <afxwin.h>
+#include <wx/wx.h>
+
+class CWnd;
 
 class CEnvironment
 {
 public:
-    void SetMainWnd(void *pWnd)
+    void SetMainWnd(CWnd *pWnd)
     {
         m_mainWnd = pWnd;
     }
-    void *GetMainWnd()
+    CWnd *GetMainWnd() const
     {
         return m_mainWnd;
     }
-    void SetDebugWnd(void *pDbg)
-    {
-        m_debugWnd = pDbg;
-    }
-    void *GetDebugWnd()
-    {
-        return m_debugWnd;
-    }
-    void SetDeviceFile(CString str)
+    void SetDeviceFile(const wxString &str)
     {
         m_deviceFile = str;
     }
-    CString GetDeviceFile()
+    const wxString &GetDeviceFile() const
     {
         return m_deviceFile;
     }
 
 private:
-    void   *m_mainWnd{};
-    void   *m_debugWnd{};
-    CString m_deviceFile;
+    CWnd    *m_mainWnd{};
+    wxString m_deviceFile;
 };
 
 #endif

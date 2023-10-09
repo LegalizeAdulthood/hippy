@@ -66,8 +66,8 @@ public:
     void            UpdateAll();
     void            Stop();
     void            InsBkPt();
-    int             LoadSFile(CString &str);
-    int             WriteSFile(Word wBegin, Word wEnd, CString &str);
+    int             LoadSFile(const wxString &fileName);
+    int             WriteSFile(const wxString &fileName, Word wBegin, Word wEnd);
     void            SetThreadPriority(int priority);
     afx_msg void    OnDestroy();
     afx_msg void    OnShowWindow(BOOL bShow, UINT nStatus);

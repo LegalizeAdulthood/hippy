@@ -56,11 +56,11 @@ public:
     DECLARE_DYNAMIC(CAsmEditorWnd)
 
     bool            IsNewFile() const;
-    void            GetFileName(CString &str);
+    void            GetFileName(wxString &fileName);
     int             CompileCode();
     int             Save();
-    int             SaveAs(CString fileName);
-    CString         GetHexFileName();
+    int             SaveAs(const wxString &fileName);
+    wxString        GetHexFileName() const;
     afx_msg void    OnSize(UINT nType, int cx, int cy);
     afx_msg bool    OnEraseBkgnd(CDC *pDC);
     afx_msg void    OnClose();
@@ -74,7 +74,7 @@ private:
     int  SaveFile();
 
     CAsmEdit   m_editor;
-    CString    m_fileName;
+    wxString   m_fileName;
     CFont      m_font;
     CFont     *m_oldFont{};
     bool       m_newFile{};

@@ -19,25 +19,25 @@
 
 #include "dialogs.h"
 
-Word StrToWord(CString &str)
+#include <cctype>
+
+Word StrToWord(const wxString &str)
 {
     if (str[0] == '$')
     {
         Word w = 0;
         BYTE b;
-        char ch;
-        str.MakeUpper();
-        int size = str.GetLength();
+        int  size = str.Length();
         for (int i = 1; i < size; i++)
         {
-            ch = str[i];
+            const char ch = str[i];
             if (ch >= '0' && ch <= '9')
             {
                 b = ch - '0';
             }
-            else if (ch >= 'A' && ch <= 'F')
+            else if (std::toupper(ch) >= 'A' && std::toupper(ch) <= 'F')
             {
-                b = ch - 'A' + 10;
+                b = std::toupper(ch) - 'A' + 10;
             }
             else
             {
@@ -55,16 +55,20 @@ Word StrToWord(CString &str)
 /////////////////////////////////////
 void CInputBox::DoDataExchange(CDataExchange *pDX)
 {
-    SendMessage(WM_SETTEXT, 0, (LPARAM) m_title.GetBuffer(1));
-    DDX_Text(pDX, IDC_EDIT, m_entry);
-    DDX_Text(pDX, IDC_PROMPT, m_prompt);
+    SendMessage(WM_SETTEXT, 0, (LPARAM) LPCTSTR(m_title));
+    CString entry = LPCTSTR(m_entry);
+    DDX_Text(pDX, IDC_EDIT, entry);
+    m_entry = LPCTSTR(entry);
+    CString prompt = LPCTSTR(m_prompt);
+    DDX_Text(pDX, IDC_PROMPT, prompt);
+    m_prompt = LPCTSTR(prompt);
 }
 
-int CInputBox::ShowModal(CString *pstrPrompt, CString *pstrTitle)
+int CInputBox::ShowModal(const wxString *prompt, const wxString *title)
 {
     m_lpszTemplateName = MAKEINTRESOURCE(IDD_INPUTBOX);
-    m_title = pstrTitle ? *pstrTitle : _T("User input");
-    m_prompt = pstrPrompt ? *pstrPrompt : _T("Please enter a value");
+    m_title = title ? *title : _T("User input");
+    m_prompt = prompt ? *prompt : _T("Please enter a value");
     return DoModal();
 }
 
@@ -99,18 +103,24 @@ void CSFileDialog::DoDataExchange(CDataExchange *pDX)
 
     { // read latest write locations from registry
         CWinApp *app = AfxGetApp();
-        m_begin = app->GetProfileString(_T("SRec"), _T("SRecBeging"), _T("$0000"));
-        m_end = app->GetProfileString(_T("SRec"), _T("SRecEnd"), _T("$FFFF"));
-        m_file = app->GetProfileString(_T("SRec"), _T("SRecFile"), _T("Output.Hex"));
+        m_begin = wxString(LPCTSTR(app->GetProfileString(_T("SRec"), _T("SRecBeging"), _T("$0000"))));
+        m_end = wxString(LPCTSTR(app->GetProfileString(_T("SRec"), _T("SRecEnd"), _T("$FFFF"))));
+        m_file = wxString(LPCTSTR(app->GetProfileString(_T("SRec"), _T("SRecFile"), _T("Output.Hex"))));
     }
-    DDX_Text(pDX, IDC_EDITBADDR, m_begin);
-    DDX_Text(pDX, IDC_EDITEADDR, m_end);
-    DDX_Text(pDX, IDC_EDITOUTPUT, m_file);
+    CString begin = LPCTSTR(m_begin);
+    DDX_Text(pDX, IDC_EDITBADDR, begin);
+    m_begin = LPCTSTR(begin);
+    CString end = LPCTSTR(m_end);
+    DDX_Text(pDX, IDC_EDITEADDR, end);
+    m_end = LPCTSTR(end);
+    CString file = LPCTSTR(m_file);
+    DDX_Text(pDX, IDC_EDITOUTPUT, file);
+    m_file = LPCTSTR(file);
 }
 
-void CSFileDialog::GetValues(Word &begin, Word &end, CString &str)
+void CSFileDialog::GetValues(Word &begin, Word &end, wxString &values)
 {
     begin = StrToWord(m_begin);
     end = StrToWord(m_end);
-    str = m_file;
+    values = LPCTSTR(m_file);
 }

@@ -276,19 +276,19 @@ void CDebugWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 }
 
-int CDebugWnd::LoadSFile(CString &str)
+int CDebugWnd::LoadSFile(const wxString &fileName)
 {
     std::vector<Word> arr;
-    m_memory->LoadFile(str.GetBuffer(1), arr);
+    m_memory->LoadFile(fileName, arr);
     m_dasm->LoadProgram(0x100);
     m_dasm->RedrawWindow();
     UpdateAll();
     return 0;
 }
 
-int CDebugWnd::WriteSFile(Word wBegin, Word wEnd, CString &str)
+int CDebugWnd::WriteSFile(const wxString &fileName, Word wBegin, Word wEnd)
 {
-    return m_memory->SaveSFile(str, wBegin, wEnd);
+    return m_memory->SaveSFile(fileName, wBegin, wEnd);
 }
 
 void CDebugWnd::OnDestroy()

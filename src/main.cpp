@@ -84,10 +84,10 @@ private:
     CSemaphore  *m_reset{};
 
     CAsmEditorWnd *GetCurrentEditor();
-    void           SendThroughCom(int PortNo, CString fname);
-    void           GetExecutablePath(CString &str);
+    void           SendThroughCom(int PortNo, const wxString &fileName);
+    void           GetExecutablePath(wxString &path);
     void           CreateMRUMenu();
-    CString        GetDeviceFile();
+    wxString       GetDeviceFile() const;
 };
 
 // clang-format off
@@ -137,15 +137,15 @@ public:
 
 CMainApp mapp;
 
-void CMainFrame::SendThroughCom(int PortNo, CString fname)
+void CMainFrame::SendThroughCom(int PortNo, const wxString &fileName)
 {
     STARTUPINFO         si;
     PROCESS_INFORMATION pi;
     CString             bat, batb;
 
     // port = "COM" + PortNo;
-    bat.Format(_T("send%d.bat %s"), PortNo, fname);
-    batb.Format(_T("bsend%d.bat %s"), PortNo, fname);
+    bat.Format(_T("send%d.bat %s"), PortNo, LPCTSTR(fileName));
+    batb.Format(_T("bsend%d.bat %s"), PortNo, LPCTSTR(fileName));
 
     GetStartupInfo(&si);
     si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
@@ -169,7 +169,7 @@ void CMainFrame::OnLoadSFile()
     CFileDialog fd(true, _T(".asm"), nullptr, OFN_FILEMUSTEXIST);
     if (fd.DoModal() == IDOK)
     {
-        m_debugWnd->LoadSFile(fd.GetFileName());
+        m_debugWnd->LoadSFile(wxString(LPCTSTR(fd.GetFileName())));
         m_debugWnd->SendMessage(WM_UPDATEDBGWND);
     }
 }
@@ -180,29 +180,30 @@ void CMainFrame::OnWriteSFile()
     if (fd.ShowModal() == IDOK)
     {
         Word    wBegin, wEnd;
-        CString str;
-        fd.GetValues(wBegin, wEnd, str);
+        wxString value;
+        fd.GetValues(wBegin, wEnd, value);
+        value.MakeUpper();
         int port = 0;
-        if (str == "COM1")
+        if (value == _T("COM1"))
         {
             port = 1;
         }
-        else if (str == "COM2")
+        else if (value == _T("COM2"))
         {
             port = 2;
         }
 
         if (port)
         {
-            CString fname;
+            wxString fname;
             GetExecutablePath(fname);
-            fname += "1921abbxx231.hex";
-            m_debugWnd->WriteSFile(wBegin, wEnd, fname);
+            fname += _T("1921abbxx231.hex");
+            m_debugWnd->WriteSFile(fname, wBegin, wEnd);
             SendThroughCom(port, fname);
         }
         else
         {
-            m_debugWnd->WriteSFile(wBegin, wEnd, str);
+            m_debugWnd->WriteSFile(value, wBegin, wEnd);
         }
     }
 }
@@ -243,8 +244,7 @@ void CMainFrame::OnSendCom1()
     {
         if (aw->CompileCode())
         {
-            CString str = aw->GetHexFileName();
-            SendThroughCom(1, str);
+            SendThroughCom(1, aw->GetHexFileName());
         }
     }
     else
@@ -260,8 +260,7 @@ void CMainFrame::OnSendCom2()
     {
         if (aw->CompileCode())
         {
-            CString str = aw->GetHexFileName();
-            SendThroughCom(2, str);
+            SendThroughCom(2, aw->GetHexFileName());
         }
     }
     else
@@ -277,7 +276,7 @@ void CMainFrame::OnCompileNLoad()
     {
         if (aw->CompileCode())
         {
-            CString str = aw->GetHexFileName();
+            wxString str = aw->GetHexFileName();
             m_debugWnd->LoadSFile(str);
         }
     }
@@ -362,13 +361,13 @@ void CMainFrame::OnFileSaveAsClick()
 
     if (pAsm)
     {
-        CString str;
+        wxString str;
         pAsm->GetFileName(str);
-        CFileDialog fd(false, _T(".asm"), str.GetBuffer(1), OFN_OVERWRITEPROMPT);
+        CFileDialog fd(false, _T(".asm"), str, OFN_OVERWRITEPROMPT);
         if (fd.DoModal() == IDOK)
         {
             mapp.AddToRecentFileList(fd.GetPathName());
-            pAsm->SaveAs(fd.GetPathName());
+            pAsm->SaveAs(wxString(LPCTSTR(fd.GetPathName())));
         }
     }
     else
@@ -382,8 +381,7 @@ void CMainFrame::OnFileOpenClick()
     CFileDialog fd(true, _T(".asm"), nullptr, OFN_FILEMUSTEXIST);
     if (fd.DoModal() == IDOK)
     {
-        CAsmEditorWnd *pAsm;
-        pAsm = new CAsmEditorWnd(this, fd.GetPathName());
+        CAsmEditorWnd *pAsm = new CAsmEditorWnd(this, fd.GetPathName());
         mapp.AddToRecentFileList(fd.GetFileName());
     }
 }
@@ -462,12 +460,12 @@ void CMainFrame::CreateMRUMenu()
     CMenu *menu = GetMenu();
 }
 
-void CMainFrame::GetExecutablePath(CString &str)
+void CMainFrame::GetExecutablePath(wxString &path)
 {
     TCHAR buffer[256];
     GetModuleFileName(GetModuleHandle(nullptr), buffer, 256);
     buffer[_tcslen(buffer) - 9] = 0;
-    str = buffer;
+    path = buffer;
 }
 
 CAsmEditorWnd *CMainFrame::GetCurrentEditor()
@@ -487,17 +485,17 @@ CAsmEditorWnd *CMainFrame::GetCurrentEditor()
     return ret;
 }
 
-CString CMainFrame::GetDeviceFile()
+wxString CMainFrame::GetDeviceFile() const
 {
     TCHAR buf[256];
     TCHAR *p;
-    GetModuleFileName(mapp.m_hInstance, buf, 256);
+    GetModuleFileName(nullptr, buf, 256);
 
     p = _tcsrchr(buf, _T('\\'));
     *p = 0;
     p = _tcsrchr(buf, _T('\\'));
     *p = 0;
-    CString str(buf);
+    wxString str(buf);
     str += _T("\\devices\\device.xml");
     return str;
 }
@@ -508,11 +506,6 @@ CMainFrame::CMainFrame()
     CFrameWnd::Create(nullptr, _T("Hippy - Motorola 6800 Studio"), WS_OVERLAPPEDWINDOW, CRect(100, 100, 800, 800),
                       GetDesktopWindow(), MAKEINTRESOURCE(IDR_MENU1));
 
-    CString deviceFile;
-
-    GetExecutablePath(deviceFile);
-    deviceFile += "device.xml";
-    m_env.SetDebugWnd(m_debugWnd);
     m_env.SetMainWnd(this);
     m_env.SetDeviceFile(GetDeviceFile());
     m_debugWnd = new CDebugWnd(&m_env);

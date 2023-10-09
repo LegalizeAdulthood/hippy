@@ -73,7 +73,7 @@ public:
     bool GetUntilChar(const char chr, CString &szStr);
     bool FindNextTag();
     bool CompileData();
-    int  ParseFile(CWnd *parent, CString szFileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl);
+    int  ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl);
 
 private:
     FILE  *m_file{};

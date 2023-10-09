@@ -49,7 +49,7 @@ CAddressManager::~CAddressManager()
     m_devices.clear();
 }
 
-bool CAddressManager::LoadFile(CString fname, std::vector<Word> &adr_arr)
+bool CAddressManager::LoadFile(const wxString &fname, std::vector<Word> &adr_arr)
 {
     int   hi{};
     Word  last_addr = 0xffff;
@@ -119,7 +119,7 @@ bool CAddressManager::LoadFile(CString fname, std::vector<Word> &adr_arr)
 /* save the contents of the memory from wBegin to wEnd (inclusive)
  * to file specified (str). Output file is in S-Record File format
  */
-int CAddressManager::SaveSFile(CString str, Word wBegin, Word wEnd)
+int CAddressManager::SaveSFile(const wxString &fileName, Word wBegin, Word wEnd)
 {
     HexDumper      hex;
     CStdioFile     file;
@@ -131,13 +131,12 @@ int CAddressManager::SaveSFile(CString str, Word wBegin, Word wEnd)
     char           buf_out[40];
     buf_out[0] = 'S';
     buf_out[1] = '1';
-    if (!file.Open(str, CFile::modeWrite | CFile::modeCreate, &fe))
+    if (!file.Open(fileName, CFile::modeWrite | CFile::modeCreate, &fe))
     {
         return 0;
     }
     while (num_bytes)
     {
-        cksum = 0;
         // one line in a S-Record file contains up to 10 bytes (this may depend on the implementation)
         // of data (plus addr, size, cksum)
         numWrite = (num_bytes >= 16) ? 16 : num_bytes;
@@ -199,5 +198,5 @@ void CAddressManager::Create(CEnvironment *pEnv)
     memset(m_memory, 0, sizeof(m_memory));
     this->m_env = pEnv;
     // read the device file
-    m_xp.ParseFile((CWnd *) pEnv->GetMainWnd(), pEnv->GetDeviceFile(), m_devices, m_AddrResTbl);
+    m_xp.ParseFile(pEnv->GetMainWnd(), pEnv->GetDeviceFile(), m_devices, m_AddrResTbl);
 }

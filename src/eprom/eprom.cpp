@@ -36,7 +36,7 @@ private:
     BYTE    m_memory[0x2000]{};
 
     bool    LoadFile();
-    CString GetRomFileName();
+    wxString GetRomFileName();
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ BYTE GetNextByte(FILE *f)
     return HexToByte(hi) * 0x10 + HexToByte(lo);
 }
 
-CString CEprom::GetRomFileName()
+wxString CEprom::GetRomFileName()
 {
     TCHAR buf[256];
     GetModuleFileName(g_theApp.m_hInstance, buf, 256);
@@ -71,7 +71,7 @@ CString CEprom::GetRomFileName()
         i--;
     }
     buf[i + 1] = 0;
-    CString str(buf);
+    wxString str(buf);
 
     str += m_deviceName;
     str += _T(".rom");
