@@ -280,7 +280,7 @@ void CDebugWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 int CDebugWnd::LoadSFile(CString &str)
 {
-    CArray<Word, Word &> arr;
+    std::vector<Word> arr;
     m_memory->LoadFile(str.GetBuffer(1), arr);
     m_dasm->LoadProgram(0x100);
     m_dasm->RedrawWindow();
@@ -367,10 +367,9 @@ CDebugWnd::CDebugWnd(CEnvironment *pEnv)
     m_memDump->ShowWindow(SW_SHOW);
 
     m_dasm = new CDisasmWnd(this, CRect(10, 10, 350, 290));
-    CArray<Word, Word &> arr;
 
     m_dasm->SetMemory(m_m6800->GetMemPtr());
-    m_dasm->LoadProgram(/*arr,*/ 0x0100);
+    m_dasm->LoadProgram(0x0100);
     m_dasm->ModifyStyle(0, WS_GROUP);
     m_dasm->ShowWindow(SW_SHOW);
 

@@ -51,7 +51,7 @@ CAddressManager::~CAddressManager()
     m_devices.clear();
 }
 
-bool CAddressManager::LoadFile(CString fname, CArray<Word, Word &> &adr_arr)
+bool CAddressManager::LoadFile(CString fname, std::vector<Word> &adr_arr)
 {
     int   hi{};
     Word  last_addr = 0xffff;
@@ -92,7 +92,7 @@ bool CAddressManager::LoadFile(CString fname, CArray<Word, Word &> &adr_arr)
                 lg -= 3;
                 if (last_addr != addr)
                 {
-                    adr_arr.Add(addr);
+                    adr_arr.push_back(addr);
                 }
                 for (; lg > 0; lg--)
                 {

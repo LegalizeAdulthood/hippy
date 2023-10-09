@@ -24,16 +24,18 @@
 
 #include <afx.h>
 
+#include <vector>
+
 class CEnvironment;
 
 class CAddressManager
 {
 public:
-    CAddressManager() {}
+    CAddressManager() = default;
     ~CAddressManager();
 
     void Create(CEnvironment *pEnv);
-    bool LoadFile(CString fname, CArray<Word, Word &> &adr_arr);
+    bool LoadFile(CString fname, std::vector<Word> &adr_arr);
     int  SaveSFile(CString str, Word wBegin, Word wEnd);
 
     Word GetLastWrite() const
@@ -48,13 +50,13 @@ public:
     void Write(Word wIndex, BYTE bVal);
 
 private:
-    AddrResEntry  m_AddrResTbl[0x10000];
-    CEnvironment *m_env;
+    AddrResEntry  m_AddrResTbl[0x10000]{};
+    CEnvironment *m_env{};
     CDeviceFile   m_xp;
     CDeviceArray  m_devices;
-    BYTE          m_memory[0x10000];
-    Word          m_wLastWrite;
-    Word          m_wLastRead;
+    BYTE          m_memory[0x10000]{};
+    Word          m_wLastWrite{};
+    Word          m_wLastRead{};
 };
 
 #endif
