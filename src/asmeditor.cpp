@@ -147,7 +147,7 @@ void CAsmEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
         long end = start + 2;
         SetSel(start, end);
         CString str = GetSelText();
-        if (str[0] != ' ' && str[0] != '\t')
+        if (str[0] != _T(' ') && str[0] != _T('\t'))
         {
             SetSel(curs, cure);
             break;
