@@ -93,8 +93,7 @@ bool CEprom::LoadFile()
     FILE *f = fopen(CT2A (GetRomFileName()), "r");
     if (!f)
     {
-        CString msg;
-        msg.Format(_T("Rom image file not found:\n%s"), GetRomFileName());
+        wxString msg = wxString::Format(_T("Rom image file not found:\n%s"), GetRomFileName().c_str());
         m_parentWnd->MessageBox(msg, m_deviceName);
         return false;
     }
