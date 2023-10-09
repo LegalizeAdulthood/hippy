@@ -554,7 +554,7 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
             cur = AddrResTbl[w].devIndex;
             if (cur == 255)
             {
-                str = _T("memory");
+                str = _T("Memory");
             }
             else
             {
