@@ -256,20 +256,7 @@ void CAsmEditorWnd::OnClose()
 bool CAsmEditorWnd::OpenFile()
 {
     CStdioFile file;
-    CString    str;
-    CString    szBuffer;
-
-    if (file.Open(m_fileName, CFile::modeRead | CFile::typeText))
-    {
-        while (file.ReadString(str))
-        {
-            szBuffer += str + '\13';
-        }
-        m_editor.SendMessage(WM_SETTEXT, (WPARAM) 0, (LPARAM) szBuffer.GetBuffer(1));
-        file.Close();
-        return true;
-    }
-    else
+    if (!file.Open(m_fileName, CFile::modeRead | CFile::typeText))
     {
         LPVOID lpMsgBuf;
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -279,6 +266,16 @@ bool CAsmEditorWnd::OpenFile()
         LocalFree(lpMsgBuf);
         return false;
     }
+
+    CString str;
+    CString szBuffer;
+    while (file.ReadString(str))
+    {
+        szBuffer += str + _T('\13');
+    }
+    m_editor.SendMessage(WM_SETTEXT, 0, (LPARAM) szBuffer.GetBuffer(1));
+    file.Close();
+    return true;
 }
 
 wxString CAsmEditorWnd::GetHexFileName() const
