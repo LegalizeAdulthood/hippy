@@ -21,6 +21,12 @@
 
 #include "device.h"
 
+#define IMPLEMENT_STACK() \
+    int  indStack = 0;    \
+    char stack[30]
+#define POP() stack[--indStack]
+#define PUSH(x) stack[indStack++] = (x)
+
 char CDeviceFile::GetNextToken()
 {
     int     state = 0, k;
@@ -104,7 +110,7 @@ char CDeviceFile::GetNextToken()
 bool CDeviceFile::CompileData()
 {
     // assume : m_xmlTag.szData is valid
-    CString       szBuffer = "";
+    CString       szBuffer;
     unsigned char c;
     IMPLEMENT_STACK();
 

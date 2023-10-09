@@ -59,12 +59,6 @@ struct Registers
     CCR     ccr;
 };
 
-#define IMPLEMENT_STACK() \
-    int  indStack = 0;    \
-    char stack[30]
-#define POP() stack[--indStack]
-#define PUSH(x) stack[indStack++] = (x)
-
 enum Operator
 {
     bitOR = 1,
