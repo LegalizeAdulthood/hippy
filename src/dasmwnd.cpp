@@ -69,8 +69,7 @@ void CDisasmWnd::OnGoto()
 
     if (ib.ShowModal() == IDOK)
     {
-        CString str;
-        Word    w = ib.AsWord();
+        Word w = ib.AsWord();
         m_selectedLine = m_instructionPos[w];
         m_pageStart = m_instructionPos[w];
         RedrawWindow();

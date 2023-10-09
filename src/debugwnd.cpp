@@ -329,11 +329,10 @@ void CDebugWnd::SetThreadPriority(int priority)
 
 CDebugWnd::CDebugWnd(CEnvironment *pEnv)
 {
-    CString str;
     m_dasm = nullptr;
     m_memDump = nullptr;
     m_regWnd = nullptr;
-    this->m_env = pEnv;
+    m_env = pEnv;
 
     CMDIChildWnd::Create(nullptr, _T("CPU Window"), WS_TABSTOP | WS_CHILD | WS_OVERLAPPEDWINDOW,
                          CRect(100, 100, 820, 740), (CMDIFrameWnd *) pEnv->GetMainWnd());
