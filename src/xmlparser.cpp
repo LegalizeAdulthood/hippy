@@ -72,7 +72,7 @@ private:
     bool FindNextTag();
     bool CompileData();
     char GetNextToken();
-    bool EvalEqn(Word addr, CString &eqn);
+    bool EvalEqn(Word addr, const CString &eqn);
 };
 
 char CDeviceFile::GetNextToken()
@@ -413,16 +413,16 @@ label1:
 }
 
 // evaluate the equation using the values in addr, return true or false
-bool CDeviceFile::EvalEqn(Word addr, CString &eqn)
+bool CDeviceFile::EvalEqn(Word addr, const CString &eqn)
 {
     std::vector<char> stack;
-    int               i, size = eqn.GetLength();
-    bool              b1, b2;
-    char              c;
+    int const         size = eqn.GetLength();
+    bool              b1;
+    bool              b2;
 
-    for (i = 0; i < size; i++)
+    for (int i = 0; i < size; i++)
     {
-        c = eqn[i];
+        const auto c = static_cast<unsigned char>(eqn[i]);
         if ((c & 0xf0) == 0xf0) // operand
         {
             stack.push_back((addr & 1 << (c & 0x0f)) != 0);
@@ -455,6 +455,8 @@ bool CDeviceFile::EvalEqn(Word addr, CString &eqn)
             case 'H':
                 stack.push_back(1);
                 break;
+            default:
+                break;
             }
         }
     }
@@ -470,8 +472,8 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
         return 0;
     }
 
-    CStringArray csEqn;
-    CStringArray addrEqns[255];
+    std::vector<CString> csEqn;
+    std::vector<CString> addrEqns[255];
     {
         int      num = 0;
         wxString name;
@@ -497,10 +499,10 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
                 }
                 break;
             case ttChipSelect:
-                csEqn.Add(m_xmlTag.data);
+                csEqn.push_back(m_xmlTag.data);
                 break;
             case ttAI:
-                addrEqns[num].Add(m_xmlTag.data);
+                addrEqns[num].push_back(m_xmlTag.data);
                 break;
             }
         }
@@ -529,9 +531,10 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
             {
                 Word dec = 0;
                 AddrResTbl[w].devIndex = i;
-                for (int k = 0; k < addrEqns[i].GetSize(); k++)
+                int k = 0;
+                for (const CString &eqn : addrEqns[i])
                 {
-                    dec |= EvalEqn(w, addrEqns[i][k]) << k;
+                    dec |= EvalEqn(w, eqn) << k;
                 }
                 AddrResTbl[w].decodedAddr = dec;
             }
