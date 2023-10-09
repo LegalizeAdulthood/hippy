@@ -21,8 +21,6 @@
 
 #include "resource.h"
 
-#include <wx/wx.h>
-
 CFifo::CFifo()
 {
     ClearFifo();

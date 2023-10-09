@@ -23,8 +23,6 @@
 #include "dialogs.h"
 #include "resource.h"
 
-#include <wx/wx.h>
-
 // clang-format off
 BEGIN_MESSAGE_MAP(CDisasmWnd, CBaseWnd)
     ON_WM_KEYDOWN()

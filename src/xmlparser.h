@@ -21,9 +21,13 @@
 
 #include "hippy.h"
 
-#include <afxtempl.h>
+#include <afx.h>
+
+#include <wx/wx.h>
 
 #include <vector>
+
+class CWnd;
 
 class CDevice;
 

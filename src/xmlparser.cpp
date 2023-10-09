@@ -21,8 +21,6 @@
 
 #include "device.h"
 
-#include <wx/wx.h>
-
 char CDeviceFile::GetNextToken()
 {
     int     state = 0, k;

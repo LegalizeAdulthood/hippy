@@ -23,6 +23,8 @@
 
 #include <afxwin.h>
 
+#include <wx/wx.h>
+
 enum RegEnum
 {
     rgNone,

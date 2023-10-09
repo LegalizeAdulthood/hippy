@@ -26,8 +26,6 @@
 #include <device.h>
 #include <hippy.h>
 
-#include <wx/wx.h>
-
 class CEprom : public CDevice
 {
 public:

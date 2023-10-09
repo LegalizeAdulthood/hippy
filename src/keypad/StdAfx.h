@@ -55,4 +55,6 @@
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
+#include <wx/wx.h>
+
 #endif // !defined(AFX_STDAFX_H__37B0BC1F_FDEB_434D_80B9_12E0BA68BC78__INCLUDED_)

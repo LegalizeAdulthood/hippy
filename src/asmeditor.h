@@ -23,6 +23,8 @@
 #include <afxcmn.h>
 #include <afxwin.h>
 
+#include <wx/wx.h>
+
 class CAsmEdit : public CRichEditCtrl
 {
 public:

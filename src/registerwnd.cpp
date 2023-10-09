@@ -20,8 +20,6 @@
 
 #include "disassembler.h"
 
-#include <wx/wx.h>
-
 // clang-format off
 BEGIN_MESSAGE_MAP(CRegisterWnd, CWnd)
     ON_WM_DESTROY()

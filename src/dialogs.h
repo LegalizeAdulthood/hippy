@@ -24,6 +24,8 @@
 
 #include <afxwin.h>
 
+#include <wx/wx.h>
+
 class CInputBox : public CDialog
 {
 public:

@@ -25,6 +25,8 @@
 
 #include <afxwin.h>
 
+#include <wx/wx.h>
+
 #include <vector>
 
 enum RegName

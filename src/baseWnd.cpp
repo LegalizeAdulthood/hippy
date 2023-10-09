@@ -19,8 +19,6 @@
 
 #include "baseWnd.h"
 
-#include <wx/wx.h>
-
 // clang-format off
 BEGIN_MESSAGE_MAP(CBaseWnd, CWnd)
     ON_WM_KEYDOWN()

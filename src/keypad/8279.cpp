@@ -24,8 +24,6 @@
 #include "8279.h"
 #include "keypad.h"
 
-#include <wx/wx.h>
-
 extern "C" __declspec(dllexport) CDevice *GetNewDevice();
 __declspec(dllexport) CDevice *GetNewDevice()
 {

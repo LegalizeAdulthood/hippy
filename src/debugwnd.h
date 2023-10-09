@@ -25,6 +25,8 @@
 #include <Winsock2.h>
 #include <afxwin.h>
 
+#include <wx/wx.h>
+
 class CAddressManager;
 class CDisasmWnd;
 class CEnvironment;

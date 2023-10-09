@@ -18,9 +18,8 @@
 //
 
 #include "asmeditor.h"
-#include "hippy.h"
 
-#include <wx/wx.h>
+#include "hippy.h"
 
 static int s_fileNumber = 0;
 

@@ -28,6 +28,8 @@
 #include <afx.h>
 #include <afxwin.h>
 
+#include <wx/wx.h>
+
 class CM6800;
 class CSemaphore;
 class CStackWnd;

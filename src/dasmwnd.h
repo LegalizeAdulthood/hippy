@@ -25,6 +25,8 @@
 
 #include <afxwin.h>
 
+#include <wx/wx.h>
+
 struct Listnode
 {
     Listnode *prev;

@@ -23,8 +23,6 @@
 #include "disassembler.h"
 #include "environment.h"
 
-#include <wx/wx.h>
-
 ///////////////////////////////////////
 
 int HexToByte(char c)

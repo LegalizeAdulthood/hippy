@@ -21,6 +21,8 @@
 
 #include "baseWnd.h"
 
+#include <wx/wx.h>
+
 class CMemDumpWnd : public CBaseWnd
 {
 public:

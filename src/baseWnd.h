@@ -23,6 +23,8 @@
 
 #include <afxwin.h>
 
+#include <wx/wx.h>
+
 class CAddressManager;
 
 class CBaseWnd : public CWnd
