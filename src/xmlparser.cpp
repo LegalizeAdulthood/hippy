@@ -505,17 +505,12 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
 
     // build up the address resolution table
     {
-        int  i;
-        int  w;
-        int  size = static_cast<int>(devArr.size());
-        bool found;
-        int  k;
-        Word dec;
-
-        for (w = 0x0000; w < 0x10000; w++)
+        const int size = static_cast<int>(devArr.size());
+        for (int w = 0x0000; w < 0x10000; w++)
         {
             // for each location look for selected chip
-            found = false;
+            bool found = false;
+            int  i;
             for (i = 0; i < size; i++)
             {
                 if (EvalEqn(w, csEqn[i]))
@@ -529,9 +524,9 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
             // according to its address equations
             if (found)
             {
-                dec = 0;
+                Word dec = 0;
                 AddrResTbl[w].devIndex = i;
-                for (k = 0; k < addrEqns[i].GetSize(); k++)
+                for (int k = 0; k < addrEqns[i].GetSize(); k++)
                 {
                     dec |= EvalEqn(w, addrEqns[i][k]) << k;
                 }
@@ -542,39 +537,35 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
                 AddrResTbl[w].devIndex = 255; // 255 means no device
             }
         }
+    }
 
 #if 0
-            { // DEBUGGING CODE
-                BYTE    last = 255;
-                BYTE    cur;
-                wxString str;
+    { // DEBUGGING CODE
+        BYTE     last = 255;
+        BYTE     cur;
+        wxString str;
 
-                FILE *f = fopen("e:/dbg.txt", "w");
-                for (int w = 0; w < 0x10000; w++)
-                {
-                    if (w == 0xc001)
-                    {
-                        cur = cur;
-                    }
-                    cur = AddrResTbl[w].devIndex;
-                    if (cur == 255)
-                    {
-                        str = _T("MEMORY");
-                    }
-                    else
-                    {
-                        devArr[cur]->GetDeviceName(str);
-                    }
-                    if (cur != last)
-                    {
-                        _ftprintf(f, _T("[%08d] %s\n"), w, LPCTSTR(str.c_str()));
-                        last = cur;
-                    }
-                }
-                fclose(f);
+        FILE *f = fopen("dbg.txt", "w");
+        for (int w = 0; w < 0x10000; w++)
+        {
+            cur = AddrResTbl[w].devIndex;
+            if (cur == 255)
+            {
+                str = _T("memory");
             }
-#endif
+            else
+            {
+                devArr[cur]->GetDeviceName(str);
+            }
+            if (cur != last)
+            {
+                _ftprintf(f, _T("[%04x] %s\n"), w, LPCTSTR(str));
+                last = cur;
+            }
+        }
+        fclose(f);
     }
+#endif
 
     fclose(m_file);
     return 1;
