@@ -141,7 +141,8 @@ void CMainFrame::SendThroughCom(int PortNo, const wxString &fileName)
 {
     STARTUPINFO         si;
     PROCESS_INFORMATION pi;
-    CString             bat, batb;
+    CString             bat;
+    CString             batb;
 
     // port = "COM" + PortNo;
     bat.Format(_T("send%d.bat %s"), PortNo, LPCTSTR(fileName));
