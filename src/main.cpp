@@ -33,6 +33,7 @@
 #include <afxwin.h>
 
 #include <wx/wx.h>
+#include <wx/msw/mfc.h>
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -122,7 +123,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 END_MESSAGE_MAP()
 // clang-format on
 
-class CMainApp : public CWinApp
+class CMainApp : public wxMFCWinApp
 {
 public:
     int InitInstance() override
