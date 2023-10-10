@@ -8,7 +8,7 @@ find_package(wxwidgets CONFIG REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_definitions(-D_AFXDLL -D_WIN32_WINNT=_WIN32_WINNT_WIN7)
+add_definitions(-D_AFXDLL -D_WIN32_WINNT=_WIN32_WINNT_WIN7 -DWINVER=_WIN32_WINNT_WIN7)
 set(CMAKE_MFC_FLAG 2)
 
 add_library(device STATIC
