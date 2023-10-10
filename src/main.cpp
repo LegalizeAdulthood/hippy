@@ -167,10 +167,11 @@ void CMainFrame::SendThroughCom(int PortNo, const wxString &fileName)
 
 void CMainFrame::OnLoadSFile()
 {
-    CFileDialog fd(true, wxT(".asm"), nullptr, OFN_FILEMUSTEXIST);
-    if (fd.DoModal() == IDOK)
+    wxFileDialog fd(nullptr, wxT("Open S record file"), wxEmptyString, wxEmptyString,
+                    wxT("Hex files (*.hex)|*.hex|S record files (*.s)|*.s"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (fd.ShowModal() == wxID_OK)
     {
-        m_debugWnd->LoadSFile(wxString(LPCTSTR(fd.GetFileName())));
+        m_debugWnd->LoadSFile(fd.GetPath());
         m_debugWnd->SendMessage(WM_UPDATEDBGWND);
     }
 }
@@ -358,17 +359,16 @@ void CMainFrame::OnFileSaveClick()
 
 void CMainFrame::OnFileSaveAsClick()
 {
-    CAsmEditorWnd *pAsm = GetCurrentEditor();
-
-    if (pAsm)
+    if (CAsmEditorWnd *asmEditor = GetCurrentEditor())
     {
         wxString str;
-        pAsm->GetFileName(str);
-        CFileDialog fd(false, wxT(".asm"), str, OFN_OVERWRITEPROMPT);
-        if (fd.DoModal() == IDOK)
+        asmEditor->GetFileName(str);
+        wxFileDialog fd(nullptr, wxT("Save assembly file"), wxEmptyString, wxEmptyString,
+                        wxT("Assembly files (*.asm)|*.asm"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+        if (fd.ShowModal() == wxID_OK)
         {
-            mapp.AddToRecentFileList(fd.GetPathName());
-            pAsm->SaveAs(wxString(LPCTSTR(fd.GetPathName())));
+            mapp.AddToRecentFileList(fd.GetPath());
+            asmEditor->SaveAs(fd.GetPath());
         }
     }
     else
@@ -379,11 +379,12 @@ void CMainFrame::OnFileSaveAsClick()
 
 void CMainFrame::OnFileOpenClick()
 {
-    CFileDialog fd(true, wxT(".asm"), nullptr, OFN_FILEMUSTEXIST);
-    if (fd.DoModal() == IDOK)
+    wxFileDialog fd(nullptr, wxT("Open assembly source"), wxEmptyString, wxEmptyString,
+                    wxT("Assembly files (*.asm)|*.asm"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (fd.ShowModal() == wxID_OK)
     {
-        CAsmEditorWnd *pAsm = new CAsmEditorWnd(this, fd.GetPathName());
-        mapp.AddToRecentFileList(fd.GetFileName());
+        CAsmEditorWnd *editor = new CAsmEditorWnd(this, fd.GetPath());
+        mapp.AddToRecentFileList(fd.GetPath());
     }
 }
 
