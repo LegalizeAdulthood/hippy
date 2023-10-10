@@ -157,7 +157,7 @@ void CDebugWnd::Run()
     }
     else
     {
-        MessageBeep(1);
+        wxBell();
     }
 }
 
@@ -202,7 +202,7 @@ void CDebugWnd::StepOut()
 {
     if (m_running)
     {
-        MessageBeep(1);
+        wxBell();
         return;
     }
     if (m_retStackSize)

@@ -77,7 +77,7 @@ void CBuildEdit::OnLButtonDblClk(UINT nFlags, CPoint point)
         }
         else
         {
-            MessageBeep(1);
+            wxBell();
         }
     }
 }
@@ -106,7 +106,7 @@ LRESULT CAsmEditorWnd::OnJumpToLine(WPARAM wParam, LPARAM lParam)
     }
     else
     {
-        MessageBeep(1);
+        wxBell();
     }
 
     return TRUE;
@@ -244,7 +244,7 @@ void CAsmEditorWnd::OnClose()
 {
     if (m_editor.GetModify())
     {
-        MessageBeep(1);
+        wxBell();
     }
     else
     {

@@ -251,7 +251,7 @@ void CMainFrame::OnSendCom1()
     }
     else
     {
-        MessageBeep(1);
+        wxBell();
     }
 }
 
@@ -267,7 +267,7 @@ void CMainFrame::OnSendCom2()
     }
     else
     {
-        MessageBeep(1);
+        wxBell();
     }
 }
 
@@ -284,7 +284,7 @@ void CMainFrame::OnCompileNLoad()
     }
     else
     {
-        MessageBeep(1);
+        wxBell();
     }
 }
 
@@ -297,7 +297,7 @@ void CMainFrame::OnEditCompile()
     }
     else
     {
-        MessageBeep(1);
+        wxBell();
     }
 }
 
@@ -353,7 +353,7 @@ void CMainFrame::OnFileSaveClick()
     }
     else
     {
-        MessageBeep(1);
+        wxBell();
     }
 }
 
@@ -373,7 +373,7 @@ void CMainFrame::OnFileSaveAsClick()
     }
     else
     {
-        MessageBeep(1);
+        wxBell();
     }
 }
 
@@ -390,23 +390,22 @@ void CMainFrame::OnFileOpenClick()
 
 void CMainFrame::OnFileCloseClick()
 {
-    CMDIChildWnd *cw = this->MDIGetActive();
-    if (cw)
+    if (CMDIChildWnd *cw = this->MDIGetActive())
     {
         CRuntimeClass *pRtc = cw->GetRuntimeClass();
-        CString        str = "CAsmEditorWnd";
+        wxString       str = wxT("CAsmEditorWnd");
         if (str == pRtc->m_lpszClassName)
         {
             cw->DestroyWindow();
         }
         else
         {
-            MessageBeep(0);
+            wxBell();
         }
     }
     else
     {
-        MessageBeep(1);
+        wxBell();
     }
 }
 
