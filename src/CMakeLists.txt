@@ -62,6 +62,7 @@ add_executable(hippy WIN32
 )
 target_link_libraries(hippy PUBLIC device wx::core)
 set_property(TARGET hippy PROPERTY VS_DPI_AWARE "OFF")
+set_directory_properties(PROPERTIES VS_STARTUP_PROJECT hippy)
 
 add_subdirectory(keypad)
 add_subdirectory(asm)
