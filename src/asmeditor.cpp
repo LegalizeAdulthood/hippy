@@ -199,7 +199,7 @@ int CAsmEditorWnd::SaveFile()
     if (!file.Open(m_fileName, CFile::modeWrite | CFile::typeText | CFile::modeCreate, &fe))
     {
         fe.GetErrorMessage(buffer, sizeof(buffer));
-        MessageBox(buffer, wxT("File open error"));
+        wxMessageBox(buffer, wxT("File open error"));
         return 0;
     }
 
@@ -262,7 +262,7 @@ bool CAsmEditorWnd::OpenFile()
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                       nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
                       (LPTSTR) &lpMsgBuf, 0, nullptr);
-        MessageBox((LPCTSTR) lpMsgBuf);
+        wxMessageBox((LPCTSTR) lpMsgBuf, wxT("Error"), wxOK | wxICON_ERROR | wxCENTER);
         LocalFree(lpMsgBuf);
         return false;
     }

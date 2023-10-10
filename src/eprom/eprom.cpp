@@ -91,12 +91,10 @@ bool CEprom::LoadFile()
     BYTE checksum;
     Word last_addr = 0xffff;
 
-
-    FILE *f = fopen(CT2A (GetRomFileName()), "r");
+    FILE *f = fopen(CT2A(GetRomFileName()), "r");
     if (!f)
     {
-        wxString msg = wxString::Format(wxT("Rom image file not found:\n%s"), GetRomFileName().c_str());
-        m_parentWnd->MessageBox(msg, m_deviceName);
+        wxMessageBox(wxT("Rom image file not found:\n") + GetRomFileName(), m_deviceName);
         return false;
     }
     while (!feof(f))
