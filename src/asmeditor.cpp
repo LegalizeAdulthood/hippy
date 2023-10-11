@@ -22,6 +22,7 @@
 #include "hippy.h"
 
 #include <fstream>
+#include <string>
 
 static int s_fileNumber = 0;
 
@@ -252,8 +253,8 @@ void CAsmEditorWnd::OnClose()
 // tries to open the file specified by lpFileName returns true on success
 bool CAsmEditorWnd::OpenFile()
 {
-    CStdioFile file;
-    if (!file.Open(m_fileName, CFile::modeRead | CFile::typeText))
+    std::ifstream file(m_fileName.c_str().AsChar(), std::ios_base::in);
+    if (!file)
     {
         LPVOID lpMsgBuf;
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -264,14 +265,13 @@ bool CAsmEditorWnd::OpenFile()
         return false;
     }
 
-    CString str;
-    CString szBuffer;
-    while (file.ReadString(str))
+    wxString buffer;
+    std::string line;
+    while (std::getline(file, line))
     {
-        szBuffer += str + wxT('\13');
+        buffer += wxString(line.c_str()) + wxT('\13');
     }
-    m_editor.SendMessage(WM_SETTEXT, 0, (LPARAM) szBuffer.GetBuffer(1));
-    file.Close();
+    m_editor.SendMessage(WM_SETTEXT, 0, (LPARAM) buffer.c_str().AsWChar());
     return true;
 }
 

@@ -23,6 +23,8 @@
 #include "disassembler.h"
 #include "environment.h"
 
+#include <fstream>
+
 ///////////////////////////////////////
 
 int HexToByte(char c)
@@ -121,8 +123,6 @@ bool CAddressManager::LoadFile(const wxString &fname, std::vector<Word> &adr_arr
  */
 int CAddressManager::SaveSFile(const wxString &fileName, Word wBegin, Word wEnd)
 {
-    CStdioFile     file;
-    CFileException fe;
     Word           i, num_bytes = wEnd - wBegin; // number of bytes to export
     BYTE           cksum, b;
     int            numWrite;
@@ -130,7 +130,8 @@ int CAddressManager::SaveSFile(const wxString &fileName, Word wBegin, Word wEnd)
     char           buf_out[40];
     buf_out[0] = 'S';
     buf_out[1] = '1';
-    if (!file.Open(fileName, CFile::modeWrite | CFile::modeCreate, &fe))
+    std::ofstream file(fileName.c_str().AsChar(), std::ios_base::out | std::ios_base::trunc);
+    if (!file)
     {
         return 0;
     }
@@ -153,11 +154,9 @@ int CAddressManager::SaveSFile(const wxString &fileName, Word wBegin, Word wEnd)
         cksum = ~cksum;
         buffer[3 + i] = cksum;
         HexDumper::ByteArrayToHexArray(buffer, 4 + i, buf_out + 2);
-        strcat(buf_out, "\n");
-        file.WriteString(CA2T(buf_out));
+        file << buf_out << '\n';
     }
-    file.WriteString(wxT("S9030000FC\n"));
-    file.Close();
+    file << "S9030000FC\n";
     return 0;
 }
 
