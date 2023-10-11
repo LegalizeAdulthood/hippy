@@ -26,6 +26,7 @@
 #include <device.h>
 #include <hippy.h>
 
+#include <wx/filename.h>
 #include <wx/msgdlg.h>
 
 class CEprom : public CDevice
@@ -64,20 +65,13 @@ BYTE GetNextByte(FILE *f)
 
 wxString CEprom::GetRomFileName()
 {
+    wxString libName;
+    GetLibraryName(libName);
+    HMODULE module = GetModuleHandle(libName);
     TCHAR buf[256];
-    GetModuleFileName(g_theApp.m_hInstance, buf, 256);
-
-    int i = _tcslen(buf);
-    while (buf[i] != '\\')
-    {
-        i--;
-    }
-    buf[i + 1] = 0;
-    wxString str(buf);
-
-    str += m_deviceName;
-    str += wxT(".rom");
-    return str;
+    GetModuleFileName(module, buf, 256);
+    wxFileName modulePath(buf);
+    return wxFileName(modulePath.GetPath(), m_deviceName + wxT(".rom")).GetFullPath();
 }
 
 ///////////////////////////////////////////////
