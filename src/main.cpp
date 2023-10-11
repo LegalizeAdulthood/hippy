@@ -35,6 +35,7 @@
 #include <wx/filename.h>
 #include <wx/msw/mfc.h>
 #include <wx/wx.h>
+#include <wx/xrc/xmlres.h>
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -131,6 +132,9 @@ public:
     {
         SetRegistryKey(wxT("Hippy 6800"));
         LoadStdProfileSettings(10);
+
+        wxImage::AddHandler(new wxPNGHandler);
+        wxXmlResource::Get()->InitAllHandlers();
 
         m_pMainWnd = new CMainFrame();
         return TRUE;

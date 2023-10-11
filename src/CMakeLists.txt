@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 project(hippy)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 include(CTest)
 
@@ -68,7 +69,7 @@ add_executable(hippy WIN32
     vcpkg.json
     ../.github/workflows/build.yaml
 )
-target_link_libraries(hippy PUBLIC device hippy-lib wx::core)
+target_link_libraries(hippy PUBLIC device hippy-lib wx::core wx::xrc)
 set_property(TARGET hippy PROPERTY VS_DPI_AWARE "OFF")
 set_directory_properties(PROPERTIES VS_STARTUP_PROJECT hippy)
 

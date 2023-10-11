@@ -24,6 +24,7 @@
 #include <wx/bitmap.h>
 #include <wx/filename.h>
 #include <wx/image.h>
+#include <wx/xrc/xmlres.h>
 
 static const BYTE KeyMap[36] = {0xbb, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0xff, 0xff, 0xff, 0xbb, 0xff, 0x08,
                                 0x09, 0x0a, 0x0b, 0x11, 0xff, 0xff, 0xff, 0xff, 0xff, 0x04, 0x05, 0x06,
@@ -333,7 +334,7 @@ CKeyPad::CKeyPad(CDevice *pdevParent, CWnd *parent) :
         File,
         Resource
     };
-    LoadMethod method = LoadMethod::File;
+    LoadMethod method = LoadMethod::Resource;
     HANDLE     hBmp;
     switch (method)
     {
@@ -356,7 +357,11 @@ CKeyPad::CKeyPad(CDevice *pdevParent, CWnd *parent) :
     }
 
     case LoadMethod::Resource:
+    {
+        m_keypadBmp = wxXmlResource::Get()->LoadBitmap(wxT("keypad_png"));
+        hBmp = m_keypadBmp.GetResourceHandle();
         break;
+    }
     }
     m_bmp.Attach((HBITMAP) hBmp);
 
@@ -519,9 +524,12 @@ void CIntel8279::Reset()
     m_autoInc = false;
 }
 
+// Generated in resources.cpp
+extern void InitXmlResource();
+
 void CIntel8279::OnInitialize()
 {
-    wxImage::AddHandler( new wxPNGHandler );
+    InitXmlResource();
     m_keyPad = new CKeyPad(this, m_parentWnd);
     wxLogDebug(wxT("Generated KeyPad."));
 }
