@@ -21,6 +21,8 @@
 
 #include "device.h"
 
+#include <wx/filename.h>
+
 #include <vector>
 
 inline char stack_pop(std::vector<char> &stack)
@@ -467,6 +469,7 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
         return 0;
     }
 
+    const wxString deviceDir = wxFileName(fileName).GetPath();
     std::vector<wxString> csEqn;
     std::vector<wxString> addrEqns[255];
     {
@@ -480,8 +483,20 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
             case ttDevice:
                 if (m_xmlTag.close)
                 { // </DEVICE>
-                    HMODULE    hmod = LoadLibrary(LPCTSTR(wxT("../devices/") + libName));
+                    wxString libPath(wxFileName(deviceDir, libName).GetAbsolutePath());
+                    HMODULE  hmod = LoadLibrary(LPCTSTR(libPath));
+                    if(!hmod)
+                    {
+                        wxMessageBox(wxString::Format(wxT("Couldn't load device %s (%s)"), name, libPath));
+                        break;
+                    }
                     pdevFunctv func = pdevFunctv(GetProcAddress(hmod, "GetNewDevice"));
+                    if(!func)
+                    {
+                        wxMessageBox(wxString::Format(wxT("Couldn't load device factory function for device %s (%s)"),
+                                                      name, libPath));
+                        break;
+                    }
                     CDevice   *pDev = func();
                     pDev->Create(parent, name, libName);
                     devArr.push_back(pDev);
