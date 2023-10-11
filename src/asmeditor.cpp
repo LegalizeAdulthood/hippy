@@ -297,22 +297,7 @@ bool CAsmEditorWnd::OpenFile()
 
 wxString CAsmEditorWnd::GetHexFileName() const
 {
-    TCHAR buffer[1024];
-    _tcscpy(buffer, m_fileName);
-
-    TCHAR *p = _tcsrchr(buffer, '.');
-    if (p)
-    {
-        p[1] = 'h';
-        p[2] = 'e';
-        p[3] = 'x';
-        p[4] = 0;
-    }
-    else
-    {
-        _tcscat(buffer, wxT(".hex"));
-    }
-    return {buffer};
+    return hippy::GetHexFileName(m_fileName);
 }
 
 // assemble the source file, generate source.HEX file within the same

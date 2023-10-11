@@ -23,3 +23,17 @@ TEST(TestUtils, GetErrorLineNumberTrailingText)
 
     EXPECT_EQ(10, line);
 }
+
+TEST(TestUtils, GetHexFileNameForAsmFile)
+{
+    wxString hexFile = hippy::GetHexFileName(wxT("foo.asm"));
+
+    EXPECT_EQ(wxT("foo.hex"), hexFile);
+}
+
+TEST(TestUtils, GetHexFileNameForFileNoExtension)
+{
+    wxString hexFile = hippy::GetHexFileName(wxT("foo"));
+
+    EXPECT_EQ(wxT("foo.hex"), hexFile);
+}
