@@ -1,5 +1,5 @@
-#ifndef _SYM_TBL__
-#define _SYM_TBL__
+#ifndef HIPPY_ASM_SYM_TABLE_H
+#define HIPPY_ASM_SYM_TABLE_H
 
 #include <malloc.h>
 #include <stdio.h>
