@@ -76,7 +76,6 @@ private:
     CAsmEdit   m_editor;
     wxString   m_fileName;
     CFont      m_font;
-    CFont     *m_oldFont{};
     bool       m_newFile{};
     CBuildEdit m_buildWnd;
     int        m_buildWndHeight{};
