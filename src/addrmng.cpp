@@ -121,7 +121,6 @@ bool CAddressManager::LoadFile(const wxString &fname, std::vector<Word> &adr_arr
  */
 int CAddressManager::SaveSFile(const wxString &fileName, Word wBegin, Word wEnd)
 {
-    HexDumper      hex;
     CStdioFile     file;
     CFileException fe;
     Word           i, num_bytes = wEnd - wBegin; // number of bytes to export
@@ -153,7 +152,7 @@ int CAddressManager::SaveSFile(const wxString &fileName, Word wBegin, Word wEnd)
         }
         cksum = ~cksum;
         buffer[3 + i] = cksum;
-        hex.ByteArrayToHexArray(buffer, 4 + i, buf_out + 2);
+        HexDumper::ByteArrayToHexArray(buffer, 4 + i, buf_out + 2);
         strcat(buf_out, "\n");
         file.WriteString(CA2T(buf_out));
     }
