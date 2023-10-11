@@ -32,8 +32,9 @@
 #include <afxmt.h>
 #include <afxwin.h>
 
-#include <wx/wx.h>
+#include <wx/filename.h>
 #include <wx/msw/mfc.h>
+#include <wx/wx.h>
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -490,16 +491,9 @@ CAsmEditorWnd *CMainFrame::GetCurrentEditor()
 wxString CMainFrame::GetDeviceFile() const
 {
     TCHAR buf[256];
-    TCHAR *p;
     GetModuleFileName(nullptr, buf, 256);
-
-    p = _tcsrchr(buf, wxT('\\'));
-    *p = 0;
-    p = _tcsrchr(buf, wxT('\\'));
-    *p = 0;
-    wxString str(buf);
-    str += wxT("\\devices\\device.xml");
-    return str;
+    wxFileName exePath(buf);
+    return exePath.GetPath() + wxT("/../devices/device.xml");
 }
 
 CMainFrame::CMainFrame()
