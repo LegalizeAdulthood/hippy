@@ -368,8 +368,8 @@ void CMainFrame::OnFileSaveAsClick()
                         wxT("Assembly files (*.asm)|*.asm"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
         if (fd.ShowModal() == wxID_OK)
         {
-            mapp.AddToRecentFileList(fd.GetPath());
             asmEditor->SaveAs(fd.GetPath());
+            mapp.AddToRecentFileList(fd.GetPath());
         }
     }
     else
