@@ -136,7 +136,7 @@ public:
     }
 };
 
-CMainApp mapp;
+CMainApp g_app;
 
 void CMainFrame::SendThroughCom(int PortNo, const wxString &fileName)
 {
@@ -369,7 +369,7 @@ void CMainFrame::OnFileSaveAsClick()
         if (fd.ShowModal() == wxID_OK)
         {
             asmEditor->SaveAs(fd.GetPath());
-            mapp.AddToRecentFileList(fd.GetPath());
+            g_app.AddToRecentFileList(fd.GetPath());
         }
     }
     else
@@ -385,7 +385,7 @@ void CMainFrame::OnFileOpenClick()
     if (fd.ShowModal() == wxID_OK)
     {
         CAsmEditorWnd *editor = new CAsmEditorWnd(this, fd.GetPath());
-        mapp.AddToRecentFileList(fd.GetPath());
+        g_app.AddToRecentFileList(fd.GetPath());
     }
 }
 
