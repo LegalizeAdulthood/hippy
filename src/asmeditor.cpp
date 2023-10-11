@@ -22,6 +22,8 @@
 #include "hippy.h"
 #include "utils.h"
 
+#include <wx/nativewin.h>
+
 #include <fstream>
 #include <string>
 
@@ -440,7 +442,7 @@ void CAsmEditorWnd::ShowBuildWindow()
 //				 otherwise it will attempt to open the file.
 CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName) :
     m_buildWnd(this),
-    m_buildWndWx(this)
+    m_buildWndWx(new wxBuildEdit(this))
 {
     CMDIChildWnd::Create(nullptr, wxT("Editor"), WS_VISIBLE | WS_CHILD | WS_OVERLAPPEDWINDOW, rectDefault, pParent);
     m_editor.Create(WS_CHILD | ES_MULTILINE | WS_VSCROLL, rectDefault, this, 101);
@@ -448,6 +450,11 @@ CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName) :
                       102);
     m_buildWndHeight = 100;
     m_buildWnd.SetReadOnly();
+
+    m_containerWx = new wxNativeContainerWindow(m_hWnd);
+    m_buildWndWx->Create(m_containerWx, 103, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    m_buildWndWx->Hide();
+
     m_fileName = lpcFileName;
     m_newFile = m_fileName.IsEmpty();
     if (m_newFile)

@@ -26,6 +26,8 @@
 #include <wx/string.h>
 #include <wx/textctrl.h>
 
+class wxNativeContainerWindow;
+
 class AsmEditorWindow
 {
 public:
@@ -114,13 +116,14 @@ private:
     bool OpenFile();
     int  SaveFile();
 
-    CAsmEdit    m_editor;
-    wxString    m_fileName;
-    CFont       m_font;
-    bool        m_newFile{};
-    CBuildEdit  m_buildWnd;
-    wxBuildEdit m_buildWndWx;
-    int         m_buildWndHeight{};
+    CAsmEdit                 m_editor;
+    wxString                 m_fileName;
+    CFont                    m_font;
+    bool                     m_newFile{};
+    CBuildEdit               m_buildWnd;
+    wxNativeContainerWindow *m_containerWx{};
+    wxBuildEdit              *m_buildWndWx;
+    int                      m_buildWndHeight{};
 };
 
 #endif
