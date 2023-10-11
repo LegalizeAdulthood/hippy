@@ -49,24 +49,6 @@ public:
     DECLARE_MESSAGE_MAP()
 };
 
-class CBuildEdit : public CEdit
-{
-public:
-    CBuildEdit(AsmEditorWindow *editorWindow) :
-        m_editorWindow(editorWindow)
-    {
-    }
-    ~CBuildEdit() override = default;
-
-    afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-    afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
-
-    DECLARE_MESSAGE_MAP()
-
-private:
-    AsmEditorWindow *m_editorWindow;
-};
-
 class wxBuildEdit : public wxTextCtrl
 {
 public:
@@ -120,9 +102,8 @@ private:
     wxString                 m_fileName;
     CFont                    m_font;
     bool                     m_newFile{};
-    CBuildEdit               m_buildWnd;
     wxNativeContainerWindow *m_containerWx{};
-    wxBuildEdit              *m_buildWndWx;
+    wxBuildEdit              *m_buildWndWx{};
     int                      m_buildWndHeight{};
 };
 

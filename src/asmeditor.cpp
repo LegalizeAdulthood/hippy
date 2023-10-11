@@ -41,11 +41,6 @@ BEGIN_MESSAGE_MAP(CAsmEdit, CRichEditCtrl)
     ON_WM_CHAR()
 END_MESSAGE_MAP()
 
-BEGIN_MESSAGE_MAP(CBuildEdit, CEdit)
-    ON_WM_CHAR()
-    ON_WM_LBUTTONDBLCLK()
-END_MESSAGE_MAP()
-
 wxBEGIN_EVENT_TABLE(wxBuildEdit, wxTextCtrl)
     EVT_CHAR(OnChar)
     EVT_LEFT_DCLICK(OnLButtonDblClk)
@@ -55,42 +50,6 @@ wxEND_EVENT_TABLE()
 // clang-format on
 
 IMPLEMENT_DYNAMIC(CAsmEditorWnd, CMDIChildWnd)
-
-void CBuildEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-    if (nChar == VK_ESCAPE)
-    {
-        m_editorWindow->HideBuildWindow();
-    }
-}
-
-void CBuildEdit::OnLButtonDblClk(UINT nFlags, CPoint point)
-{
-    int nBegin;
-    int nEnd;
-    // retrieve selected chars
-    GetSel(nBegin, nEnd);
-    // now get selected line
-    int line = LineFromChar(nBegin);
-    // receive the contents of the line, if no problems yet
-    if (line >= 0)
-    {
-        TCHAR buffer[1024];
-        GetLine(line, buffer, sizeof(buffer));
-        // printf("Line %d : Error: %s\n", line, msg);
-        // strip off the line number
-        const int d = hippy::GetErrorLineNumber(buffer);
-        if (d >= 0)
-        {
-            // send jump message to parent
-            m_editorWindow->JumpToLine(d);
-        }
-        else
-        {
-            wxBell();
-        }
-    }
-}
 
 void wxBuildEdit::OnChar(wxKeyEvent &event)
 {
@@ -133,12 +92,12 @@ LRESULT CAsmEditorWnd::OnHideBuildWnd(WPARAM wParam, LPARAM lParam)
 
 void CAsmEditorWnd::HideBuildWindow()
 {
-    if (!m_buildWnd.IsWindowVisible())
+    if (!m_buildWndWx->IsShown())
     {
         return;
     }
 
-    m_buildWnd.ShowWindow(SW_HIDE);
+    m_buildWndWx->Show(false);
     CRect rc;
     GetClientRect(&rc);
     OnSize(0, rc.right, rc.bottom);
@@ -237,11 +196,10 @@ void CAsmEditorWnd::OnSize(UINT nType, int cx, int cy)
         return;
     }
     // if build output window is visible then it needs care
-    if (m_buildWnd.IsWindowVisible())
+    if (m_buildWndWx->IsShown())
     {
-        WINDOWPLACEMENT wp;
-        m_buildWnd.GetWindowPlacement(&wp);
-        m_buildWnd.SetWindowPos(nullptr, 5, cy - 5 - m_buildWndHeight, cx - 10, m_buildWndHeight, 0);
+        m_buildWndWx->SetPosition(wxPoint(5, cy - 5 - m_buildWndHeight));
+        m_buildWndWx->SetSize(cx - 10, m_buildWndHeight);
         m_editor.SetWindowPos(nullptr, 5, 5, cx - 10, cy - m_buildWndHeight - 15, 0);
     }
     else
@@ -400,7 +358,7 @@ int CAsmEditorWnd::CompileCode()
         }
         ReadFile(rd, buffer, 0x50000, &bread, nullptr);
         buffer[bread] = 0;
-        m_buildWnd.SetWindowText(CA2T(buffer));
+        m_buildWndWx->WriteText(wxString(buffer));
         // show the window if hidden
         ShowBuildWindow();
     }
@@ -422,12 +380,12 @@ int CAsmEditorWnd::CompileCode()
 
 void CAsmEditorWnd::ShowBuildWindow()
 {
-    if (m_buildWnd.IsWindowVisible())
+    if (m_buildWndWx->IsShown())
     {
         return;
     }
 
-    m_buildWnd.ShowWindow(SW_SHOW);
+    m_buildWndWx->Show(true);
     // then the window size needs to be calculated
     CRect rc;
     GetClientRect(&rc);
@@ -441,19 +399,15 @@ void CAsmEditorWnd::ShowBuildWindow()
 // bNewFile    : if true then the editor will not open the file (its a new file)
 //				 otherwise it will attempt to open the file.
 CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName) :
-    m_buildWnd(this),
     m_buildWndWx(new wxBuildEdit(this))
 {
     CMDIChildWnd::Create(nullptr, wxT("Editor"), WS_VISIBLE | WS_CHILD | WS_OVERLAPPEDWINDOW, rectDefault, pParent);
     m_editor.Create(WS_CHILD | ES_MULTILINE | WS_VSCROLL, rectDefault, this, 101);
-    m_buildWnd.Create(WS_CHILD | WS_VISIBLE | ES_MULTILINE | WS_VSCROLL | WS_TABSTOP | WS_BORDER, rectDefault, this,
-                      102);
     m_buildWndHeight = 100;
-    m_buildWnd.SetReadOnly();
 
     m_containerWx = new wxNativeContainerWindow(m_hWnd);
-    m_buildWndWx->Create(m_containerWx, 103, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-    m_buildWndWx->Hide();
+    m_buildWndWx->Create(m_containerWx, 102, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    m_buildWndWx->Enable(false);
 
     m_fileName = lpcFileName;
     m_newFile = m_fileName.IsEmpty();
@@ -503,5 +457,4 @@ CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName) :
 CAsmEditorWnd::~CAsmEditorWnd()
 {
     m_editor.DestroyWindow();
-    m_buildWnd.DestroyWindow();
 }
