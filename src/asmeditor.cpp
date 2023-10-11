@@ -317,7 +317,7 @@ int CAsmEditorWnd::CompileCode()
 
     if (!CreatePipe(&rd, &wr, &sa, 0))
     {
-        TRACE0("Stdout pipe creation failed\n");
+        wxLogDebug(wxT("Stdout pipe creation failed"));
         return 0;
     }
 
@@ -350,7 +350,7 @@ int CAsmEditorWnd::CompileCode()
     }
     else
     {
-        wxLogDebug(wxT("CREATING NEW PROCESS FAILED : GetLatError -->  0x%8.8X\n"), ::GetLastError());
+        wxLogDebug(wxString::Format(wxT("CREATING NEW PROCESS FAILED : GetLatError -->  0x%8.8X"), ::GetLastError()));
         void *msgBuffer{};
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                       nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language

@@ -484,6 +484,6 @@ void CIntel8279::Reset()
 
 void CIntel8279::OnInitialize()
 {
-    TRACE0("Generated KeyPad.\n");
     m_keyPad = new CKeyPad(this, m_parentWnd);
+    wxLogDebug(wxT("Generated KeyPad."));
 }
