@@ -48,17 +48,17 @@ wxBEGIN_EVENT_TABLE(wxBuildEdit, wxTextCtrl)
     EVT_CHAR(OnChar)
     EVT_LEFT_DCLICK(OnLButtonDblClk)
 wxEND_EVENT_TABLE()
+
+; // workaround to get clang-format to stop indenting after these macros.
 // clang-format on
 
 IMPLEMENT_DYNAMIC(CAsmEditorWnd, CMDIChildWnd)
 
 void CBuildEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-    switch (nChar)
+    if (nChar == VK_ESCAPE)
     {
-    case VK_ESCAPE:
-        GetParent()->SendMessage(WM_HIDEBUILDWND);
-        break;
+        m_editorWindow->HideBuildWindow();
     }
 }
 
@@ -81,7 +81,7 @@ void CBuildEdit::OnLButtonDblClk(UINT nFlags, CPoint point)
         if (d >= 0)
         {
             // send jump message to parent
-            GetParent()->SendMessage(WM_JUMPTOLINE, (WPARAM) d);
+            m_editorWindow->JumpToLine(d);
         }
         else
         {
@@ -94,7 +94,7 @@ void wxBuildEdit::OnChar(wxKeyEvent &event)
 {
     if (event.GetKeyCode() == WXK_ESCAPE)
     {
-        m_mfcParent->SendMessage(WM_HIDEBUILDWND);
+        m_editorWindow->HideBuildWindow();
     }
 }
 
@@ -114,44 +114,62 @@ void wxBuildEdit::OnLButtonDblClk(wxMouseEvent &event)
         const int errorLine = hippy::GetErrorLineNumber(text);
         if (errorLine >= 0)
         {
-            // send jump message to parent
-            m_mfcParent->SendMessage(WM_JUMPTOLINE, (WPARAM) errorLine);
+            m_editorWindow->JumpToLine(errorLine);
         }
         else
         {
-            wxBell();
+            m_editorWindow->ErrorBeep();
         }
     }
 }
 
 LRESULT CAsmEditorWnd::OnHideBuildWnd(WPARAM wParam, LPARAM lParam)
 {
+    HideBuildWindow();
+    return TRUE;
+}
+
+void CAsmEditorWnd::HideBuildWindow()
+{
+    if (!m_buildWnd.IsWindowVisible())
+    {
+        return;
+    }
+
     m_buildWnd.ShowWindow(SW_HIDE);
     CRect rc;
     GetClientRect(&rc);
     OnSize(0, rc.right, rc.bottom);
-    return TRUE;
 }
 
 LRESULT CAsmEditorWnd::OnJumpToLine(WPARAM wParam, LPARAM lParam)
 {
-    int nBegin, nEnd;
+    int line = wParam - 1;
+    JumpToLine(line);
+    return TRUE;
+}
 
-    if ((nBegin = m_editor.LineIndex(wParam - 1)) != -1)
+void CAsmEditorWnd::JumpToLine(int line)
+{
+    const int nBegin = m_editor.LineIndex(line);
+    if (nBegin != -1)
     {
         TCHAR buffer[1024];
-        m_editor.GetLine(wParam - 1, buffer, 1024);
-        nEnd = _tcslen(buffer) + nBegin;
+        m_editor.GetLine(line, buffer, 1024);
+        const int nEnd = _tcslen(buffer) + nBegin;
         m_editor.SetSel(nBegin, nEnd);
         m_editor.SetFocus();
-        m_editor.LineScroll((wParam - 1) - m_editor.GetFirstVisibleLine());
+        m_editor.LineScroll(line - m_editor.GetFirstVisibleLine());
     }
     else
     {
         wxBell();
     }
+}
 
-    return TRUE;
+void CAsmEditorWnd::ErrorBeep()
+{
+    wxBell();
 }
 
 bool CAsmEditorWnd::IsNewFile() const
@@ -307,7 +325,7 @@ bool CAsmEditorWnd::OpenFile()
         return false;
     }
 
-    wxString buffer;
+    wxString    buffer;
     std::string line;
     while (std::getline(file, line))
     {
@@ -341,7 +359,6 @@ wxString CAsmEditorWnd::GetHexFileName() const
 // directory.
 int CAsmEditorWnd::CompileCode()
 {
-
     STARTUPINFO         si;
     PROCESS_INFORMATION pi;
     SECURITY_ATTRIBUTES sa;
@@ -383,14 +400,7 @@ int CAsmEditorWnd::CompileCode()
         buffer[bread] = 0;
         m_buildWnd.SetWindowText(CA2T(buffer));
         // show the window if hidden
-        if (!m_buildWnd.IsWindowVisible())
-        {
-            m_buildWnd.ShowWindow(SW_SHOW);
-            // then the window size needs to be calculated
-            CRect rc;
-            GetClientRect(&rc);
-            OnSize(0, rc.right, rc.bottom);
-        }
+        ShowBuildWindow();
     }
     else
     {
@@ -408,13 +418,29 @@ int CAsmEditorWnd::CompileCode()
     return 1;
 }
 
+void CAsmEditorWnd::ShowBuildWindow()
+{
+    if (m_buildWnd.IsWindowVisible())
+    {
+        return;
+    }
+
+    m_buildWnd.ShowWindow(SW_SHOW);
+    // then the window size needs to be calculated
+    CRect rc;
+    GetClientRect(&rc);
+    OnSize(0, rc.right, rc.bottom);
+}
+
 // constructor & destructor
 
 // pParent     : Parent MDIFrame window (the main application window
 // lpcFileName : the filename of the file to be edited in this editor
 // bNewFile    : if true then the editor will not open the file (its a new file)
 //				 otherwise it will attempt to open the file.
-CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName)
+CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName) :
+    m_buildWnd(this),
+    m_buildWndWx(this)
 {
     CMDIChildWnd::Create(nullptr, wxT("Editor"), WS_VISIBLE | WS_CHILD | WS_OVERLAPPEDWINDOW, rectDefault, pParent);
     m_editor.Create(WS_CHILD | ES_MULTILINE | WS_VSCROLL, rectDefault, this, 101);
@@ -451,7 +477,7 @@ CAsmEditorWnd::CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName)
          CLIP_DEFAULT_PRECIS,      // nClipPrecision
          DEFAULT_QUALITY,          // nQuality
          DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
-         wxT("FixedSys"));          // lpszFacename
+         wxT("FixedSys"));         // lpszFacename
     m_editor.SetFont(&m_font, false);
 
     GetClientRect(&rc);

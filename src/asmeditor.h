@@ -23,8 +23,19 @@
 #include <afxcmn.h>
 #include <afxwin.h>
 
-#include <wx/wx.h>
+#include <wx/string.h>
 #include <wx/textctrl.h>
+
+class AsmEditorWindow
+{
+public:
+    virtual ~AsmEditorWindow() = default;
+
+    virtual void ShowBuildWindow() = 0;
+    virtual void HideBuildWindow() = 0;
+    virtual void JumpToLine(int line) = 0;
+    virtual void ErrorBeep() = 0;
+};
 
 class CAsmEdit : public CRichEditCtrl
 {
@@ -39,25 +50,32 @@ public:
 class CBuildEdit : public CEdit
 {
 public:
+    CBuildEdit(AsmEditorWindow *editorWindow) :
+        m_editorWindow(editorWindow)
+    {
+    }
     ~CBuildEdit() override = default;
 
     afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
     afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 
     DECLARE_MESSAGE_MAP()
+
+private:
+    AsmEditorWindow *m_editorWindow;
 };
 
 class wxBuildEdit : public wxTextCtrl
 {
 public:
-    wxBuildEdit(CWnd *mfcParent) :
-        m_mfcParent(mfcParent)
+    wxBuildEdit(AsmEditorWindow *editorWindow) :
+        m_editorWindow(editorWindow)
     {
     }
     ~wxBuildEdit() override = default;
 
 private:
-    CWnd *m_mfcParent;
+    AsmEditorWindow *m_editorWindow;
 
     void OnChar(wxKeyEvent &event);
     void OnLButtonDblClk(wxMouseEvent &event);
@@ -65,10 +83,9 @@ private:
     wxDECLARE_EVENT_TABLE();
 };
 
-class CAsmEditorWnd : public CMDIChildWnd
+class CAsmEditorWnd : public CMDIChildWnd, public AsmEditorWindow
 {
 public:
-    CAsmEditorWnd() = default;
     CAsmEditorWnd(CMDIFrameWnd *pParent, LPCTSTR lpcFileName);
     ~CAsmEditorWnd() override;
 
@@ -88,20 +105,22 @@ public:
 
     DECLARE_MESSAGE_MAP()
 
+    void ShowBuildWindow() override;
+    void HideBuildWindow() override;
+    void JumpToLine(int line) override;
+    void ErrorBeep() override;
+
 private:
     bool OpenFile();
     int  SaveFile();
 
-public:
-    BOOL DestroyWindow() override { return CMDIChildWnd::DestroyWindow(); }
-
-private:
-    CAsmEdit   m_editor;
-    wxString   m_fileName;
-    CFont      m_font;
-    bool       m_newFile{};
-    CBuildEdit m_buildWnd;
-    int        m_buildWndHeight{};
+    CAsmEdit    m_editor;
+    wxString    m_fileName;
+    CFont       m_font;
+    bool        m_newFile{};
+    CBuildEdit  m_buildWnd;
+    wxBuildEdit m_buildWndWx;
+    int         m_buildWndHeight{};
 };
 
 #endif
