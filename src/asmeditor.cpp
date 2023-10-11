@@ -21,6 +21,8 @@
 
 #include "hippy.h"
 
+#include <fstream>
+
 static int s_fileNumber = 0;
 
 // clang-format off
@@ -192,30 +194,25 @@ void CAsmEditorWnd::OnSize(UINT nType, int cx, int cy)
 // it is a valid filename
 int CAsmEditorWnd::SaveFile()
 {
-    CStdioFile     file;
-    CFileException fe;
-    char           ln[3] = {0x0d, 0x0a, 0};
-    TCHAR          buffer[2048];
-    if (!file.Open(m_fileName, CFile::modeWrite | CFile::typeText | CFile::modeCreate, &fe))
+    std::ofstream file(m_fileName.c_str().AsChar(), std::ios_base::out | std::ios_base::trunc);
+    if (!file)
     {
-        fe.GetErrorMessage(buffer, sizeof(buffer));
-        wxMessageBox(buffer, wxT("File open error"));
+        wxMessageBox(wxString::Format(wxT("Error opening %s for writing"), m_fileName.c_str()), wxT("File open error"));
         return 0;
     }
 
-    file.SetLength(0);
-
-    int c = m_editor.GetLineCount();
-    int size;
+    int   c = m_editor.GetLineCount();
+    int   size;
+    TCHAR buffer[1000];
     for (int i = 0; i < c; i++)
     {
         size = m_editor.LineLength(m_editor.LineIndex(i));
         m_editor.GetLine(i, buffer, size);
-        buffer[size] = '\n';
+        buffer[size] = wxT('\n');
         buffer[size + 1] = 0;
-        file.WriteString(buffer);
+        file << CT2A(buffer);
     }
-    file.Close();
+    file.close();
     m_editor.SetModify(false);
     SetWindowText(m_fileName);
     m_newFile = false;
