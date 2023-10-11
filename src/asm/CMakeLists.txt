@@ -27,7 +27,6 @@ add_executable(asm
     codes.h
     lexer.h
     phase2.h
-    stack.h
     y.tab.hpp
 )
 set_target_properties(asm PROPERTIES FOLDER "Tools")
