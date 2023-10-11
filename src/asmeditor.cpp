@@ -208,7 +208,10 @@ int CAsmEditorWnd::SaveFile()
     for (int i = 0; i < c; i++)
     {
         size = m_editor.LineLength(m_editor.LineIndex(i));
-        m_editor.GetLine(i, buffer, size);
+        if (size > 0)
+        {
+            m_editor.GetLine(i, buffer, size);
+        }
         buffer[size] = wxT('\n');
         buffer[size + 1] = 0;
         file << CT2A(buffer);
