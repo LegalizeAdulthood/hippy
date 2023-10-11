@@ -302,7 +302,6 @@ wxString CAsmEditorWnd::GetHexFileName() const
 // directory.
 int CAsmEditorWnd::CompileCode()
 {
-    TCHAR buffer[0x50000];
 
     STARTUPINFO         si;
     PROCESS_INFORMATION pi;
@@ -329,20 +328,21 @@ int CAsmEditorWnd::CompileCode()
     si.wShowWindow = SW_HIDE;
     si.hStdInput = nullptr;
     si.cb = sizeof(si);
-    _tcprintf(buffer, wxT("%s %s"), wxT("assembler.exe"), LPCTSTR(m_fileName));
-    CreateProcess(nullptr, buffer, nullptr, nullptr, true, CREATE_NEW_CONSOLE /*creation flags*/, nullptr /*envirn*/,
-                  nullptr /*cur dir*/, &si, &pi);
-
+    wxString cmd = wxString::Format(wxT("assembler %s"), m_fileName.c_str());
+    CreateProcess(nullptr, LPTSTR(cmd.wx_str()), nullptr, nullptr, true, CREATE_NEW_CONSOLE /*creation flags*/,
+                  nullptr /*envirn*/, nullptr /*cur dir*/, &si, &pi);
     if (pi.hProcess)
     {
         WaitForSingleObject(pi.hProcess, INFINITE);
+        char buffer[0x50000];
+        buffer[0] = 0;
         while (!bread)
         {
             PeekNamedPipe(rd, buffer, 0x50000, &bread, &bavail, nullptr);
         }
         ReadFile(rd, buffer, 0x50000, &bread, nullptr);
         buffer[bread] = 0;
-        m_buildWnd.SetWindowText(buffer);
+        m_buildWnd.SetWindowText(CA2T(buffer));
         // show the window if hidden
         if (!m_buildWnd.IsWindowVisible())
         {
