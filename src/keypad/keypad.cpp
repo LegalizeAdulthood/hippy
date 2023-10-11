@@ -21,6 +21,10 @@
 
 #include "resource.h"
 
+#include <wx/bitmap.h>
+#include <wx/filename.h>
+#include <wx/image.h>
+
 static const BYTE KeyMap[36] = {0xbb, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0xff, 0xff, 0xff, 0xbb, 0xff, 0x08,
                                 0x09, 0x0a, 0x0b, 0x11, 0xff, 0xff, 0xff, 0xff, 0xff, 0x04, 0x05, 0x06,
                                 0x07, 0x12, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x01, 0x02, 0x03, 0x13};
@@ -319,8 +323,41 @@ CKeyPad::CKeyPad(CDevice *pdevParent, CWnd *parent) :
 
     wxString libName;
     m_devParent->GetLibraryName(libName);
-    HANDLE hBmp = LoadImage(GetModuleHandle(libName), MAKEINTRESOURCE(IDB_BMP_KEYPAD), IMAGE_BITMAP, 0, 0,
-                            LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+    HMODULE module = GetModuleHandle(libName);
+    TCHAR   path[1024];
+    GetModuleFileName(module, path, sizeof(path) / sizeof(path[0]));
+    wxFileName modulePath(path);
+    enum class LoadMethod
+    {
+        MFC,
+        File,
+        Resource
+    };
+    LoadMethod method = LoadMethod::File;
+    HANDLE     hBmp;
+    switch (method)
+    {
+    case LoadMethod::MFC:
+        hBmp = LoadImage(module, MAKEINTRESOURCE(IDB_BMP_KEYPAD), IMAGE_BITMAP, 0, 0,
+                         LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+        break;
+
+    case LoadMethod::File:
+    {
+        wxImage    keypad;
+        wxFileName pngPath(modulePath.GetPath(), wxT("keypad.png"));
+        if (!keypad.LoadFile(pngPath.GetFullPath()))
+        {
+            wxMessageBox(wxT("Failed to load keypad image ") + pngPath.GetFullPath());
+        }
+        m_keypadBmp = keypad;
+        hBmp = m_keypadBmp.GetResourceHandle();
+        break;
+    }
+
+    case LoadMethod::Resource:
+        break;
+    }
     m_bmp.Attach((HBITMAP) hBmp);
 
     ClearDisplay();
@@ -484,6 +521,7 @@ void CIntel8279::Reset()
 
 void CIntel8279::OnInitialize()
 {
+    wxImage::AddHandler( new wxPNGHandler );
     m_keyPad = new CKeyPad(this, m_parentWnd);
     wxLogDebug(wxT("Generated KeyPad."));
 }

@@ -24,7 +24,7 @@
 
 #include <afxwin.h>
 
-#include <wx/wx.h>
+#include <wx/bitmap.h>
 
 /*-----------------------------------
  * FIFO
@@ -133,6 +133,7 @@ private:
     CPoint   m_downKeyPoint;
     CWnd    *m_parent{};
     CDevice *m_devParent{};
+    wxBitmap m_keypadBmp;
 
     void     DrawDisplay();
     void     Draw7Segment(int x, int y, BYTE val);
