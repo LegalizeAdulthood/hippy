@@ -16,8 +16,8 @@
 // along with Hippy; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-#ifndef _CODES_H__
-#define _CODES_H__
+#ifndef HIPPY_ASM_CODES_H
+#define HIPPY_ASM_CODES_H
 
 #ifndef BYTE
 typedef unsigned char BYTE;
