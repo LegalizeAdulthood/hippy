@@ -24,6 +24,7 @@
 #include <afxwin.h>
 
 #include <wx/wx.h>
+#include <wx/textctrl.h>
 
 class CAsmEdit : public CRichEditCtrl
 {
@@ -44,6 +45,24 @@ public:
     afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 
     DECLARE_MESSAGE_MAP()
+};
+
+class wxBuildEdit : public wxTextCtrl
+{
+public:
+    wxBuildEdit(CWnd *mfcParent) :
+        m_mfcParent(mfcParent)
+    {
+    }
+    ~wxBuildEdit() override = default;
+
+private:
+    CWnd *m_mfcParent;
+
+    void OnChar(wxKeyEvent &event);
+    void OnLButtonDblClk(wxMouseEvent &event);
+
+    wxDECLARE_EVENT_TABLE();
 };
 
 class CAsmEditorWnd : public CMDIChildWnd
@@ -73,6 +92,10 @@ private:
     bool OpenFile();
     int  SaveFile();
 
+public:
+    BOOL DestroyWindow() override { return CMDIChildWnd::DestroyWindow(); }
+
+private:
     CAsmEdit   m_editor;
     wxString   m_fileName;
     CFont      m_font;

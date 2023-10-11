@@ -20,6 +20,7 @@
 #include "asmeditor.h"
 
 #include "hippy.h"
+#include "utils.h"
 
 #include <fstream>
 #include <string>
@@ -42,6 +43,11 @@ BEGIN_MESSAGE_MAP(CBuildEdit, CEdit)
     ON_WM_CHAR()
     ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
+
+wxBEGIN_EVENT_TABLE(wxBuildEdit, wxTextCtrl)
+    EVT_CHAR(OnChar)
+    EVT_LEFT_DCLICK(OnLButtonDblClk)
+wxEND_EVENT_TABLE()
 // clang-format on
 
 IMPLEMENT_DYNAMIC(CAsmEditorWnd, CMDIChildWnd)
@@ -71,12 +77,45 @@ void CBuildEdit::OnLButtonDblClk(UINT nFlags, CPoint point)
         GetLine(line, buffer, sizeof(buffer));
         // printf("Line %d : Error: %s\n", line, msg);
         // strip off the line number
-        int d = -1;
-        _tcscanf(buffer, wxT("error: line %d: "), &d);
+        const int d = hippy::GetErrorLineNumber(buffer);
         if (d >= 0)
         {
             // send jump message to parent
             GetParent()->SendMessage(WM_JUMPTOLINE, (WPARAM) d);
+        }
+        else
+        {
+            wxBell();
+        }
+    }
+}
+
+void wxBuildEdit::OnChar(wxKeyEvent &event)
+{
+    if (event.GetKeyCode() == WXK_ESCAPE)
+    {
+        m_mfcParent->SendMessage(WM_HIDEBUILDWND);
+    }
+}
+
+void wxBuildEdit::OnLButtonDblClk(wxMouseEvent &event)
+{
+    long begin;
+    long end;
+    // retrieve selected chars
+    GetSelection(&begin, &end);
+    // now get selected line
+    long line;
+    // receive the contents of the line, if no problems yet
+    if (PositionToXY(begin, nullptr, &line))
+    {
+        wxString text = GetLineText(line);
+        // strip off the line number
+        const int errorLine = hippy::GetErrorLineNumber(text);
+        if (errorLine >= 0)
+        {
+            // send jump message to parent
+            m_mfcParent->SendMessage(WM_JUMPTOLINE, (WPARAM) errorLine);
         }
         else
         {

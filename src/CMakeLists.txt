@@ -23,6 +23,14 @@ target_link_libraries(device PUBLIC wx::base)
 add_custom_command(TARGET device POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/devices/device.xml" "${CMAKE_BINARY_DIR}/devices")
 
+add_library(hippy-lib STATIC
+    utils.h
+    utils.cpp
+)
+set_target_properties(hippy-lib PROPERTIES FOLDER "Libraries")
+target_include_directories(hippy-lib PUBLIC .)
+target_link_libraries(hippy-lib PUBLIC wx::base)
+
 add_executable(hippy WIN32
     addrmng.h
     alu.h
@@ -60,7 +68,7 @@ add_executable(hippy WIN32
     vcpkg.json
     ../.github/workflows/build.yaml
 )
-target_link_libraries(hippy PUBLIC device wx::core)
+target_link_libraries(hippy PUBLIC device hippy-lib wx::core)
 set_property(TARGET hippy PROPERTY VS_DPI_AWARE "OFF")
 set_directory_properties(PROPERTIES VS_STARTUP_PROJECT hippy)
 
