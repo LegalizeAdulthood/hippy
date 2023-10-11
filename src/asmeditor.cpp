@@ -349,15 +349,14 @@ int CAsmEditorWnd::CompileCode()
     }
     else
     {
-        TRACE(wxT("CREATING NEW PROCESS FAILED : GetLatError -->  0x%8.8X\n"), ::GetLastError());
-
-        LPVOID lpMsgBuf;
+        wxLogDebug(wxT("CREATING NEW PROCESS FAILED : GetLatError -->  0x%8.8X\n"), ::GetLastError());
+        void *msgBuffer{};
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                       nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                      (LPTSTR) &lpMsgBuf, 0, nullptr);
-        TRACE((char *) lpMsgBuf);
+                      (LPTSTR) &msgBuffer, 0, nullptr);
+        wxLogDebug(static_cast<wxChar *>(msgBuffer));
         // Free the buffer.
-        LocalFree(lpMsgBuf);
+        LocalFree(msgBuffer);
     }
 
     return 1;
