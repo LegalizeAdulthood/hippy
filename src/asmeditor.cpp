@@ -117,7 +117,8 @@ void CAsmEditorWnd::JumpToLine(int line)
     {
         TCHAR buffer[1024];
         m_editor.GetLine(line, buffer, 1024);
-        const int nEnd = _tcslen(buffer) + nBegin;
+        wxString text(buffer);
+        const int nEnd = text.Length() + nBegin;
         m_editor.SetSel(nBegin, nEnd);
         m_editor.SetFocus();
         m_editor.LineScroll(line - m_editor.GetFirstVisibleLine());
