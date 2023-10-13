@@ -1,11 +1,24 @@
 #include "parser.h"
 
+#include <cctype>
+
 namespace assembler
 {
 
-assembler::Line parse(const std::string &line)
+Line parse(const std::string &line)
 {
-    return {};
+    if (line.empty())
+    {
+        return {};
+    }
+
+    Line result;
+    if (!std::isspace(line[0]))
+    {
+        auto space = line.find_first_of(" \t");
+        result.label = line.substr(0, space);
+    }
+    return result;
 }
 
 } // namespace assembler
