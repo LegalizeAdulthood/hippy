@@ -30,3 +30,11 @@ TEST(TestParser, labelTab)
 
     EXPECT_EQ(expected, assembler::parse("foo\t"));
 }
+
+TEST(TestParser, lineComment)
+{
+    assembler::Line expected{};
+    expected.comment = "This is a comment";
+
+    EXPECT_EQ(expected, assembler::parse("* This is a comment"));
+}
