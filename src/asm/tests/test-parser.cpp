@@ -5,7 +5,7 @@
 class TestParser : public testing::Test
 {
 protected:
-    assembler::Line m_expected{};
+    assembler::Fields m_expected{};
 };
 
 TEST_F(TestParser, emptyLine)

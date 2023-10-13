@@ -7,7 +7,7 @@
 namespace assembler
 {
 
-struct Line
+struct Fields
 {
     std::string label;
     std::string opcode;
@@ -15,19 +15,19 @@ struct Line
     std::string comment;
 };
 
-inline bool operator==(const Line &lhs, const Line &rhs)
+inline bool operator==(const Fields &lhs, const Fields &rhs)
 {
     return lhs.label == rhs.label && lhs.opcode == rhs.opcode && lhs.operands == rhs.operands &&
            lhs.comment == rhs.comment;
 }
 
-inline std::ostream &operator<<(std::ostream &str, const Line &line)
+inline std::ostream &operator<<(std::ostream &str, const Fields &line)
 {
     return str << "{ '" << line.label << "', '" << line.opcode << "', '" << line.operands << "', '" << line.comment
                << "' }";
 }
 
-assembler::Line parse(const std::string &line);
+Fields parse(const std::string &text);
 
 } // namespace assembler
 

@@ -5,76 +5,72 @@
 namespace assembler
 {
 
-Line parse(const std::string &line)
+static const char *const s_whitespace{" \t"};
+
+size_t extractField(size_t pos, const std::string &text, std::string &field)
 {
-    if (line.empty())
+    const size_t space = text.find_first_of(s_whitespace, pos);
+    if (space != std::string::npos)
+    {
+        field = text.substr(pos, space - pos);
+    }
+    else
+    {
+        field = text.substr(pos);
+    }
+    return space;
+}
+
+Fields parse(const std::string &text)
+{
+    if (text.empty())
     {
         return {};
     }
 
-    const char *const whitespace{" \t"};
-    Line              result;
-    if (line[0] == '*')
+    Fields fields;
+    if (text[0] == '*')
     {
-        const size_t start = line.find_first_not_of("* \t");
-        result.comment = line.substr(start);
-        return result;
+        const size_t start = text.find_first_not_of("* \t");
+        fields.comment = text.substr(start);
+        return fields;
     }
 
     size_t pos{};
-    auto   nextWhiteSpace = [&] { return line.find_first_of(whitespace, pos); };
-    if (!std::isspace(line[0]))
+    auto   nextWhiteSpace = [&] { return text.find_first_of(s_whitespace, pos); };
+    if (!std::isspace(text[0]))
     {
         pos = nextWhiteSpace();
-        result.label = line.substr(0, pos);
+        fields.label = text.substr(0, pos);
     }
     if (pos == std::string::npos)
     {
         // label, no trailing whitespace
-        return result;
+        return fields;
     }
 
-    auto nextNotWhiteSpace = [&] { return line.find_first_not_of(whitespace, pos); };
+    auto nextNotWhiteSpace = [&] { return text.find_first_not_of(s_whitespace, pos); };
     pos = nextNotWhiteSpace();
     if (pos == std::string::npos)
     {
         // label, trailing whitespace, no opcode
-        return result;
+        return fields;
     }
 
-    size_t space = nextWhiteSpace();
-    if (space != std::string::npos)
-    {
-        result.opcode = line.substr(pos, space - pos);
-    }
-    else
-    {
-        result.opcode = line.substr(pos);
-    }
-    pos = space;
-
+    pos = extractField(pos, text, fields.opcode);
     if (pos == std::string::npos)
     {
-        return result;
+        return fields;
     }
 
     pos = nextNotWhiteSpace();
     if (pos == std::string::npos)
     {
-        return result;
+        return fields;
     }
+    pos = extractField(pos, text, fields.operands);
 
-    space = nextWhiteSpace();
-    if (space != std::string::npos)
-    {
-        result.operands = line.substr(pos, space - pos);
-    }
-    else
-    {
-        result.operands = line.substr(pos);
-    }
-
-    return result;
+    return fields;
 }
 
 } // namespace assembler
