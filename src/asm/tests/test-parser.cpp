@@ -2,55 +2,63 @@
 
 #include <gtest/gtest.h>
 
-TEST(TestParser, emptyLine)
+class TestParser : public testing::Test
 {
-    EXPECT_EQ(assembler::Line{}, assembler::parse({}));
+protected:
+    assembler::Line m_expected{};
+};
+
+TEST_F(TestParser, emptyLine)
+{
+    EXPECT_EQ(m_expected, assembler::parse({}));
 }
 
-TEST(TestParser, labelOnly)
+TEST_F(TestParser, labelOnly)
 {
-    assembler::Line expected{};
-    expected.label = "foo";
+    m_expected.label = "foo";
 
-    EXPECT_EQ(expected, assembler::parse("foo"));
+    EXPECT_EQ(m_expected, assembler::parse("foo"));
 }
 
-TEST(TestParser, labelSpace)
+TEST_F(TestParser, labelSpace)
 {
-    assembler::Line expected{};
-    expected.label = "foo";
+    m_expected.label = "foo";
 
-    EXPECT_EQ(expected, assembler::parse("foo "));
+    EXPECT_EQ(m_expected, assembler::parse("foo "));
 }
 
-TEST(TestParser, labelTab)
+TEST_F(TestParser, labelTab)
 {
-    assembler::Line expected{};
-    expected.label = "foo";
+    m_expected.label = "foo";
 
-    EXPECT_EQ(expected, assembler::parse("foo\t"));
+    EXPECT_EQ(m_expected, assembler::parse("foo\t"));
 }
 
-TEST(TestParser, lineComment)
+TEST_F(TestParser, lineComment)
 {
-    assembler::Line expected{};
-    expected.comment = "This is a comment";
+    m_expected.comment = "This is a comment";
 
-    EXPECT_EQ(expected, assembler::parse("* This is a comment"));
+    EXPECT_EQ(m_expected, assembler::parse("* This is a comment"));
 }
 
-TEST(TestParser, spaceOpcode)
+TEST_F(TestParser, spaceOpcode)
 {
-    assembler::Line expected{};
-    expected.opcode = "END";
+    m_expected.opcode = "END";
 
-    EXPECT_EQ(expected, assembler::parse(" END"));
+    EXPECT_EQ(m_expected, assembler::parse(" END"));
 }
 
-TEST(TestParser, tabOpcode)
+TEST_F(TestParser, tabOpcode)
 {
-    assembler::Line expected{};
-    expected.opcode = "END";
+    m_expected.opcode = "END";
 
-    EXPECT_EQ(expected, assembler::parse("\tEND"));
+    EXPECT_EQ(m_expected, assembler::parse("\tEND"));
+}
+
+TEST_F(TestParser, opcodeOperand)
+{
+    m_expected.opcode = "ORG";
+    m_expected.operands = "$8000";
+
+    EXPECT_EQ(m_expected, assembler::parse(" ORG $8000"));
 }
