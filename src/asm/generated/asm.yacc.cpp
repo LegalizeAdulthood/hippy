@@ -2442,7 +2442,7 @@ extern "C" int yywrap(void)
     exit(1);
 }
 
-int main(int argc, char **argv)
+int asm_main(int argc, char **argv)
 {
     extern FILE *yyin;
     char         buf[512], *p;
