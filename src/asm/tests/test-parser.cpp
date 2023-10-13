@@ -38,3 +38,19 @@ TEST(TestParser, lineComment)
 
     EXPECT_EQ(expected, assembler::parse("* This is a comment"));
 }
+
+TEST(TestParser, spaceOpcode)
+{
+    assembler::Line expected{};
+    expected.opcode = "END";
+
+    EXPECT_EQ(expected, assembler::parse(" END"));
+}
+
+TEST(TestParser, tabOpcode)
+{
+    assembler::Line expected{};
+    expected.opcode = "END";
+
+    EXPECT_EQ(expected, assembler::parse("\tEND"));
+}

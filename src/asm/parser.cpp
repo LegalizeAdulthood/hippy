@@ -20,11 +20,22 @@ Line parse(const std::string &line)
         return result;
     }
 
+    size_t pos{};
     if (!std::isspace(line[0]))
     {
-        const size_t space = line.find_first_of(" \t");
-        result.label = line.substr(0, space);
+        pos = line.find_first_of(" \t");
+        result.label = line.substr(0, pos);
     }
+
+    if (pos != std::string::npos)
+    {
+        const size_t notSpace = line.find_first_not_of(" \t", pos);
+        if (notSpace != std::string::npos)
+        {
+            result.opcode = line.substr(notSpace);
+        }
+    }
+
     return result;
 }
 
