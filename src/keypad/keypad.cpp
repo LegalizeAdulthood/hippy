@@ -322,48 +322,8 @@ CKeyPad::CKeyPad(CDevice *pdevParent, CWnd *parent) :
                       CRect(x, y, x + m_displayRect.right + 20, y + m_keyPadRect.bottom + disp_spacing + 35), m_parent,
                       nullptr, WS_EX_TOOLWINDOW);
 
-    wxString libName;
-    m_devParent->GetLibraryName(libName);
-    HMODULE module = GetModuleHandle(libName);
-    TCHAR   path[1024];
-    GetModuleFileName(module, path, sizeof(path) / sizeof(path[0]));
-    wxFileName modulePath(path);
-    enum class LoadMethod
-    {
-        MFC,
-        File,
-        Resource
-    };
-    LoadMethod method = LoadMethod::Resource;
-    HANDLE     hBmp;
-    switch (method)
-    {
-    case LoadMethod::MFC:
-        hBmp = LoadImage(module, MAKEINTRESOURCE(IDB_BMP_KEYPAD), IMAGE_BITMAP, 0, 0,
-                         LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
-        break;
-
-    case LoadMethod::File:
-    {
-        wxImage    keypad;
-        wxFileName pngPath(modulePath.GetPath(), wxT("keypad.png"));
-        if (!keypad.LoadFile(pngPath.GetFullPath()))
-        {
-            wxMessageBox(wxT("Failed to load keypad image ") + pngPath.GetFullPath());
-        }
-        m_keypadBmp = keypad;
-        hBmp = m_keypadBmp.GetResourceHandle();
-        break;
-    }
-
-    case LoadMethod::Resource:
-    {
-        m_keypadBmp = wxXmlResource::Get()->LoadBitmap(wxT("keypad_png"));
-        hBmp = m_keypadBmp.GetResourceHandle();
-        break;
-    }
-    }
-    m_bmp.Attach((HBITMAP) hBmp);
+    m_keypadBmp = wxXmlResource::Get()->LoadBitmap(wxT("keypad_png"));
+    m_bmp.Attach(m_keypadBmp.GetResourceHandle());
 
     ClearDisplay();
     ClearFifoRAM();

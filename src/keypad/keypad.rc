@@ -45,13 +45,13 @@ BEGIN
         BLOCK "040904B0"
         BEGIN
             VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "8279 DLL\0"
+            VALUE "FileDescription", "KEYPAD DLL\0"
             VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "8279\0"
+            VALUE "InternalName", "Keypad\0"
             VALUE "LegalCopyright", "Copyright (C) 2005\0"
             VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "8279.DLL\0"
-            VALUE "ProductName", "8279 Dynamic Link Library\0"
+            VALUE "OriginalFilename", "KEYPAD.DLL\0"
+            VALUE "ProductName", "kEYPAD Dynamic Link Library\0"
             VALUE "ProductVersion", "1, 0, 0, 1\0"
         END
     END
@@ -72,8 +72,7 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_TRK)
 #ifdef _WIN32
-LANGUAGE LANG_TURKISH, SUBLANG_DEFAULT
-#pragma code_page(1254)
+LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
 #endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
@@ -103,9 +102,7 @@ BEGIN
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
     "#ifdef _WIN32\r\n"
     "LANGUAGE 9, 1\r\n"
-    "#pragma code_page(1252)\r\n"
     "#endif //_WIN32\r\n"
-    "#include ""res\\8279.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""afxres.rc""         // Standard components\r\n"
     "#endif\r\n"
     "\0"
@@ -119,7 +116,6 @@ END
 // Bitmap
 //
 
-IDB_BMP_KEYPAD          BITMAP  DISCARDABLE     "keypad.bmp"
 #endif    // Turkish resources
 /////////////////////////////////////////////////////////////////////////////
 
