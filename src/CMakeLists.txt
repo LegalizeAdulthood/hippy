@@ -22,6 +22,7 @@ set_target_properties(device PROPERTIES FOLDER "Devices")
 target_include_directories(device PUBLIC .)
 target_link_libraries(device PUBLIC wx::base)
 add_custom_command(TARGET device POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_SOURCE_DIR}/devices"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/devices/device.xml" "${CMAKE_BINARY_DIR}/devices")
 
 add_library(hippy-lib STATIC
