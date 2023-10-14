@@ -31,6 +31,8 @@ class CDevice;
 
 using CDeviceArray = std::vector<CDevice *>;
 
+constexpr BYTE NO_DEVICE = 255U;
+
 struct AddrResEntry
 {
     Word decodedAddr;

@@ -163,7 +163,7 @@ int CAddressManager::SaveSFile(const wxString &fileName, Word wBegin, Word wEnd)
 void CAddressManager::Write(Word wIndex, BYTE bVal)
 {
     int ind = m_AddrResTbl[wIndex].devIndex;
-    if (ind < 255)
+    if (ind < NO_DEVICE)
     {
         m_devices[ind]->Write(m_AddrResTbl[wIndex].decodedAddr, bVal, false);
     }
@@ -178,7 +178,7 @@ BYTE CAddressManager::Read(Word wIndex, bool bDbg)
 {
     BYTE val;
     int  ind = m_AddrResTbl[wIndex].devIndex;
-    if (ind < 255)
+    if (ind < NO_DEVICE)
     {
         m_devices[ind]->Read(m_AddrResTbl[wIndex].decodedAddr, val, bDbg);
     }
