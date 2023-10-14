@@ -497,7 +497,7 @@ wxString CMainFrame::GetDeviceFile() const
     TCHAR buf[256];
     GetModuleFileName(nullptr, buf, 256);
     wxFileName exePath(buf);
-    return exePath.GetPath() + wxT("/../devices/device.xml");
+    return wxFileName(exePath.GetPath() + wxT("/../devices"), wxT("device.xml")).GetAbsolutePath();
 }
 
 CMainFrame::CMainFrame()
