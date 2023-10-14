@@ -70,6 +70,13 @@ Fields parse(const std::string &text)
     }
     pos = extractField(pos, text, fields.operands);
 
+    pos = nextNotWhiteSpace();
+    if (pos == std::string::npos)
+    {
+        return fields;
+    }
+    fields.comment = text.substr(pos);
+
     return fields;
 }
 

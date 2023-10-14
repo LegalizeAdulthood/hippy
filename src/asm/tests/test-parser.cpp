@@ -62,3 +62,12 @@ TEST_F(TestParser, opcodeOperand)
 
     EXPECT_EQ(m_expected, assembler::parse(" ORG $8000"));
 }
+
+TEST_F(TestParser, opcodeOperandComment)
+{
+    m_expected.opcode = "ORG";
+    m_expected.operands = "$8000";
+    m_expected.comment = "set origin";
+
+    EXPECT_EQ(m_expected, assembler::parse(" ORG $8000     set origin"));
+}
