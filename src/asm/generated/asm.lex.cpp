@@ -534,18 +534,8 @@ char *yytext;
 #include "lexer.h"
 #include "sym_table.h"
 #include "y.tab.hpp"
-#include <stdarg.h>
-#include <stdio.h>
 
-int my_linenum = 1;
-int num_errors = 0;
-// int num_warnings=0;
-int  do_id(char *);
-void yyerror(char *msg);
-int  str2int(char *str, int base);
-int  isatty(int fileno);
-
-#line 549 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
+#line 539 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
 
 #define INITIAL 0
 
@@ -732,9 +722,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 58 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 48 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 
-#line 738 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
+#line 728 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -819,102 +809,102 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 59 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 49 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { return do_id(yytext); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 60 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 50 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = atoi(yytext); return NUMBER; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 61 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 51 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = str2int(yytext+2, 16); return NUMBER; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 62 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 52 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = str2int(yytext+1, 16); return NUMBER; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 63 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 53 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yytext[strlen(yytext)-1] = 0; yylval.ival = str2int(yytext, 16); return NUMBER; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 64 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 54 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = str2int(yytext, 2); return NUMBER; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 65 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 55 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = str2int(yytext, 8); return NUMBER; }
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 66 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 56 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { my_linenum++; return '\n'; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 67 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 57 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.pse = insert_id(yytext); return TEXT; }
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 68 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 58 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { my_linenum++; return '\n';}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 69 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 59 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { return yytext[0]; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 70 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 60 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { return yytext[0]; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 71 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 61 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 72 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 62 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 ;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 73 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 63 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = 0; yyerror("Bad hexadecimal."); return NUMBER; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 74 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 64 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = 0; yyerror("Bad decimal."); return NUMBER; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 75 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 65 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = 0; yyerror("Bad octal"); return NUMBER; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 76 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 66 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = 0; yyerror("Bad binary"); return NUMBER; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 77 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 67 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 ECHO;
 	YY_BREAK
-#line 918 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
+#line 908 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1912,130 +1902,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 77 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 67 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 
 
-
-int isatty(int fileno)
-{
-    return (yyin == stdin) ? 1 : 0;
-}
-
-void err_msg(const char *fmt, ...)
-{
-    char buf[512];
-    num_errors++;
-    va_list ap;
-    va_start(ap, fmt);
-    fflush(stdout); /* in case stdout and stderr are the same */
-    vsprintf(buf, fmt, ap);
-    fputs(buf, stderr);
-    fputs("\n", stderr);
-    fflush(NULL); /* flushes all stdio output streams */
-    va_end(ap);
-    return;
-}
-
-void yyerror(char *msg)
-{
-    num_errors++;
-    printf("error: line %3d: %s %s.\n", my_linenum, msg, yytext);
-}
-
-unsigned int hash_func(char *pstr)
-{
-    int          len = strlen(pstr);
-    unsigned int hash = 0;
-    memcpy(&hash, pstr, len);
-    return hash;
-}
-
-int str2int(char *str, int base)
-{
-    int  rval = 0;
-    char c;
-    strupr(str);
-    char *p = str;
-    while (*p)
-    {
-        c = *p;
-        if (c > '9')
-            c = (c - 'A') + 10;
-        else
-            c -= '0';
-        if (c >= base)
-            yyerror("weird number");
-        rval = rval * base + c;
-        p++;
-    }
-    return rval;
-}
-
-int bin_search(unsigned int needle, unsigned int *haysack, int min, int max)
-{
-    int mid = (min + max) / 2;
-    if (haysack[max] == needle)
-        return max;
-    if (max <= min)
-        return -1;
-    if (haysack[mid] > needle)
-        if (mid == max)
-            return -1;
-        else
-            return bin_search(needle, haysack, min, mid - 1);
-    if (haysack[mid] < needle)
-        if (mid == min)
-            return -1;
-        else
-            return bin_search(needle, haysack, mid + 1, max);
-    return mid;
-}
-
-int do_id(char *yytext)
-{
-    int          rval = -1;
-    char         buf[256];
-    unsigned int hash;
-    int          ind;
-    strcpy(buf, yytext);
-    int len = strlen(buf);
-    strupr(buf);
-    if (len < 3 || len > 4)
-    {
-        if (!strcmp(buf, "X"))
-            return INDEX;
-        // printf("[identifier]");
-        goto retid;
-    }
-    hash = hash_func(buf);
-    ind = bin_search(hash, hashList, 0, 106);
-    if (ind == -1)
-    {
-        ind = bin_search(hash, dirHashList, 0, NUM_DIRECTIVES);
-        if (ind == -1)
-        {
-            // printf("[identifier]");
-            goto retid;
-        }
-        return ind + FCB;
-    }
-    else
-    {
-        // printf("[inst:%4s]", instList[hashInd[ind]]);
-        yylval.ival = hashInd[ind];
-        return INST;
-    }
-retid:
-    yylval.pse = insert_id(buf);
-    return ID;
-}
-
-#if 0
-int main(int argc, char **argv)
-{
-    while (1)
-        lexer->yylex();
-    return 0;
-}
-#endif
 
