@@ -21,6 +21,8 @@ else()
 endif()
 
 add_library(asm-lib STATIC
+    actions.h
+    actions.cpp
     asm.l
     asm.y
     ${grammarSources}

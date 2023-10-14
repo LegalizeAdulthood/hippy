@@ -88,63 +88,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include "codes.h"
-#include "lexer.h"
-#include "sym_table.h"
+#include "actions.h"
 
-#include <stdio.h>
-#include <vector>
-
-#define HI_BYTE(y) (unsigned char) (y >> 8)
-#define LO_BYTE(y) (unsigned char) (y & 0xff)
-
-# pragma warning (disable: 4065) /* Switch statement contains default but no case. */
-int         yylex();
-extern int  num_errors;
-extern int  my_linenum;
-extern void err_msg(const char *fmt, ...);
-extern void yyerror(char *);
-
-FILE                       *fout = NULL;
-int                         pc = 0; // where to write next
-std::vector<unsigned short> segments;
-std::vector<unsigned short> segment_length;
-unsigned short              byte_list[40];
-int                         num_byte_list = 0;
-
-equation     *equations;
-int           num_eqns = 0;
-unsigned char memory[0x10000]; // memory image
-
-void           store_eqn(void *eqn, unsigned short pc, mode_t mode);
-int            get_numbytes(unsigned char opcode);
-unsigned short get_tkval(void *vptk);
-type_t         get_tktype(void *vptk);
-void          *make_number(unsigned short sval);
-void          *make_identifier(void *pvpse);
-void          *make_eqn(char opr, void *vpl, void *vpr);
-void           add_label(void *vppse, unsigned short addr);
-void           add_reference(unsigned char opcode, void *vppse, unsigned short addr);
-void           do_fill(unsigned char val, unsigned short cnt);
-void           do_fcb();
-void           do_fdb();
-void           do_fcc(char *str);
-void           do_zmb(unsigned short cnt);
-void           do_rmb(unsigned short size);
-void           do_org(int addr);
-void           do_equ(void *vppse, unsigned short addr);
-void           do_idinst(unsigned char opcode, sym_entry *pse, char imm);
-void           do_inher(unsigned char opcode);
-void           do_immediate(unsigned char opcode, unsigned short sval);
-void           do_direct(unsigned char opcode, unsigned char cval);
-void           do_indexed(unsigned char opcode, unsigned char cval);
-void           do_extended(unsigned char opcode, unsigned short sval);
-void           do_relative(unsigned char opcode, unsigned char cval);
-void           generate_hex();
 
 
 /* Line 189 of yacc.c  */
-#line 148 "C:/Code/legalize/hippy/build/asm/asm.yacc.cpp"
+#line 97 "C:/Code/legalize/hippy/build/asm/asm.yacc.cpp"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -204,12 +153,12 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 76 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 25 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
  int ival; void* pse; 
 
 
 /* Line 214 of yacc.c  */
-#line 213 "C:/Code/legalize/hippy/build/asm/asm.yacc.cpp"
+#line 162 "C:/Code/legalize/hippy/build/asm/asm.yacc.cpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -221,7 +170,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 225 "C:/Code/legalize/hippy/build/asm/asm.yacc.cpp"
+#line 174 "C:/Code/legalize/hippy/build/asm/asm.yacc.cpp"
 
 #ifdef short
 # undef short
@@ -528,15 +477,15 @@ static const yytype_int8 yyrhs[] =
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const yytype_uint16 yyrline[] =
+static const yytype_uint8 yyrline[] =
 {
-       0,    85,    85,    89,    90,    94,    95,    96,    97,    98,
-      99,   100,   101,   102,   103,   104,   105,   109,   110,   130,
-     158,   162,   163,   164,   165,   167,   168,   169,   170,   171,
-     172,   176,   177,   178,   181,   183,   185,   188,   188,   205,
-     224,   238,   238,   254,   255,   259,   260,   261,   264,   265,
-     268,   269,   272,   273,   276,   277,   278,   279,   280,   284,
-     285
+       0,    34,    34,    38,    39,    43,    44,    45,    46,    47,
+      48,    49,    50,    51,    52,    53,    54,    58,    59,    79,
+     107,   111,   112,   113,   114,   116,   117,   118,   119,   120,
+     121,   125,   126,   127,   130,   132,   134,   137,   137,   154,
+     173,   187,   187,   203,   204,   208,   209,   210,   213,   214,
+     217,   218,   221,   222,   225,   226,   227,   228,   229,   233,
+     234
 };
 #endif
 
@@ -1520,49 +1469,49 @@ yyreduce:
         case 12:
 
 /* Line 1464 of yacc.c  */
-#line 101 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 50 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { err_msg("error: line %04d: instruction or directive expected, found \"%d\"", my_linenum-1,(yyvsp[(2) - (3)].ival));;}
     break;
 
   case 13:
 
 /* Line 1464 of yacc.c  */
-#line 102 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 51 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)(yyvsp[(3) - (4)].pse))->str);;}
     break;
 
   case 14:
 
 /* Line 1464 of yacc.c  */
-#line 103 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 52 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)(yyvsp[(2) - (3)].pse))->str);;}
     break;
 
   case 15:
 
 /* Line 1464 of yacc.c  */
-#line 104 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 53 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)(yyvsp[(2) - (4)].pse))->str);;}
     break;
 
   case 16:
 
 /* Line 1464 of yacc.c  */
-#line 105 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 54 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)(yyvsp[(3) - (5)].pse))->str);;}
     break;
 
   case 17:
 
 /* Line 1464 of yacc.c  */
-#line 109 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 58 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { do_inher((yyvsp[(1) - (2)].ival)); ;}
     break;
 
   case 18:
 
 /* Line 1464 of yacc.c  */
-#line 110 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 59 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     {
                 unsigned char opcode = (yyvsp[(1) - (4)].ival);
                 if (get_tktype((yyvsp[(3) - (4)].pse)) == INTEGER)
@@ -1588,7 +1537,7 @@ yyreduce:
   case 19:
 
 /* Line 1464 of yacc.c  */
-#line 130 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 79 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     {
                 unsigned short sval = get_tkval((yyvsp[(2) - (3)].pse));
                 unsigned char  opcode = (yyvsp[(1) - (3)].ival);
@@ -1622,112 +1571,112 @@ yyreduce:
   case 20:
 
 /* Line 1464 of yacc.c  */
-#line 158 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 107 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { do_indexed((yyvsp[(1) - (5)].ival), (yyvsp[(2) - (5)].ival)); ;}
     break;
 
   case 21:
 
 /* Line 1464 of yacc.c  */
-#line 162 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 111 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { do_org((yyvsp[(2) - (3)].ival)); ;}
     break;
 
   case 22:
 
 /* Line 1464 of yacc.c  */
-#line 163 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 112 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { /*do_fcb();*/ ;}
     break;
 
   case 23:
 
 /* Line 1464 of yacc.c  */
-#line 164 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 113 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { do_fcc(((sym_entry *) (yyvsp[(2) - (3)].pse))->str); ;}
     break;
 
   case 24:
 
 /* Line 1464 of yacc.c  */
-#line 165 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 114 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { /*do_fdb();*/ ;}
     break;
 
   case 25:
 
 /* Line 1464 of yacc.c  */
-#line 167 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 116 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { do_rmb((yyvsp[(2) - (3)].ival)); ;}
     break;
 
   case 26:
 
 /* Line 1464 of yacc.c  */
-#line 168 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 117 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { do_fill((yyvsp[(2) - (5)].ival), (yyvsp[(4) - (5)].ival)); ;}
     break;
 
   case 27:
 
 /* Line 1464 of yacc.c  */
-#line 169 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 118 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { do_zmb((yyvsp[(2) - (3)].ival)); /*bsz=zmb*/ ;}
     break;
 
   case 28:
 
 /* Line 1464 of yacc.c  */
-#line 170 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 119 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { do_zmb((yyvsp[(2) - (3)].ival)); ;}
     break;
 
   case 29:
 
 /* Line 1464 of yacc.c  */
-#line 171 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 120 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { do_fcc(((sym_entry*) (yyvsp[(2) - (3)].pse))->str); ;}
     break;
 
   case 31:
 
 /* Line 1464 of yacc.c  */
-#line 176 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 125 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { do_equ((yyvsp[(1) - (5)].pse), get_tkval((yyvsp[(4) - (5)].pse))); ;}
     break;
 
   case 32:
 
 /* Line 1464 of yacc.c  */
-#line 177 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 126 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { do_equ((yyvsp[(1) - (4)].pse), get_tkval((yyvsp[(3) - (4)].pse))); ;}
     break;
 
   case 33:
 
 /* Line 1464 of yacc.c  */
-#line 178 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 127 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { err_msg("error: line %04d: EQU must define a label", my_linenum-1);;}
     break;
 
   case 35:
 
 /* Line 1464 of yacc.c  */
-#line 183 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 132 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     {;}
     break;
 
   case 36:
 
 /* Line 1464 of yacc.c  */
-#line 185 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 134 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { ;}
     break;
 
   case 37:
 
 /* Line 1464 of yacc.c  */
-#line 188 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 137 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     {
                 if (get_tktype((yyvsp[(1) - (1)].pse)) == INTEGER)
                 {
@@ -1750,7 +1699,7 @@ yyreduce:
   case 39:
 
 /* Line 1464 of yacc.c  */
-#line 205 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 154 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     {
                 if (get_tktype((yyvsp[(1) - (1)].pse)) == INTEGER)
                 {
@@ -1773,7 +1722,7 @@ yyreduce:
   case 40:
 
 /* Line 1464 of yacc.c  */
-#line 224 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 173 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     {
                 if (get_tktype((yyvsp[(1) - (1)].pse)) == INTEGER)
                 {
@@ -1793,7 +1742,7 @@ yyreduce:
   case 41:
 
 /* Line 1464 of yacc.c  */
-#line 238 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 187 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     {
                 if (get_tktype((yyvsp[(1) - (1)].pse)) == INTEGER)
                 {
@@ -1813,63 +1762,63 @@ yyreduce:
   case 45:
 
 /* Line 1464 of yacc.c  */
-#line 259 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 208 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { add_label((yyvsp[(1) - (1)].pse), pc); ;}
     break;
 
   case 46:
 
 /* Line 1464 of yacc.c  */
-#line 260 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 209 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { add_label((yyvsp[(1) - (2)].pse), pc); ;}
     break;
 
   case 54:
 
 /* Line 1464 of yacc.c  */
-#line 276 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 225 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { (yyval.pse) = make_eqn('+',(yyvsp[(1) - (3)].pse), (yyvsp[(3) - (3)].pse)); ;}
     break;
 
   case 55:
 
 /* Line 1464 of yacc.c  */
-#line 277 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 226 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { (yyval.pse) = make_eqn('-',(yyvsp[(1) - (3)].pse), (yyvsp[(3) - (3)].pse)); ;}
     break;
 
   case 56:
 
 /* Line 1464 of yacc.c  */
-#line 278 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 227 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { (yyval.pse) = make_eqn('*',(yyvsp[(1) - (3)].pse), (yyvsp[(3) - (3)].pse)); ;}
     break;
 
   case 57:
 
 /* Line 1464 of yacc.c  */
-#line 279 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 228 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { (yyval.pse) = make_eqn('/',(yyvsp[(1) - (3)].pse), (yyvsp[(3) - (3)].pse)); ;}
     break;
 
   case 59:
 
 /* Line 1464 of yacc.c  */
-#line 284 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 233 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { (yyval.pse) = make_identifier((yyvsp[(1) - (1)].pse)); ;}
     break;
 
   case 60:
 
 /* Line 1464 of yacc.c  */
-#line 285 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 234 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
     { (yyval.pse) = make_number((yyvsp[(1) - (1)].ival)); ;}
     break;
 
 
 
 /* Line 1464 of yacc.c  */
-#line 1873 "C:/Code/legalize/hippy/build/asm/asm.yacc.cpp"
+#line 1822 "C:/Code/legalize/hippy/build/asm/asm.yacc.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2081,428 +2030,6 @@ yyreturn:
 
 
 /* Line 1684 of yacc.c  */
-#line 287 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 236 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
 
-
-// utils
-
-unsigned short get_tkval(void *vptk)
-{
-    return (unsigned short) ((token *) vptk)->data1;
-}
-
-type_t get_tktype(void *vptk)
-{
-    return ((token *) vptk)->type;
-}
-
-int do_arith(char op, int v1, int v2)
-{
-    switch (op)
-    {
-    case '+':
-        return v1 + v2;
-    case '-':
-        return v1 - v2;
-    case '*':
-        return v1 * v2;
-    case '/':
-        return v1 / v2;
-    }
-    return -1;
-}
-
-unsigned short calc_tk(token *tk)
-{
-    if (tk->type == INTEGER)
-    {
-        return get_tkval((void *) tk);
-    }
-    if (tk->type == IDENTIFIER)
-    {
-        sym_entry *pse = (sym_entry *) tk->data1;
-        if (pse->defined)
-        {
-            return pse->addr;
-        }
-        else
-        {
-            err_msg("error: fatal: undeclared identifier \"%s\".", pse->str);
-            return 0;
-        }
-    }
-    return (unsigned short) do_arith(tk->opr, calc_tk((token *) tk->data1), calc_tk((token *) tk->data2));
-}
-
-void store_eqn(void *eqn, unsigned short pc, mode_t mode)
-{
-    equations = (equation *) realloc(equations, sizeof(equation) * (num_eqns + 1));
-    equations[num_eqns].eqn = (token *) eqn;
-    equations[num_eqns].addr = pc;
-    equations[num_eqns].mode = mode;
-    num_eqns++;
-}
-
-void *make_eqn(char opr, void *vpl, void *vpr)
-{
-    token *pt;
-    token *vl = (token *) vpl;
-    token *vr = (token *) vpr;
-    if (vl->type == INTEGER && vr->type == INTEGER)
-    {
-        pt = (token *) make_number(do_arith(opr, (int) vl->data1, (int) vr->data1));
-    }
-    else
-    {
-        pt = (token *) malloc(sizeof(token));
-        pt->type = OPERATOR;
-        pt->data1 = (void *) vpl;
-        pt->data2 = (void *) vpr;
-        pt->opr = opr;
-    }
-    return pt;
-}
-
-void *make_number(unsigned short sval)
-{
-    token *pt = (token *) malloc(sizeof(token));
-    pt->type = INTEGER;
-    pt->data1 = (void *) sval;
-    return pt;
-}
-
-void *make_identifier(void *pvpse)
-{
-    token     *pt;
-    sym_entry *pse = (sym_entry *) pvpse;
-    if (!pse->defined)
-    {
-        pt = (token *) malloc(sizeof(token));
-        pt->type = IDENTIFIER;
-        pt->data1 = pvpse;
-    }
-    else
-    {
-        pt = (token *) make_number(pse->addr);
-    }
-    return pt;
-}
-
-void add_reference(unsigned char opcode, void *vppse, unsigned short addr)
-{
-    sym_entry *pse = (sym_entry *) vppse;
-    insert_ref(pse, addr, instCodes[opcode].icRel);
-}
-
-void add_label(void *vppse, unsigned short addr)
-{
-    sym_entry *pse = (sym_entry *) vppse;
-    if (insert_def(pse, addr) == -1)
-    {
-        err_msg("error: line %04d: identifier \"%s\" is already defined", my_linenum, pse->str);
-    }
-}
-
-// directives
-
-void do_fill(unsigned char val, unsigned short cnt)
-{
-    while (cnt--)
-        memory[pc++] = val;
-}
-
-void do_fcb()
-{
-    int i;
-    for (i = 0; i < num_byte_list; i++)
-    {
-        if (byte_list[i] > 0xff)
-            err_msg("error: line %04d: defined value %04X overflows FCB", my_linenum - 1, byte_list[i]);
-        memory[pc++] = (unsigned char) byte_list[i];
-    }
-    num_byte_list = 0;
-}
-
-void do_fdb()
-{
-    int i;
-    for (i = 0; i < num_byte_list; i++)
-    {
-        memory[pc++] = HI_BYTE(byte_list[i]);
-        memory[pc++] = LO_BYTE(byte_list[i]);
-    }
-    num_byte_list = 0;
-}
-
-void do_zmb(unsigned short cnt)
-{
-    while (cnt--)
-        memory[pc++] = 0;
-}
-
-void do_rmb(unsigned short size)
-{
-    do_org(pc + size);
-}
-
-void do_fcc(char *str)
-{
-    char *p = str + 1; // skip first "
-    while (*p != '"')
-    {
-        memory[pc] = (unsigned char) (*p);
-        pc++;
-        p++;
-    }
-}
-
-void do_org(int addr)
-{
-    if (addr > 0xffff)
-    {
-        err_msg("error: line %d: parameter for ORG directive is out of address space.", my_linenum - 1);
-        return;
-    }
-    segments.push_back(addr);
-    segment_length.push_back(0);
-    if (!segments.empty())
-    {
-        segment_length[segments.size() - 1] = pc - segments[segments.size() - 1];
-    }
-    pc = addr;
-}
-
-void do_equ(void *vppse, unsigned short addr)
-{
-    add_label(vppse, addr);
-}
-
-// instructions
-/*
-void do_idinst(unsigned char opcode, sym_entry *pse, char imm)
-{
-    // add_reference(opcode, pse, pc+1);
-    if (instCodes[opcode].icRel)
-        do_relative(opcode, 0x00);
-    else
-        do_extended(opcode, 0x0000);
-}
-*/
-
-void do_inher(unsigned char opcode)
-{
-    if (instCodes[opcode].icInher)
-        memory[pc++] = instCodes[opcode].icInher;
-    else
-        err_msg("error: line %04d: instruction \"%s\" does not support implied addressing\n", my_linenum - 1,
-                instList[opcode]);
-}
-
-int get_numbytes(unsigned char opcode)
-{
-    return (s_instDescTbl[instCodes[opcode].icImmed] & 0x0f);
-}
-
-void do_immediate(unsigned char opcode, unsigned short sval)
-{
-    if (instCodes[opcode].icImmed)
-    {
-        if (get_numbytes(opcode) == 3)
-        {
-            memory[pc++] = instCodes[opcode].icImmed;
-            memory[pc++] = HI_BYTE(sval);
-            memory[pc++] = LO_BYTE(sval);
-        }
-        else
-        {
-            memory[pc++] = instCodes[opcode].icImmed;
-            memory[pc++] = (unsigned char) sval;
-        }
-    }
-    else
-        err_msg("error: line %04d: instruction \"%s\" does not support immediate addressing\n", my_linenum - 1,
-                instList[opcode]);
-}
-
-void do_direct(unsigned char opcode, unsigned char cval)
-{
-    if (instCodes[opcode].icDirect)
-    {
-        memory[pc++] = instCodes[opcode].icDirect;
-        memory[pc++] = cval;
-    }
-    else
-        err_msg("error: line %04d: instruction \"%s\" does not support direct addressing\n", my_linenum - 1,
-                instList[opcode]);
-}
-
-void do_indexed(unsigned char opcode, unsigned char cval)
-{
-    if (instCodes[opcode].icIndex)
-    {
-        memory[pc++] = instCodes[opcode].icIndex;
-        memory[pc++] = cval;
-    }
-    else
-        err_msg("error: line %04d: instruction \"%s\" does not support indexed addressing\n", my_linenum - 1,
-                instList[opcode]);
-}
-
-void do_extended(unsigned char opcode, unsigned short sval)
-{
-    if (instCodes[opcode].icExtend)
-    {
-        memory[pc++] = instCodes[opcode].icExtend;
-        memory[pc++] = (unsigned char) ((sval & 0xff00) >> 8);
-        memory[pc++] = (unsigned char) (sval & 0xff);
-    }
-    else
-        err_msg("error: line %04d: instruction \"%s\" does not support extended addressing\n", my_linenum - 1,
-                instList[opcode]);
-}
-
-void do_relative(unsigned char opcode, unsigned char cval)
-{
-    if (instCodes[opcode].icRel)
-    {
-        memory[pc++] = instCodes[opcode].icRel;
-        memory[pc++] = cval;
-    }
-    else
-        err_msg("error: line %04d: instruction \"%s\" does not support relative addressing\n", my_linenum - 1,
-                instList[opcode]);
-}
-
-void resolve_refs()
-{
-    int i;
-    for (i = 0; i < num_eqns; i++)
-    {
-        unsigned short val = calc_tk(equations[i].eqn);
-        switch (equations[i].mode)
-        {
-        case RELATIVE:
-            memory[equations[i].addr] = (unsigned char) (val - equations[i].addr - 1);
-            break;
-        case EXTENDED:
-            memory[equations[i].addr] = HI_BYTE(val);
-            memory[equations[i].addr + 1] = LO_BYTE(val);
-            break;
-        case ONEBYTE:
-            memory[equations[i].addr] = (unsigned char) val;
-            break;
-        }
-    }
-}
-
-void generate_hex()
-{
-    int           i;
-    unsigned char cksum;
-    int           s_left, s_emit, addr;
-    char          buf[44];
-    resolve_refs();
-    for (i = 0; i < segments.size(); i++)
-    {
-        addr = segments[i];
-        s_left = segment_length[i];
-        while (s_left)
-        {
-            s_emit = (s_left > 0x10) ? 0x10 : s_left;
-            cksum = s_emit + 3;
-            cksum += HI_BYTE(addr) + LO_BYTE(addr);
-            s_left -= s_emit;
-            sprintf(buf, "S1%s%s%s", hex_conv_tbl[s_emit + 3], hex_conv_tbl[HI_BYTE(addr)],
-                    hex_conv_tbl[LO_BYTE(addr)]);
-            while (s_emit)
-            {
-                cksum += memory[addr];
-                strcat(buf, hex_conv_tbl[memory[addr]]);
-                addr++;
-                s_emit--;
-            }
-            strcat(buf, hex_conv_tbl[(unsigned char) (~cksum)]);
-            strcat(buf, "\n");
-            fprintf(fout, buf);
-        }
-    }
-    cksum = ~(3 + HI_BYTE(addr) + LO_BYTE(addr));
-    fprintf(fout, "S903%s%s%s\n", hex_conv_tbl[HI_BYTE(addr)], hex_conv_tbl[LO_BYTE(addr)], hex_conv_tbl[cksum]);
-}
-
-extern "C" int yywrap(void)
-{
-    return 1;
-}
-
-[[noreturn]] void usage(const char *program)
-{
-    fprintf(stderr, "Usage:\n"
-                    "%s [<input> [<output>]]\n", program);
-    exit(1);
-}
-
-int asm_main(int argc, char **argv)
-{
-    extern FILE *yyin;
-    char         buf[512], *p;
-    int          out_is_stdout = 0;
-    buf[0] = 0;
-
-    //printf("Hippy m6800 studio assembler\n"
-    //       "contact: perreal@hotmail.com\n"
-    //       "--------------------------------------\n");
-    init_sym_table();
-
-    do_org(0x0000);
-
-    if (argc > 3)
-    {
-        usage(argv[0]);
-    }
-    else if (argc >= 2)
-    {
-        strcpy(buf, argv[1]);
-        yyin = fopen(buf, "r");
-        if (!yyin)
-        {
-            err_msg("error: fatal: input file \"%s\" open error.", buf);
-            exit(1);
-        }
-        if (argc == 3)
-            strcpy(buf, argv[2]);
-        else
-        {
-            p = strstr(buf, ".");
-            if (p)
-                *p = 0;
-            strcat(buf, ".hex");
-        }
-        fout = fopen(buf, "w");
-        if (!fout)
-        {
-            err_msg("error: fatal: output file \"%s\" open error.", buf);
-            exit(1);
-        }
-    }
-    else
-    {
-        yyin = stdin;
-        fout = stdout;
-        out_is_stdout = 1;
-    }
-
-    yyparse();
-
-    segment_length[segments.size() - 1] = pc - segments[segments.size() - 1];
-    generate_hex();
-    printf("assembly complete with %d errors.\n", num_errors);
-
-    clear_sym_table();
-    if (!out_is_stdout)
-    {
-        fclose(yyin);
-        fclose(fout);
-    }
-}
 
