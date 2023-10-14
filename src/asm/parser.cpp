@@ -28,16 +28,23 @@ Fields parse(const std::string &text)
         return {};
     }
 
+    size_t pos{};
+    auto   nextWhiteSpace = [&] { return text.find_first_of(s_whitespace, pos); };
+    auto   nextNotWhiteSpace = [&] { return text.find_first_not_of(s_whitespace, pos); };
+    pos = nextNotWhiteSpace();
+    if (pos == std::string::npos)
+    {
+        return {};
+    }
+
     Fields fields;
-    if (text[0] == '*')
+    if (text[pos] == '*')
     {
         const size_t start = text.find_first_not_of("* \t");
         fields.comment = text.substr(start);
         return fields;
     }
 
-    size_t pos{};
-    auto   nextWhiteSpace = [&] { return text.find_first_of(s_whitespace, pos); };
     if (!std::isspace(text[0]))
     {
         pos = nextWhiteSpace();
@@ -49,7 +56,6 @@ Fields parse(const std::string &text)
         return fields;
     }
 
-    auto nextNotWhiteSpace = [&] { return text.find_first_not_of(s_whitespace, pos); };
     pos = nextNotWhiteSpace();
     if (pos == std::string::npos)
     {

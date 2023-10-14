@@ -71,3 +71,10 @@ TEST_F(TestParser, opcodeOperandComment)
 
     EXPECT_EQ(m_expected, assembler::parse(" ORG $8000     set origin"));
 }
+
+TEST_F(TestParser, indentedComment)
+{
+    m_expected.comment = "indented comment";
+
+    EXPECT_EQ(m_expected, assembler::parse("  * indented comment"));
+}
