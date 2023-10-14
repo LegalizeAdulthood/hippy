@@ -463,9 +463,16 @@ bool CDeviceFile::EvalEqn(Word addr, const wxString &eqn)
 
 int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray &devArr, AddrResEntry *AddrResTbl)
 {
+    // initialize address resolution table to no devices for all addresses
+    for (int w = 0x0000; w < 0x10000; ++w)
+    {
+        AddrResTbl[w].devIndex = NO_DEVICE;
+    }
+
     m_file = fopen(CT2A(fileName), "r");
     if (!m_file)
     {
+        wxMessageBox(_T("Couldn't load devices file ") + fileName, wxT("Error"), wxICON_ERROR);
         return 0;
     }
 
@@ -524,33 +531,25 @@ int CDeviceFile::ParseFile(CWnd *parent, const wxString &fileName, CDeviceArray 
         for (int w = 0x0000; w < 0x10000; w++)
         {
             // for each location look for selected chip
-            bool found = false;
-            int  i;
-            for (i = 0; i < size; i++)
+            for (int i = 0; i < size; i++)
             {
-                if (EvalEqn(w, csEqn[i]))
+                if (!EvalEqn(w, csEqn[i]))
                 {
-                    found = true;
-                    break;
+                    continue;
                 }
-            }
 
-            // for each selected chip decode this address
-            // according to its address equations
-            if (found)
-            {
+                // for each selected chip decode this address
+                // according to its address equations
                 Word dec = 0;
                 AddrResTbl[w].devIndex = i;
                 int k = 0;
                 for (const wxString &eqn : addrEqns[i])
                 {
                     dec |= EvalEqn(w, eqn) << k;
+                    ++k;
                 }
                 AddrResTbl[w].decodedAddr = dec;
-            }
-            else
-            {
-                AddrResTbl[w].devIndex = 255; // 255 means no device
+                break;
             }
         }
     }
