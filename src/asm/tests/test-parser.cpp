@@ -52,14 +52,14 @@ TEST_F(TestParser, spaceOpcode)
 {
     m_expected.opcode = "END";
 
-    EXPECT_EQ(m_expected, assembler::parse(" END"));
+    EXPECT_EQ(m_expected, assembler::parse(" end"));
 }
 
 TEST_F(TestParser, tabOpcode)
 {
     m_expected.opcode = "END";
 
-    EXPECT_EQ(m_expected, assembler::parse("\tEND"));
+    EXPECT_EQ(m_expected, assembler::parse("\tend"));
 }
 
 TEST_F(TestParser, opcodeOperand)
@@ -67,7 +67,7 @@ TEST_F(TestParser, opcodeOperand)
     m_expected.opcode = "ORG";
     m_expected.operands = "$8000";
 
-    EXPECT_EQ(m_expected, assembler::parse(" ORG $8000"));
+    EXPECT_EQ(m_expected, assembler::parse(" org $8000"));
 }
 
 TEST_F(TestParser, opcodeOperandComment)
@@ -76,7 +76,7 @@ TEST_F(TestParser, opcodeOperandComment)
     m_expected.operands = "$8000";
     m_expected.comment = "set origin";
 
-    EXPECT_EQ(m_expected, assembler::parse(" ORG $8000     set origin"));
+    EXPECT_EQ(m_expected, assembler::parse(" org $8000     set origin"));
 }
 
 TEST_F(TestParser, opcodeOperandCommentStar)
@@ -85,7 +85,7 @@ TEST_F(TestParser, opcodeOperandCommentStar)
     m_expected.operands = "$8000";
     m_expected.comment = "set origin";
 
-    EXPECT_EQ(m_expected, assembler::parse(" ORG $8000     * set origin"));
+    EXPECT_EQ(m_expected, assembler::parse(" org $8000     * set origin"));
 }
 
 TEST_F(TestParser, opcodeOperandCommentSemiColon)
@@ -94,7 +94,7 @@ TEST_F(TestParser, opcodeOperandCommentSemiColon)
     m_expected.operands = "$8000";
     m_expected.comment = "set origin";
 
-    EXPECT_EQ(m_expected, assembler::parse(" ORG $8000     ; set origin"));
+    EXPECT_EQ(m_expected, assembler::parse(" org $8000     ; set origin"));
 }
 
 TEST_F(TestParser, indentedCommentStar)

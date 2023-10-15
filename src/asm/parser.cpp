@@ -20,11 +20,11 @@ static size_t extractField(size_t pos, const std::string &text, std::string &fie
     const size_t space = text.find_first_of(s_whitespace, pos);
     if (space != std::string::npos)
     {
-        field = text.substr(pos, space - pos);
+        field = toUpper(text.substr(pos, space - pos));
     }
     else
     {
-        field = text.substr(pos);
+        field = toUpper(text.substr(pos));
     }
     return space;
 }
