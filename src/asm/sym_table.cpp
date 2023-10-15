@@ -19,7 +19,7 @@
 
 #include "sym_table.h"
 
-static sym_entry sym_table[SYMTBL_LENGTH];
+static SymbolEntry sym_table[SYMTBL_LENGTH];
 
 unsigned char hash_str(char *str)
 {
@@ -34,13 +34,13 @@ unsigned char hash_str(char *str)
 
 void init_sym_table()
 {
-    memset(sym_table, 0, sizeof(sym_entry) * SYMTBL_LENGTH);
+    memset(sym_table, 0, sizeof(SymbolEntry) * SYMTBL_LENGTH);
 }
 
 void clear_sym_table()
 {
-    int        i;
-    sym_entry *pse, *pse_tmp;
+    int          i;
+    SymbolEntry *pse, *pse_tmp;
     for (i = 0; i < SYMTBL_LENGTH; i++)
     {
         pse = sym_table[i].next;
@@ -59,10 +59,10 @@ void clear_sym_table()
     }
 }
 
-sym_entry *insert_id(char *str)
+SymbolEntry *insert_id(char *str)
 {
-    int        hash_val = hash_str(str);
-    sym_entry *pse = &sym_table[hash_val];
+    int          hash_val = hash_str(str);
+    SymbolEntry *pse = &sym_table[hash_val];
     while (pse->next)
     {
         if (pse->next->hash_val == hash_val && !strcmp(str, pse->next->str))
@@ -72,16 +72,16 @@ sym_entry *insert_id(char *str)
         pse = pse->next;
     }
     // we need to insert this string
-    pse->next = (sym_entry *) malloc(sizeof(sym_entry));
+    pse->next = (SymbolEntry *) malloc(sizeof(SymbolEntry));
     pse = pse->next;
-    memset(pse, 0, sizeof(sym_entry));
+    memset(pse, 0, sizeof(SymbolEntry));
     pse->hash_val = hash_val;
     pse->str = (char *) malloc(strlen(str) + 1);
     memcpy(pse->str, str, strlen(str) + 1);
     return pse;
 }
 
-int insert_ref(sym_entry *pse, unsigned short mem_adr, char relative)
+int insert_ref(SymbolEntry *pse, unsigned short mem_adr, char relative)
 {
     pse->num_refs++;
     pse->refs = (unsigned short *) realloc(pse->refs, sizeof(unsigned short) * pse->num_refs);
@@ -91,7 +91,7 @@ int insert_ref(sym_entry *pse, unsigned short mem_adr, char relative)
     return 0;
 }
 
-int insert_def(sym_entry *pse, unsigned short mem_adr)
+int insert_def(SymbolEntry *pse, unsigned short mem_adr)
 {
     if (pse->defined)
         return -1; // identifier re-declared
@@ -100,7 +100,7 @@ int insert_def(sym_entry *pse, unsigned short mem_adr)
     return 0;
 }
 
-sym_entry *get_first(int ind)
+SymbolEntry *get_first(int ind)
 {
     return sym_table[ind].next;
 }

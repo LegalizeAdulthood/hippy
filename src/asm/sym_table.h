@@ -7,36 +7,36 @@
 
 #define SYMTBL_LENGTH 23
 
-enum type_t
+enum Type
 {
     OPERATOR,
     IDENTIFIER,
     INTEGER
 };
 
-enum mode_t
+enum Mode
 {
     RELATIVE,
     EXTENDED,
     ONEBYTE
 };
 
-struct token
+struct Token
 {
-    type_t type;
-    int    opr;
-    void  *data1;
-    void  *data2;
+    Type  type;
+    int   opr;
+    void *data1;
+    void *data2;
 };
 
-struct equation
+struct Equate
 {
     unsigned short addr;
-    token         *eqn;
-    mode_t         mode;
+    Token         *eqn;
+    Mode           mode;
 };
 
-struct sym_entry
+struct SymbolEntry
 {
     char           *str;      // actual string of the identifier
     char            hash_val; // hash val for this str
@@ -45,14 +45,14 @@ struct sym_entry
     int             num_refs; // number of elements in the refs array
     unsigned short  addr;     // value of the identifier (generally an address)
     char            defined;  // undefined refrence ?
-    sym_entry      *next;     // next item
+    SymbolEntry    *next;     // next item
 };
 
-void       init_sym_table();
-void       clear_sym_table();
-sym_entry *insert_id(char *str);
-int        insert_ref(sym_entry *pse, unsigned short mem_adr, char relative);
-int        insert_def(sym_entry *pse, unsigned short mem_adr);
-sym_entry *get_first(int ind);
+void         init_sym_table();
+void         clear_sym_table();
+SymbolEntry *insert_id(char *str);
+int          insert_ref(SymbolEntry *pse, unsigned short mem_adr, char relative);
+int          insert_def(SymbolEntry *pse, unsigned short mem_adr);
+SymbolEntry *get_first(int ind);
 
 #endif

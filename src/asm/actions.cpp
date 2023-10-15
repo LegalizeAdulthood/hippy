@@ -19,21 +19,23 @@
 
 #include "actions.h"
 
-FILE                       *fout = NULL;
-int                         pc = 0; // where to write next
+#include <cstring>
+
+FILE                       *fout{};
+int                         pc{}; // where to write next
 std::vector<unsigned short> segments;
 std::vector<unsigned short> segment_length;
-unsigned short              byte_list[40];
-int                         num_byte_list = 0;
+unsigned short              byte_list[40]{};
+int                         num_byte_list{};
 
-equation     *equations;
-int           num_eqns = 0;
+Equate       *equations{};
+int           num_eqns{};
 unsigned char memory[0x10000]; // memory image
 
-void           store_eqn(void *eqn, unsigned short pc, mode_t mode);
+void           store_eqn(void *eqn, unsigned short pc, Mode mode);
 int            get_numbytes(unsigned char opcode);
 unsigned short get_tkval(void *vptk);
-type_t         get_tktype(void *vptk);
+Type           get_tktype(void *vptk);
 void          *make_number(unsigned short sval);
 void          *make_identifier(void *pvpse);
 void          *make_eqn(char opr, void *vpl, void *vpr);
@@ -47,7 +49,7 @@ void           do_zmb(unsigned short cnt);
 void           do_rmb(unsigned short size);
 void           do_org(int addr);
 void           do_equ(void *vppse, unsigned short addr);
-void           do_idinst(unsigned char opcode, sym_entry *pse, char imm);
+void           do_idinst(unsigned char opcode, SymbolEntry *pse, char imm);
 void           do_inher(unsigned char opcode);
 void           do_immediate(unsigned char opcode, unsigned short sval);
 void           do_direct(unsigned char opcode, unsigned char cval);
@@ -60,12 +62,12 @@ void           generate_hex();
 
 unsigned short get_tkval(void *vptk)
 {
-    return (unsigned short) ((token *) vptk)->data1;
+    return (unsigned short) ((Token *) vptk)->data1;
 }
 
-type_t get_tktype(void *vptk)
+Type get_tktype(void *vptk)
 {
-    return ((token *) vptk)->type;
+    return ((Token *) vptk)->type;
 }
 
 int do_arith(char op, int v1, int v2)
@@ -84,7 +86,7 @@ int do_arith(char op, int v1, int v2)
     return -1;
 }
 
-unsigned short calc_tk(token *tk)
+unsigned short calc_tk(Token *tk)
 {
     if (tk->type == INTEGER)
     {
@@ -92,7 +94,7 @@ unsigned short calc_tk(token *tk)
     }
     if (tk->type == IDENTIFIER)
     {
-        sym_entry *pse = (sym_entry *) tk->data1;
+        SymbolEntry *pse = (SymbolEntry *) tk->data1;
         if (pse->defined)
         {
             return pse->addr;
@@ -103,13 +105,13 @@ unsigned short calc_tk(token *tk)
             return 0;
         }
     }
-    return (unsigned short) do_arith(tk->opr, calc_tk((token *) tk->data1), calc_tk((token *) tk->data2));
+    return (unsigned short) do_arith(tk->opr, calc_tk((Token *) tk->data1), calc_tk((Token *) tk->data2));
 }
 
-void store_eqn(void *eqn, unsigned short pc, mode_t mode)
+void store_eqn(void *eqn, unsigned short pc, Mode mode)
 {
-    equations = (equation *) realloc(equations, sizeof(equation) * (num_eqns + 1));
-    equations[num_eqns].eqn = (token *) eqn;
+    equations = (Equate *) realloc(equations, sizeof(Equate) * (num_eqns + 1));
+    equations[num_eqns].eqn = (Token *) eqn;
     equations[num_eqns].addr = pc;
     equations[num_eqns].mode = mode;
     num_eqns++;
@@ -117,16 +119,16 @@ void store_eqn(void *eqn, unsigned short pc, mode_t mode)
 
 void *make_eqn(char opr, void *vpl, void *vpr)
 {
-    token *pt;
-    token *vl = (token *) vpl;
-    token *vr = (token *) vpr;
+    Token *pt;
+    Token *vl = (Token *) vpl;
+    Token *vr = (Token *) vpr;
     if (vl->type == INTEGER && vr->type == INTEGER)
     {
-        pt = (token *) make_number(do_arith(opr, (int) vl->data1, (int) vr->data1));
+        pt = (Token *) make_number(do_arith(opr, reinterpret_cast<int>(vl->data1), reinterpret_cast<int>(vr->data1)));
     }
     else
     {
-        pt = (token *) malloc(sizeof(token));
+        pt = (Token *) malloc(sizeof(Token));
         pt->type = OPERATOR;
         pt->data1 = (void *) vpl;
         pt->data2 = (void *) vpr;
@@ -137,7 +139,7 @@ void *make_eqn(char opr, void *vpl, void *vpr)
 
 void *make_number(unsigned short sval)
 {
-    token *pt = (token *) malloc(sizeof(token));
+    Token *pt = (Token *) malloc(sizeof(Token));
     pt->type = INTEGER;
     pt->data1 = (void *) sval;
     return pt;
@@ -145,30 +147,30 @@ void *make_number(unsigned short sval)
 
 void *make_identifier(void *pvpse)
 {
-    token     *pt;
-    sym_entry *pse = (sym_entry *) pvpse;
+    Token       *pt;
+    SymbolEntry *pse = (SymbolEntry *) pvpse;
     if (!pse->defined)
     {
-        pt = (token *) malloc(sizeof(token));
+        pt = (Token *) malloc(sizeof(Token));
         pt->type = IDENTIFIER;
         pt->data1 = pvpse;
     }
     else
     {
-        pt = (token *) make_number(pse->addr);
+        pt = (Token *) make_number(pse->addr);
     }
     return pt;
 }
 
 void add_reference(unsigned char opcode, void *vppse, unsigned short addr)
 {
-    sym_entry *pse = (sym_entry *) vppse;
+    SymbolEntry *pse = (SymbolEntry *) vppse;
     insert_ref(pse, addr, instCodes[opcode].icRel);
 }
 
 void add_label(void *vppse, unsigned short addr)
 {
-    sym_entry *pse = (sym_entry *) vppse;
+    SymbolEntry *pse = (SymbolEntry *) vppse;
     if (insert_def(pse, addr) == -1)
     {
         err_msg("error: line %04d: identifier \"%s\" is already defined", my_linenum, pse->str);
@@ -251,7 +253,7 @@ void do_equ(void *vppse, unsigned short addr)
 
 // instructions
 /*
-void do_idinst(unsigned char opcode, sym_entry *pse, char imm)
+void do_idinst(unsigned char opcode, SymbolEntry *pse, char imm)
 {
     // add_reference(opcode, pse, pc+1);
     if (instCodes[opcode].icRel)

@@ -48,10 +48,10 @@ asm_stmt:
             | page_stmt
             | opt_stmt
             | label_def NUMBER '\n'     { err_msg("error: line %04d: instruction or directive expected, found \"%d\"", my_linenum-1,$2);}
-            | ID ':' ID '\n'            { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)$3)->str);}
-            | ID ID '\n'                { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)$2)->str);}
-            | ID ID NUMBER '\n'         { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)$2)->str);}
-            | ID ':' ID NUMBER '\n'     { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)$3)->str);}
+            | ID ':' ID '\n'            { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((SymbolEntry*)$3)->str);}
+            | ID ID '\n'                { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((SymbolEntry*)$2)->str);}
+            | ID ID NUMBER '\n'         { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((SymbolEntry*)$2)->str);}
+            | ID ':' ID NUMBER '\n'     { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((SymbolEntry*)$3)->str);}
             ;
 
 pure_asm_stmt:
@@ -110,14 +110,14 @@ pure_asm_stmt:
 dir_stmt:
             ORG NUMBER '\n'                 { do_org($2); }
             | fcb byte_list                 { /*do_fcb();*/ }
-            | fcb TEXT '\n'                 { do_fcc(((sym_entry *) $2)->str); }
+            | fcb TEXT '\n'                 { do_fcc(((SymbolEntry *) $2)->str); }
             | fdb word_list                 { /*do_fdb();*/ }
             //| FDB ID '\n'                 { add_reference(0, $2, pc); } 
             | rmb NUMBER '\n'               { do_rmb($2); }
             | FILL NUMBER ',' NUMBER '\n'   { do_fill($2, $4); }
             | BSZ NUMBER '\n'               { do_zmb($2); /*bsz=zmb*/ }
             | ZMB NUMBER '\n'               { do_zmb($2); }
-            | FCC TEXT '\n'                 { do_fcc(((sym_entry*) $2)->str); }
+            | FCC TEXT '\n'                 { do_fcc(((SymbolEntry*) $2)->str); }
             | END '\n'
             ;
 

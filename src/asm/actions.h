@@ -36,7 +36,7 @@ int yyparse();
 extern int  num_errors;
 extern int  my_linenum;
 extern void err_msg(const char *fmt, ...);
-extern void yyerror(char *);
+extern void yyerror(const char *);
 
 extern FILE                       *fout;
 extern int                         pc; // where to write next
@@ -45,14 +45,14 @@ extern std::vector<unsigned short> segment_length;
 extern unsigned short              byte_list[40];
 extern int                         num_byte_list;
 
-extern equation     *equations;
+extern Equate       *equations;
 extern int           num_eqns;
 extern unsigned char memory[0x10000]; // memory image
 
-void           store_eqn(void *eqn, unsigned short pc, mode_t mode);
+void           store_eqn(void *eqn, unsigned short pc, Mode mode);
 int            get_numbytes(unsigned char opcode);
 unsigned short get_tkval(void *vptk);
-type_t         get_tktype(void *vptk);
+Type           get_tktype(void *vptk);
 void          *make_number(unsigned short sval);
 void          *make_identifier(void *pvpse);
 void          *make_eqn(char opr, void *vpl, void *vpr);
@@ -66,7 +66,7 @@ void           do_zmb(unsigned short cnt);
 void           do_rmb(unsigned short size);
 void           do_org(int addr);
 void           do_equ(void *vppse, unsigned short addr);
-void           do_idinst(unsigned char opcode, sym_entry *pse, char imm);
+void           do_idinst(unsigned char opcode, SymbolEntry *pse, char imm);
 void           do_inher(unsigned char opcode);
 void           do_immediate(unsigned char opcode, unsigned short sval);
 void           do_direct(unsigned char opcode, unsigned char cval);
