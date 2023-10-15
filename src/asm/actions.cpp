@@ -478,4 +478,6 @@ int asm_main(int argc, char **argv)
         fclose(yyin);
         fclose(fout);
     }
+
+    return 0;
 }
