@@ -1477,28 +1477,28 @@ yyreduce:
 
 /* Line 1464 of yacc.c  */
 #line 51 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
-    { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)(yyvsp[(3) - (4)].pse))->str);;}
+    { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((SymbolEntry*)(yyvsp[(3) - (4)].pse))->str);;}
     break;
 
   case 14:
 
 /* Line 1464 of yacc.c  */
 #line 52 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
-    { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)(yyvsp[(2) - (3)].pse))->str);;}
+    { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((SymbolEntry*)(yyvsp[(2) - (3)].pse))->str);;}
     break;
 
   case 15:
 
 /* Line 1464 of yacc.c  */
 #line 53 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
-    { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)(yyvsp[(2) - (4)].pse))->str);;}
+    { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((SymbolEntry*)(yyvsp[(2) - (4)].pse))->str);;}
     break;
 
   case 16:
 
 /* Line 1464 of yacc.c  */
 #line 54 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
-    { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((sym_entry*)(yyvsp[(3) - (5)].pse))->str);;}
+    { err_msg("error: line %04d: instruction or directive expected, found \"%s\"", my_linenum-1,((SymbolEntry*)(yyvsp[(3) - (5)].pse))->str);;}
     break;
 
   case 17:
@@ -1593,7 +1593,7 @@ yyreduce:
 
 /* Line 1464 of yacc.c  */
 #line 113 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
-    { do_fcc(((sym_entry *) (yyvsp[(2) - (3)].pse))->str); ;}
+    { do_fcc(((SymbolEntry *) (yyvsp[(2) - (3)].pse))->str); ;}
     break;
 
   case 24:
@@ -1635,7 +1635,7 @@ yyreduce:
 
 /* Line 1464 of yacc.c  */
 #line 120 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
-    { do_fcc(((sym_entry*) (yyvsp[(2) - (3)].pse))->str); ;}
+    { do_fcc(((SymbolEntry*) (yyvsp[(2) - (3)].pse))->str); ;}
     break;
 
   case 31:

@@ -71,7 +71,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1685 of yacc.c  */
-#line 76 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
+#line 25 "C:/Code/legalize/hippy/hippy/src/asm/asm.y"
  int ival; void* pse; 
 
 
