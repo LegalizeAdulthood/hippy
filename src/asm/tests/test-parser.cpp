@@ -64,10 +64,10 @@ TEST_F(TestParser, tabOpcode)
 
 TEST_F(TestParser, opcodeOperand)
 {
-    m_expected.opcode = "ORG";
-    m_expected.operands = "$8000";
+    m_expected.opcode = "STAA";
+    m_expected.operands = "0,X";
 
-    EXPECT_EQ(m_expected, assembler::parse(" org $8000"));
+    EXPECT_EQ(m_expected, assembler::parse(" staa 0,x"));
 }
 
 TEST_F(TestParser, opcodeOperandComment)
