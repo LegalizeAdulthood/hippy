@@ -20,6 +20,7 @@
 #include "actions.h"
 
 #include <cstring>
+#include <string>
 
 FILE                       *fout{};
 int                         pc{}; // where to write next
@@ -99,11 +100,8 @@ unsigned short calc_tk(Token *tk)
         {
             return pse->addr;
         }
-        else
-        {
-            err_msg("error: fatal: undeclared identifier \"%s\".", pse->str);
-            return 0;
-        }
+        err_msg("error: fatal: undeclared identifier \"%s\".", pse->str);
+        return 0;
     }
     return (unsigned short) do_arith(tk->opr, calc_tk((Token *) tk->data1), calc_tk((Token *) tk->data2));
 }
@@ -436,28 +434,32 @@ int asm_main(int argc, char **argv)
     {
         usage(argv[0]);
     }
-    else if (argc >= 2)
+    if (argc >= 2)
     {
-        strcpy(buf, argv[1]);
-        yyin = fopen(buf, "r");
+        std::string buf{argv[1]};
+        yyin = fopen(buf.c_str(), "r");
         if (!yyin)
         {
-            err_msg("error: fatal: input file \"%s\" open error.", buf);
+            err_msg("error: fatal: input file \"%s\" open error.", buf.c_str());
             exit(1);
         }
         if (argc == 3)
-            strcpy(buf, argv[2]);
+        {
+            buf = argv[2];
+        }
         else
         {
-            p = strstr(buf, ".");
-            if (p)
-                *p = 0;
-            strcat(buf, ".hex");
+            size_t dot = buf.find_last_of('.');
+            if (dot != std::string::npos)
+            {
+                buf.erase(dot);
+            }
+            buf += ".hex";
         }
-        fout = fopen(buf, "w");
+        fout = fopen(buf.c_str(), "w");
         if (!fout)
         {
-            err_msg("error: fatal: output file \"%s\" open error.", buf);
+            err_msg("error: fatal: output file \"%s\" open error.", buf.c_str());
             exit(1);
         }
     }
