@@ -29,6 +29,7 @@ add_library(asm-lib STATIC
     sym_table.h
     sym_table.cpp
     codes.h
+    codes.cpp
     lexer.h
     lexer.cpp
     parser.h
