@@ -1,11 +1,19 @@
 #include "parser.h"
 
+#include <algorithm>
 #include <cctype>
 
 namespace assembler
 {
 
 static const char *const s_whitespace{" \t"};
+
+static std::string toUpper(std::string text)
+{
+    std::transform(text.begin(), text.end(), text.begin(),
+                   [](char c) { return static_cast<char>(std::toupper(static_cast<unsigned char>(c))); });
+    return text;
+}
 
 static size_t extractField(size_t pos, const std::string &text, std::string &field)
 {
@@ -48,7 +56,7 @@ Fields parse(const std::string &text)
     if (!std::isspace(text[0]))
     {
         pos = nextWhiteSpace();
-        fields.label = text.substr(0, pos);
+        fields.label = toUpper(text.substr(0, pos));
     }
     if (pos == std::string::npos)
     {

@@ -15,21 +15,21 @@ TEST_F(TestParser, emptyLine)
 
 TEST_F(TestParser, labelOnly)
 {
-    m_expected.label = "foo";
+    m_expected.label = "FOO";
 
     EXPECT_EQ(m_expected, assembler::parse("foo"));
 }
 
 TEST_F(TestParser, labelSpace)
 {
-    m_expected.label = "foo";
+    m_expected.label = "FOO";
 
     EXPECT_EQ(m_expected, assembler::parse("foo "));
 }
 
 TEST_F(TestParser, labelTab)
 {
-    m_expected.label = "foo";
+    m_expected.label = "FOO";
 
     EXPECT_EQ(m_expected, assembler::parse("foo\t"));
 }
