@@ -7,7 +7,7 @@ namespace assembler
 
 static const char *const s_whitespace{" \t"};
 
-size_t extractField(size_t pos, const std::string &text, std::string &field)
+static size_t extractField(size_t pos, const std::string &text, std::string &field)
 {
     const size_t space = text.find_first_of(s_whitespace, pos);
     if (space != std::string::npos)
