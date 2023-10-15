@@ -36,6 +36,7 @@ add_library(asm-lib STATIC
     phase2.h
     y.tab.hpp
 )
+target_compile_definitions(asm-lib PUBLIC $<$<CONFIG:DEBUG>:YYDEBUG>)
 target_include_directories(asm-lib PUBLIC . ${grammarInclude})
 set_target_properties(asm-lib PROPERTIES FOLDER "Libraries")
 
@@ -43,7 +44,6 @@ add_executable(asm
     main.cpp
 )
 set_target_properties(asm PROPERTIES FOLDER "Tools")
-target_compile_definitions(asm PUBLIC $<$<CONFIG:DEBUG>:YYDEBUG>)
 target_include_directories(asm PUBLIC .)
 target_link_libraries(asm PUBLIC asm-lib)
 
