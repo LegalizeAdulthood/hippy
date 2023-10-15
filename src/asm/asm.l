@@ -24,6 +24,11 @@
 #include "sym_table.h"
 #include "y.tab.hpp"
 
+static int isatty(int fileno)
+{
+    return (yyin == stdin) ? 1 : 0;
+}
+
 %}
 
 identifier      ("_"|[a-z])([0-9]|[a-z]|"_")*

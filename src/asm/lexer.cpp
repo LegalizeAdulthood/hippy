@@ -122,11 +122,6 @@ const unsigned int hashInd[NUM_INST] =
 int my_linenum = 1;
 int num_errors = 0;
 
-int isatty(int fileno)
-{
-    return (yyin == stdin) ? 1 : 0;
-}
-
 void err_msg(const char *fmt, ...)
 {
     char buf[512];

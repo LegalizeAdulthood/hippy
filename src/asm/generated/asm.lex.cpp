@@ -535,7 +535,12 @@ char *yytext;
 #include "sym_table.h"
 #include "y.tab.hpp"
 
-#line 539 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
+static int isatty(int fileno)
+{
+    return (yyin == stdin) ? 1 : 0;
+}
+
+#line 544 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
 
 #define INITIAL 0
 
@@ -722,9 +727,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 48 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 53 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 
-#line 728 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
+#line 733 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -809,102 +814,102 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 49 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 54 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { return do_id(yytext); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 50 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 55 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = atoi(yytext); return NUMBER; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 51 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 56 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = str2int(yytext+2, 16); return NUMBER; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 52 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 57 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = str2int(yytext+1, 16); return NUMBER; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 53 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 58 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yytext[strlen(yytext)-1] = 0; yylval.ival = str2int(yytext, 16); return NUMBER; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 54 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 59 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = str2int(yytext, 2); return NUMBER; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 55 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 60 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = str2int(yytext, 8); return NUMBER; }
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 56 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 61 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { my_linenum++; return '\n'; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 57 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 62 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.pse = insert_id(yytext); return TEXT; }
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 58 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 63 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { my_linenum++; return '\n';}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 59 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 64 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { return yytext[0]; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 60 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 65 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { return yytext[0]; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 61 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 66 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 62 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 67 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 ;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 63 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 68 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = 0; yyerror("Bad hexadecimal."); return NUMBER; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 64 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 69 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = 0; yyerror("Bad decimal."); return NUMBER; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 65 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 70 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = 0; yyerror("Bad octal"); return NUMBER; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 66 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 71 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 { yylval.ival = 0; yyerror("Bad binary"); return NUMBER; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 67 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 72 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 ECHO;
 	YY_BREAK
-#line 908 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
+#line 913 "C:/Code/legalize/hippy/build/asm/asm.lex.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1902,7 +1907,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 67 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
+#line 72 "C:/Code/legalize/hippy/hippy/src/asm/asm.l"
 
 
 

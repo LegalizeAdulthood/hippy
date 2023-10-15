@@ -157,6 +157,5 @@ extern int num_errors;
 int  do_id(const char *text);
 void yyerror(const char *msg);
 int  str2int(const char *str, int base);
-int  isatty(int fileno);
 
 #endif
