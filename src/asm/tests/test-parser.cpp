@@ -34,11 +34,18 @@ TEST_F(TestParser, labelTab)
     EXPECT_EQ(m_expected, assembler::parse("foo\t"));
 }
 
-TEST_F(TestParser, lineComment)
+TEST_F(TestParser, lineCommentStar)
 {
     m_expected.comment = "This is a comment";
 
     EXPECT_EQ(m_expected, assembler::parse("* This is a comment"));
+}
+
+TEST_F(TestParser, lineCommentSemiColon)
+{
+    m_expected.comment = "This is a comment";
+
+    EXPECT_EQ(m_expected, assembler::parse("; This is a comment"));
 }
 
 TEST_F(TestParser, spaceOpcode)
@@ -72,9 +79,34 @@ TEST_F(TestParser, opcodeOperandComment)
     EXPECT_EQ(m_expected, assembler::parse(" ORG $8000     set origin"));
 }
 
-TEST_F(TestParser, indentedComment)
+TEST_F(TestParser, opcodeOperandCommentStar)
+{
+    m_expected.opcode = "ORG";
+    m_expected.operands = "$8000";
+    m_expected.comment = "set origin";
+
+    EXPECT_EQ(m_expected, assembler::parse(" ORG $8000     * set origin"));
+}
+
+TEST_F(TestParser, opcodeOperandCommentSemiColon)
+{
+    m_expected.opcode = "ORG";
+    m_expected.operands = "$8000";
+    m_expected.comment = "set origin";
+
+    EXPECT_EQ(m_expected, assembler::parse(" ORG $8000     ; set origin"));
+}
+
+TEST_F(TestParser, indentedCommentStar)
 {
     m_expected.comment = "indented comment";
 
     EXPECT_EQ(m_expected, assembler::parse("  * indented comment"));
+}
+
+TEST_F(TestParser, indentedCommentSemiColon)
+{
+    m_expected.comment = "indented comment";
+
+    EXPECT_EQ(m_expected, assembler::parse("  ; indented comment"));
 }

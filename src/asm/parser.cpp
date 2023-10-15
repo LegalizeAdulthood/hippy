@@ -38,9 +38,9 @@ Fields parse(const std::string &text)
     }
 
     Fields fields;
-    if (text[pos] == '*')
+    if (text[pos] == '*' || text[pos] == ';')
     {
-        const size_t start = text.find_first_not_of("* \t");
+        const size_t start = text.find_first_not_of(";* \t");
         fields.comment = text.substr(start);
         return fields;
     }
@@ -74,13 +74,15 @@ Fields parse(const std::string &text)
     {
         return fields;
     }
-    pos = extractField(pos, text, fields.operands);
 
+    pos = extractField(pos, text, fields.operands);
     pos = nextNotWhiteSpace();
     if (pos == std::string::npos)
     {
         return fields;
     }
+
+    pos = text.find_first_not_of(s_whitespace, text.find_first_not_of("*;", pos));
     fields.comment = text.substr(pos);
 
     return fields;
