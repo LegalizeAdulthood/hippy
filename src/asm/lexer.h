@@ -154,9 +154,9 @@ extern const unsigned int hashInd[NUM_INST];
 
 extern int my_linenum;
 extern int num_errors;
-int  do_id(char *);
-void yyerror(char *msg);
-int  str2int(char *str, int base);
+int  do_id(const char *text);
+void yyerror(const char *msg);
+int  str2int(const char *str, int base);
 int  isatty(int fileno);
 
 #endif

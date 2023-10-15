@@ -21,6 +21,9 @@
 
 #include "sym_table.h"
 #include "y.tab.hpp"
+
+#include <cassert>
+#include <cctype>
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -77,7 +80,7 @@ const char *const instList[NUM_INST + 1] =
     "CBA",  "BHI",  "BGT",  "NEGA",
     "NEGB", "SBCA", "SBCB", "SBA",
     "CMPA", "BITA", "CMPB", "BITB",
-    "BLE",  "TSTA", "TSTB", 0
+    "BLE",  "TSTA", "TSTB", nullptr
 };
 
 /*
@@ -118,11 +121,6 @@ const unsigned int hashInd[NUM_INST] =
 
 int my_linenum = 1;
 int num_errors = 0;
-int  do_id(char *);
-void yyerror(char *msg);
-int  str2int(char *str, int base);
-int  isatty(int fileno);
-
 
 int isatty(int fileno)
 {
@@ -135,16 +133,15 @@ void err_msg(const char *fmt, ...)
     num_errors++;
     va_list ap;
     va_start(ap, fmt);
-    fflush(stdout); /* in case stdout and stderr are the same */
-    vsprintf(buf, fmt, ap);
-    fputs(buf, stderr);
-    fputs("\n", stderr);
-    fflush(NULL); /* flushes all stdio output streams */
+    (void) fflush(stdout); /* in case stdout and stderr are the same */
+    (void) vsprintf(buf, fmt, ap);
+    (void) fputs(buf, stderr);
+    (void) fputs("\n", stderr);
+    (void) fflush(nullptr); /* flushes all stdio output streams */
     va_end(ap);
-    return;
 }
 
-void yyerror(char *msg)
+void yyerror(const char *msg)
 {
     num_errors++;
     printf("error: line %3d: %s %s.\n", my_linenum, msg, yytext);
@@ -154,25 +151,23 @@ unsigned int hash_func(char *pstr)
 {
     int          len = strlen(pstr);
     unsigned int hash = 0;
+    assert(len <= sizeof(hash));
     memcpy(&hash, pstr, len);
     return hash;
 }
 
-int str2int(char *str, int base)
+int str2int(const char *str, int base)
 {
-    int  rval = 0;
-    char c;
-    strupr(str);
-    char *p = str;
+    int         rval = 0;
+    const char *p = str;
     while (*p)
     {
-        c = *p;
-        if (c > '9')
-            c = (c - 'A') + 10;
-        else
-            c -= '0';
+        int c = static_cast<unsigned char>(*p);
+        c > '9' ? c = std::toupper(c) - 'A' + 10 : c -= '0';
         if (c >= base)
+        {
             yyerror("weird number");
+        }
         rval = rval * base + c;
         p++;
     }
@@ -183,35 +178,38 @@ int bin_search(unsigned int needle, const unsigned *haysack, int min, int max)
 {
     int mid = (min + max) / 2;
     if (haysack[max] == needle)
+    {
         return max;
+    }
     if (max <= min)
+    {
         return -1;
+    }
     if (haysack[mid] > needle)
-        if (mid == max)
-            return -1;
-        else
-            return bin_search(needle, haysack, min, mid - 1);
+    {
+        return mid == max ? -1 : bin_search(needle, haysack, min, mid - 1);
+    }
     if (haysack[mid] < needle)
-        if (mid == min)
-            return -1;
-        else
-            return bin_search(needle, haysack, mid + 1, max);
+    {
+        return mid == min ? -1 : bin_search(needle, haysack, mid + 1, max);
+    }
     return mid;
 }
 
-int do_id(char *yytext)
+int do_id(const char *text)
 {
-    int          rval = -1;
     char         buf[256];
     unsigned int hash;
     int          ind;
-    strcpy(buf, yytext);
+    strcpy(buf, text);
     int len = strlen(buf);
     strupr(buf);
     if (len < 3 || len > 4)
     {
         if (!strcmp(buf, "X"))
+        {
             return INDEX;
+        }
         // printf("[identifier]");
         goto retid;
     }
@@ -227,12 +225,11 @@ int do_id(char *yytext)
         }
         return ind + FCB;
     }
-    else
-    {
-        // printf("[inst:%4s]", instList[hashInd[ind]]);
-        yylval.ival = hashInd[ind];
-        return INST;
-    }
+
+    // printf("[inst:%4s]", instList[hashInd[ind]]);
+    yylval.ival = hashInd[ind];
+    return INST;
+
 retid:
     yylval.pse = insert_id(buf);
     return ID;
