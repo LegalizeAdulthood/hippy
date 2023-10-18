@@ -20,7 +20,7 @@
 #include "codes.h"
 
 // clang-foramt off
-const char *const hex_conv_tbl[256] =
+const char *const g_hexConvTable[256] =
 {
     "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0A", "0B", "0C", "0D", "0E", "0F",
     "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1A", "1B", "1C", "1D", "1E", "1F",
@@ -41,7 +41,7 @@ const char *const hex_conv_tbl[256] =
 };
 
 #define INVAL 0x00
-const InstDesc instCodes[107] =
+const InstDesc g_instOpCodes[107] =
 {
     //          rel     imm,    dir,    ind,    ext,    inher
     /*ASL*/   { INVAL,  INVAL,  INVAL,  0x68,   0x78,   INVAL },
@@ -160,7 +160,7 @@ const InstDesc instCodes[107] =
  * LOWER  ORDER 4BITS --> NUMBER OF BYTES
  */
 
-const unsigned char s_instDescTbl[0x100] =
+const unsigned char g_instDescTable[0x100] =
 {
     0x00, 0x21, 0x00, 0x00, 0x00, 0x00, 0x21, 0x21, 0x41, 0x41, 0x21, 0x21, 0x21, 0x21, 0x21, 0x21,
     0x21, 0x21, 0x00, 0x00, 0x00, 0x00, 0x21, 0x21, 0x00, 0x21, 0x00, 0x21, 0x00, 0x00, 0x00, 0x00,

@@ -16,7 +16,7 @@ class TestInherent : public TestInstruction
 
 TEST_P(TestInherent, isInherent)
 {
-    EXPECT_NE(0x00, instCodes[GetParam()].icInher);
+    EXPECT_NE(0x00, g_instOpCodes[GetParam()].icInher);
 }
 
 class TestImmediate : public TestInstruction
@@ -25,7 +25,7 @@ class TestImmediate : public TestInstruction
 
 TEST_P(TestImmediate, isImmediate)
 {
-    EXPECT_NE(0x00, instCodes[GetParam()].icImmed);
+    EXPECT_NE(0x00, g_instOpCodes[GetParam()].icImmed);
 }
 
 class TestRelative : public TestInstruction
@@ -34,7 +34,7 @@ class TestRelative : public TestInstruction
 
 TEST_P(TestRelative, isRelative)
 {
-    EXPECT_NE(0x00, instCodes[GetParam()].icRel);
+    EXPECT_NE(0x00, g_instOpCodes[GetParam()].icRel);
 }
 
 class TestDirect : public TestInstruction
@@ -43,7 +43,7 @@ class TestDirect : public TestInstruction
 
 TEST_P(TestDirect, isDirect)
 {
-    EXPECT_NE(0x00, instCodes[GetParam()].icDirect);
+    EXPECT_NE(0x00, g_instOpCodes[GetParam()].icDirect);
 }
 
 class TestIndexed : public TestInstruction
@@ -52,7 +52,7 @@ class TestIndexed : public TestInstruction
 
 TEST_P(TestIndexed, isIndexed)
 {
-    EXPECT_NE(0x00, instCodes[GetParam()].icIndex);
+    EXPECT_NE(0x00, g_instOpCodes[GetParam()].icIndex);
 }
 
 class TestExtended : public TestInstruction
@@ -61,7 +61,7 @@ class TestExtended : public TestInstruction
 
 TEST_P(TestExtended, isExtended)
 {
-    EXPECT_NE(0x00, instCodes[GetParam()].icExtend);
+    EXPECT_NE(0x00, g_instOpCodes[GetParam()].icExtend);
 };
 
 static Instruction inherentInstructions[] = {
@@ -113,7 +113,7 @@ TEST(TestInstructions, notInherent)
     {
         if (std::find(std::begin(inherentInstructions), end, ins) == end)
         {
-            EXPECT_EQ(0x00, instCodes[ins].icInher) << "instruction " << ins;
+            EXPECT_EQ(0x00, g_instOpCodes[ins].icInher) << "instruction " << ins;
         }
     }
 }
@@ -125,7 +125,7 @@ TEST(TestInstructions, notImmediate)
     {
         if (std::find(std::begin(immediateInstructions), end, ins) == end)
         {
-            EXPECT_EQ(0x00, instCodes[ins].icImmed) << "instruction " << ins;
+            EXPECT_EQ(0x00, g_instOpCodes[ins].icImmed) << "instruction " << ins;
         }
     }
 }
@@ -137,7 +137,7 @@ TEST(TestInstructions, notRelative)
     {
         if (std::find(std::begin(relativeInstructions), end, ins) == end)
         {
-            EXPECT_EQ(0x00, instCodes[ins].icRel) << "instruction " << ins;
+            EXPECT_EQ(0x00, g_instOpCodes[ins].icRel) << "instruction " << ins;
         }
     }
 }
@@ -149,7 +149,7 @@ TEST(TestInstructions, notDirect)
     {
         if (std::find(std::begin(directInstructions), end, ins) == end)
         {
-            EXPECT_EQ(0x00, instCodes[ins].icDirect) << "instruction " << ins;
+            EXPECT_EQ(0x00, g_instOpCodes[ins].icDirect) << "instruction " << ins;
         }
     }
 }
@@ -161,7 +161,7 @@ TEST(TestInstructions, notIndexed)
     {
         if (std::find(std::begin(indexedInstructions), end, ins) == end)
         {
-            EXPECT_EQ(0x00, instCodes[ins].icIndex) << "instruction " << ins;
+            EXPECT_EQ(0x00, g_instOpCodes[ins].icIndex) << "instruction " << ins;
         }
     }
 }
@@ -173,7 +173,7 @@ TEST(TestInstructions, notExtended)
     {
         if (std::find(std::begin(extendedInstructions), end, ins) == end)
         {
-            EXPECT_EQ(0x00, instCodes[ins].icExtend) << "instruction " << ins;
+            EXPECT_EQ(0x00, g_instOpCodes[ins].icExtend) << "instruction " << ins;
         }
     }
 }

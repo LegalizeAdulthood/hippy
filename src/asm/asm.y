@@ -81,18 +81,18 @@ pure_asm_stmt:
                 unsigned char  opcode = $1;
                 if (get_tktype($2) == INTEGER)
                 {
-                    if (instCodes[opcode].icRel)
+                    if (g_instOpCodes[opcode].icRel)
                     {
                         do_relative(opcode, (unsigned char) (sval - pc - 2));
                     }
-                    else if (sval < 0x100 && instCodes[opcode].icDirect)
+                    else if (sval < 0x100 && g_instOpCodes[opcode].icDirect)
                         do_direct(opcode, (unsigned char) sval);
                     else
                         do_extended(opcode, sval);
                 }
                 else
                 {
-                    if (instCodes[opcode].icRel)
+                    if (g_instOpCodes[opcode].icRel)
                     {
                         store_eqn($2, pc + 1, RELATIVE);
                         do_relative(opcode, 0x00);

@@ -163,7 +163,7 @@ void *make_identifier(void *pvpse)
 void add_reference(unsigned char opcode, void *vppse, unsigned short addr)
 {
     SymbolEntry *pse = (SymbolEntry *) vppse;
-    insert_ref(pse, addr, instCodes[opcode].icRel);
+    insert_ref(pse, addr, g_instOpCodes[opcode].icRel);
 }
 
 void add_label(void *vppse, unsigned short addr)
@@ -254,7 +254,7 @@ void do_equ(void *vppse, unsigned short addr)
 void do_idinst(unsigned char opcode, SymbolEntry *pse, char imm)
 {
     // add_reference(opcode, pse, pc+1);
-    if (instCodes[opcode].icRel)
+    if (g_instOpCodes[opcode].icRel)
         do_relative(opcode, 0x00);
     else
         do_extended(opcode, 0x0000);
@@ -263,8 +263,8 @@ void do_idinst(unsigned char opcode, SymbolEntry *pse, char imm)
 
 void do_inher(unsigned char opcode)
 {
-    if (instCodes[opcode].icInher)
-        memory[pc++] = instCodes[opcode].icInher;
+    if (g_instOpCodes[opcode].icInher)
+        memory[pc++] = g_instOpCodes[opcode].icInher;
     else
         err_msg("error: line %04d: instruction \"%s\" does not support implied addressing\n", my_linenum - 1,
                 instList[opcode]);
@@ -272,22 +272,22 @@ void do_inher(unsigned char opcode)
 
 int get_numbytes(unsigned char opcode)
 {
-    return (s_instDescTbl[instCodes[opcode].icImmed] & 0x0f);
+    return (g_instDescTable[g_instOpCodes[opcode].icImmed] & 0x0f);
 }
 
 void do_immediate(unsigned char opcode, unsigned short sval)
 {
-    if (instCodes[opcode].icImmed)
+    if (g_instOpCodes[opcode].icImmed)
     {
         if (get_numbytes(opcode) == 3)
         {
-            memory[pc++] = instCodes[opcode].icImmed;
+            memory[pc++] = g_instOpCodes[opcode].icImmed;
             memory[pc++] = HI_BYTE(sval);
             memory[pc++] = LO_BYTE(sval);
         }
         else
         {
-            memory[pc++] = instCodes[opcode].icImmed;
+            memory[pc++] = g_instOpCodes[opcode].icImmed;
             memory[pc++] = (unsigned char) sval;
         }
     }
@@ -298,9 +298,9 @@ void do_immediate(unsigned char opcode, unsigned short sval)
 
 void do_direct(unsigned char opcode, unsigned char cval)
 {
-    if (instCodes[opcode].icDirect)
+    if (g_instOpCodes[opcode].icDirect)
     {
-        memory[pc++] = instCodes[opcode].icDirect;
+        memory[pc++] = g_instOpCodes[opcode].icDirect;
         memory[pc++] = cval;
     }
     else
@@ -310,9 +310,9 @@ void do_direct(unsigned char opcode, unsigned char cval)
 
 void do_indexed(unsigned char opcode, unsigned char cval)
 {
-    if (instCodes[opcode].icIndex)
+    if (g_instOpCodes[opcode].icIndex)
     {
-        memory[pc++] = instCodes[opcode].icIndex;
+        memory[pc++] = g_instOpCodes[opcode].icIndex;
         memory[pc++] = cval;
     }
     else
@@ -322,9 +322,9 @@ void do_indexed(unsigned char opcode, unsigned char cval)
 
 void do_extended(unsigned char opcode, unsigned short sval)
 {
-    if (instCodes[opcode].icExtend)
+    if (g_instOpCodes[opcode].icExtend)
     {
-        memory[pc++] = instCodes[opcode].icExtend;
+        memory[pc++] = g_instOpCodes[opcode].icExtend;
         memory[pc++] = (unsigned char) ((sval & 0xff00) >> 8);
         memory[pc++] = (unsigned char) (sval & 0xff);
     }
@@ -335,9 +335,9 @@ void do_extended(unsigned char opcode, unsigned short sval)
 
 void do_relative(unsigned char opcode, unsigned char cval)
 {
-    if (instCodes[opcode].icRel)
+    if (g_instOpCodes[opcode].icRel)
     {
-        memory[pc++] = instCodes[opcode].icRel;
+        memory[pc++] = g_instOpCodes[opcode].icRel;
         memory[pc++] = cval;
     }
     else
@@ -384,22 +384,22 @@ void generate_hex()
             cksum = s_emit + 3;
             cksum += HI_BYTE(addr) + LO_BYTE(addr);
             s_left -= s_emit;
-            sprintf(buf, "S1%s%s%s", hex_conv_tbl[s_emit + 3], hex_conv_tbl[HI_BYTE(addr)],
-                    hex_conv_tbl[LO_BYTE(addr)]);
+            sprintf(buf, "S1%s%s%s", g_hexConvTable[s_emit + 3], g_hexConvTable[HI_BYTE(addr)],
+                    g_hexConvTable[LO_BYTE(addr)]);
             while (s_emit)
             {
                 cksum += memory[addr];
-                strcat(buf, hex_conv_tbl[memory[addr]]);
+                strcat(buf, g_hexConvTable[memory[addr]]);
                 addr++;
                 s_emit--;
             }
-            strcat(buf, hex_conv_tbl[(unsigned char) (~cksum)]);
+            strcat(buf, g_hexConvTable[(unsigned char) (~cksum)]);
             strcat(buf, "\n");
             fprintf(fout, buf);
         }
     }
     cksum = ~(3 + HI_BYTE(addr) + LO_BYTE(addr));
-    fprintf(fout, "S903%s%s%s\n", hex_conv_tbl[HI_BYTE(addr)], hex_conv_tbl[LO_BYTE(addr)], hex_conv_tbl[cksum]);
+    fprintf(fout, "S903%s%s%s\n", g_hexConvTable[HI_BYTE(addr)], g_hexConvTable[LO_BYTE(addr)], g_hexConvTable[cksum]);
 }
 
 extern "C" int yywrap(void)

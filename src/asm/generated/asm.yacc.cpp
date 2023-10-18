@@ -1543,18 +1543,18 @@ yyreduce:
                 unsigned char  opcode = (yyvsp[(1) - (3)].ival);
                 if (get_tktype((yyvsp[(2) - (3)].pse)) == INTEGER)
                 {
-                    if (instCodes[opcode].icRel)
+                    if (g_instOpCodes[opcode].icRel)
                     {
                         do_relative(opcode, (unsigned char) (sval - pc - 2));
                     }
-                    else if (sval < 0x100 && instCodes[opcode].icDirect)
+                    else if (sval < 0x100 && g_instOpCodes[opcode].icDirect)
                         do_direct(opcode, (unsigned char) sval);
                     else
                         do_extended(opcode, sval);
                 }
                 else
                 {
-                    if (instCodes[opcode].icRel)
+                    if (g_instOpCodes[opcode].icRel)
                     {
                         store_eqn((yyvsp[(2) - (3)].pse), pc + 1, RELATIVE);
                         do_relative(opcode, 0x00);

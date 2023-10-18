@@ -19,10 +19,9 @@
 #ifndef HIPPY_ASM_CODES_H
 #define HIPPY_ASM_CODES_H
 
-#ifndef BYTE
-using BYTE = unsigned char;
-using Byte = unsigned char;
-#endif
+#include <cstdint>
+
+using BYTE = std::uint8_t;
 
 /*
  * instruction descriptor
@@ -38,9 +37,9 @@ struct InstDesc
     BYTE icInher;
 };
 
-extern const char *const hex_conv_tbl[256];
+extern const char *const g_hexConvTable[256];
 
-extern const InstDesc instCodes[107];
+extern const InstDesc g_instOpCodes[107];
 
 /*
  *	INSTRUCTION DESCRIPTION TABLE (IDT)
@@ -48,6 +47,6 @@ extern const InstDesc instCodes[107];
  *  LOWER  ORDER 4BITS --> NUMBER OF BYTES
  */
 
-extern const unsigned char s_instDescTbl[0x100];
+extern const unsigned char g_instDescTable[0x100];
 
 #endif
