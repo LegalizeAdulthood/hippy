@@ -156,8 +156,9 @@ int Disassembler::Dasm(BYTE *pbByteArray, int szByteArray, char *pcStr)
 
     if (numread > szByteArray || !opcode)
     {
-        strcpy(pcStr, "INVALID");
-        return INVALID_CODE;
+        HexDumper::ByteToHex(opcode, pcAddr);
+        sprintf(pcStr, "FCB     $%s", pcAddr);
+        return 1;
     }
 
     if (numread == 2)
@@ -172,8 +173,9 @@ int Disassembler::Dasm(BYTE *pbByteArray, int szByteArray, char *pcStr)
     switch (g_instModes[opcode])
     {
     case amNon:
-        strcpy(pcStr, "INVALID");
-        return INVALID_CODE;
+        HexDumper::ByteToHex(opcode, pcAddr);
+        sprintf(pcStr, "FCB     $%s", pcAddr);
+        return 1;
     case amRel:
     case amDir:
     case amExt:

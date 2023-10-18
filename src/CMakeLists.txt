@@ -26,6 +26,8 @@ add_custom_command(TARGET device POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/devices/device.xml" "${CMAKE_BINARY_DIR}/devices")
 
 add_library(hippy-lib STATIC
+    disassembler.h
+    disassembler.cpp
     utils.h
     utils.cpp
 )
@@ -35,34 +37,33 @@ target_link_libraries(hippy-lib PUBLIC wx::base)
 
 add_executable(hippy WIN32
     addrmng.h
+    addrmng.cpp
     alu.h
+    alu.cpp
     asmeditor.h
+    asmeditor.cpp
     baseWnd.h
+    baseWnd.cpp
     dasmwnd.h
+    dasmwnd.cpp
     debugwnd.h
+    debugwnd.cpp
     dialogs.h
-    disassembler.h
+    dialogs.cpp
     environment.h
     m6800.h
-    memdump.h
-    registerwnd.h
-    resource.h
-    stackwnd.h
-    xmlparser.h
-    addrmng.cpp
-    alu.cpp
-    asmeditor.cpp
-    baseWnd.cpp
-    dasmwnd.cpp
-    debugwnd.cpp
-    dialogs.cpp
-    disassembler.cpp
     m6800.cpp
     main.cpp
+    memdump.h
     memdump.cpp
+    registerwnd.h
     registerwnd.cpp
+    resource.h
+    stackwnd.h
     stackwnd.cpp
+    xmlparser.h
     xmlparser.cpp
+
     Hippy.rc
     toolbar1.bmp
     toolbar2.bmp

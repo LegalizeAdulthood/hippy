@@ -176,11 +176,7 @@ void CDisasmWnd::drawLine(LINENUMBER lnActualNum)
     {
         buff[i] = m_memoryBase->Read(m_memoryAddressLocator[lnActualNum] + i, true);
     }
-    ret = m_dasm.Dasm((BYTE *) buff, m_instructionLength[lnActualNum], buffer);
-    if (ret == INVALID_CODE)
-    {
-        ret = 1;
-    }
+    ret = m_dasm.Dasm(buff, m_instructionLength[lnActualNum], buffer);
     x = m_charWidth * 10 + 5 * m_sideMargin;
     dc.TextOut(x, y, buffer);
 
